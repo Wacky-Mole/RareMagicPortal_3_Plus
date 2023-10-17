@@ -1,0 +1,8 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+RareMagicPortal_3_Plus.sln.DotSettings.user
+.idea
+.vs
