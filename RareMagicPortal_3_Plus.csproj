@@ -76,13 +76,34 @@
     <Reference Include="BepInEx">
       <HintPath>$(BepInExPath)\core\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="ItemManager">
+      <HintPath>Libs\ItemManager.dll</HintPath>
+    </Reference>
+    <Reference Include="LocalizationManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\LocalizationManager.dll</HintPath>
+    </Reference>
     <Reference Include="ServerSync">
       <HintPath>Libs\ServerSync.dll</HintPath>
+    </Reference>
+    <Reference Include="StatusEffectManager, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\StatusEffectManager.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="Unity.InputSystem">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\Unity.InputSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>$(CorlibPath)\UnityEngine.dll</HintPath>
     </Reference>
@@ -92,8 +113,20 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(CorlibPath)\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>$(CorlibPath)\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>$(CorlibPath)\UnityEngine.PhysicsModule.dll</HintPath>
@@ -101,15 +134,27 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>$(CorlibPath)\UnityEngine.UI.dll</HintPath>
     </Reference>
+    <Reference Include="YamlDotNet, Version=11.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\YamlDotNet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColorfulLights.cs" />
+    <Compile Include="functions.cs" />
     <Compile Include="LocalizationManager.cs" />
     <Compile Include="PieceManager\MaterialReplacer.cs" />
     <Compile Include="PieceManager\PieceManager.cs" />
     <Compile Include="PieceManager\SnapPointMaker.cs" />
     <Compile Include="Plugin.cs" />
+    <Compile Include="PortalColorLogic.cs" />
+    <Compile Include="PortalName.cs" />
+    <Compile Include="PortalWorld\Enumeration.cs" />
+    <Compile Include="PortalWorld\FireLights.cs" />
+    <Compile Include="PortalWorld\TeleportWorldDataRMPDefault.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VersionHandshake.cs" />
+    <Compile Include="RecipeData.cs" />
+    <Compile Include="SpriteTools.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -118,13 +163,22 @@
     <Content Include=".gitignore" />
     <Content Include="assets\DropAssetBundleInThisFolder.txt" />
     <Content Include="environment.props" />
+    <Content Include="icons\portaldrink.png" />
     <Content Include="ILRepack.targets" />
+    <Content Include="Libs\ItemManager.dll" />
+    <Content Include="Libs\LocalizationManager.dll" />
     <Content Include="Libs\PieceManager.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Libs\ServerSync.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Libs\StatusEffectManager.dll" />
+    <Content Include="Libs\System.ValueTuple.dll" />
+    <Content Include="Libs\YamlDotNet.dll" />
+    <Content Include="portal.png" />
+    <Content Include="portalicon.png" />
+    <Content Include="portaliconTarget.png" />
     <Content Include="README.md" />
     <Content Include="Thunderstore\CHANGELOG.md" />
     <Content Include="Thunderstore\icon.png" />

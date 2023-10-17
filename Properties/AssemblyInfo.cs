@@ -1,15 +1,15 @@
-﻿using RareMagicPortal_3_Plus;
+﻿using RareMagicPortal;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle(PieceManagerModTemplatePlugin.ModName)]
+[assembly: AssemblyTitle(MagicPortalFluid.ModName)]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany(PieceManagerModTemplatePlugin.Author)]
-[assembly: AssemblyProduct(PieceManagerModTemplatePlugin.ModName)]
+[assembly: AssemblyCompany(MagicPortalFluid.Author)]
+[assembly: AssemblyProduct(MagicPortalFluid.ModName)]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion(PieceManagerModTemplatePlugin.ModVersion)]
-[assembly: AssemblyFileVersion(PieceManagerModTemplatePlugin.ModVersion)]
+[assembly: AssemblyVersion(MagicPortalFluid.ModVersion)]
+[assembly: AssemblyFileVersion(MagicPortalFluid.ModVersion)]

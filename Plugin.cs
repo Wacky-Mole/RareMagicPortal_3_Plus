@@ -53,8 +53,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using ItemManager;
 using LocalizationManager;
-
-//using PieceManager;
+using PieceManager;
 using ServerSync;
 using StatusEffectManager;
 using System;
@@ -71,15 +70,33 @@ using static Interpolate;
 
 namespace RareMagicPortal
 {
-    //extra
+
+    public static class Globals
+    {
+        public static Color Gold = new Color(1f, 215f / 255f, 0, 1f);
+        public static Color m_colorTargetfound = new Color(191f / 255f, 150f / 255f, 0, 25);
+        public static Color lightcolor = new Color(1f, 100f / 255f, 0, 1f);
+        //Material PortalDefMaterial = originalMaterials["portal_small"];
+        public static Color flamesstart = new Color(1f, 194f / 255f, 34f / 255f, 1f);
+        public static Color flamesend = new Color(1f, 0, 0, 1f);
+
+        public static Color Purple = new Color(107f / 255f, 63f / 255f, 160 / 255f, 1f);
+        public static Color Tan = new Color(210f / 255f, 180f / 255f, 140f / 255f, 1f);
+        public static Color Brown = new Color(193f / 255f, 69f / 255f, 19f / 255f, 1f);
+
+        public static Dictionary<string, Material> originalMaterials;
+
+    }
+
+
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     [BepInDependency("org.bepinex.plugins.targetportal", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("org.bepinex.plugins.jewelcrafting", BepInDependency.DependencyFlags.SoftDependency)]  // it loads before this mod// not really required, but whatever
     [BepInIncompatibility("randyknapp.mods.advancedportals")]
     internal class MagicPortalFluid : BaseUnityPlugin
     {
-        public const string PluginGUID = "WackyMole.RareMagicPortal";
-        public const string PluginName = "RareMagicPortal";
+        public const string PluginGUID = "WackyMole.RareMagicPortalPlus";
+        public const string PluginName = "RareMagicPortalPlus";
         public const string PluginVersion = "3.0.0";
 
         internal const string ModName = PluginName;
