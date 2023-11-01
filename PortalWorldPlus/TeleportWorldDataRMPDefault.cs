@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,8 +11,55 @@ using UnityEngine;
 namespace RareMagicPortal.PortalWorld
 {
 
+	internal class PLUS
+	{
+		// PLUS Version only
 
-	public enum ClassTypes
+		public static string ModelDefault = "small_portal";
+		public static string Model1 = "Torus_cell.002";
+		public static string Model2 = "RuneRing";
+		public static string Model3 = "Gates";
+		public static string Model4 = "QuadPortal";
+
+		static internal TeleportWorldDataCreator ClassDefault = new TeleportWorldDataCreatorA();
+		static internal TeleportWorldDataCreator ClassModel1 = new TeleportWorldDataCreatorB();
+		static internal TeleportWorldDataCreator ClassModel2 = new TeleportWorldDataCreatorC();
+		static internal TeleportWorldDataCreator ClassModel3 = new TeleportWorldDataCreatorD();
+		static internal TeleportWorldDataCreator ClassModel4 = new TeleportWorldDataCreatorE();
+
+
+	}
+
+    [HarmonyPatch(typeof(TeleportWorld))] 
+	class TeleportWorldPatchRMPPLUS
+	{
+		[HarmonyPostfix]
+		[HarmonyPatch(nameof(TeleportWorld.Awake))]
+		static void TeleportWorldAwakePostPLUS(ref TeleportWorld __instance)
+		{
+            if (!__instance)
+            {
+                return;
+            }
+
+            if (__instance.m_model.name == PLUS.ModelDefault)  //  hopefully a better way can be found
+                PLUS._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassDefault.FactoryMethod(__instance));
+            else if (__instance.m_model.name == PLUS.Model1)
+                _teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel1.FactoryMethod(__instance));
+            else if (__instance.m_model.name == PLUS.Model2)
+                _teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel2.FactoryMethod(__instance));
+            else if (__instance.m_model.name == PLUS.Model3)
+                _teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel3.FactoryMethod(__instance));
+            else if (__instance.m_model.name == PLUS.Model4)
+                _teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel4.FactoryMethod(__instance));
+        }
+
+    }
+
+	}
+
+
+    public enum ClassTypes
 	{
 		TeleportWorldDataRMPDefault,
 		TeleportWorldDataRMPModel1,

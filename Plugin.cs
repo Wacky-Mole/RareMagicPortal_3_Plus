@@ -54,6 +54,7 @@ using HarmonyLib;
 using ItemManager;
 using LocalizationManager;
 using PieceManager;
+using RareMagicPortal.PortalWorld;
 using ServerSync;
 using StatusEffectManager;
 using System;
@@ -275,6 +276,10 @@ namespace RareMagicPortal
 
         internal static readonly Dictionary<TeleportWorld, TeleportWorldDataRMP> _teleportWorldDataCache = new();
         private static readonly KeyboardShortcut _changePortalReq = new(KeyCode.E, KeyCode.LeftControl);
+
+
+
+
 
         internal static IEnumerator RemovedDestroyedTeleportWorldsCoroutine()
         {
