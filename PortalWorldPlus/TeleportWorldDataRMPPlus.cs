@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RareMagicPortal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,10 +54,8 @@ namespace RareMagicPortal.PortalWorld
             else if (__instance.m_model.name == PLUS.Model4)
                 _teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel4.FactoryMethod(__instance));
         }
-
     }
 
-	}
 
 
     public enum ClassTypes
@@ -81,7 +80,7 @@ namespace RareMagicPortal.PortalWorld
 
 		public override ClassBase FactoryMethod(TeleportWorld teleportWorld)
 		{
-			return new TeleportWorldDataRMPDefault(teleportWorld);
+			return new TeleportWorldDataRMPPlus(teleportWorld);
 		}
 	}
 
@@ -174,7 +173,7 @@ namespace RareMagicPortal.PortalWorld
 
 	}
 
-	class TeleportWorldDataRMPDefault : ClassBase
+	class TeleportWorldDataRMPPlus : ClassBase
     {
         public List<Light> Lights { get; } = new List<Light>();
         public List<ParticleSystem> Systems { get; } = new List<ParticleSystem>();
@@ -187,7 +186,7 @@ namespace RareMagicPortal.PortalWorld
 
 
 
-		public TeleportWorldDataRMPDefault(TeleportWorld teleportWorld)
+		public TeleportWorldDataRMPPlus(TeleportWorld teleportWorld)
         {
             Lights.AddRange(teleportWorld.GetComponentsInNamedChild<Light>("Point light"));
 
