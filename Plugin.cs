@@ -188,6 +188,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<bool>? ConfigEnableGoldAsMaster;
         internal static ConfigEntry<string>? ConfigEnableColorEnable;
         internal static ConfigEntry<KeyboardShortcut>? portalRMPKEY = null!;
+        internal static ConfigEntry<KeyboardShortcut>? portalRMPsacrifceKEY = null!;
         internal static ConfigEntry<bool>? ConfigMessageLeft;
         internal static ConfigEntry<bool>? ConfigTargetPortalAnimation;
         internal static ConfigEntry<int>? ConfigMaxWeight;
@@ -211,6 +212,14 @@ namespace RareMagicPortal
         internal static ConfigEntry<string>? GemColorOrange;
         internal static ConfigEntry<bool>? RiskyYMLSave;
         internal static ConfigEntry<bool>? UseSmallUpdates;
+        internal static ConfigEntry<bool>? UsePortalProgression;
+        internal static ConfigEntry<string>? PPRed;
+        internal static ConfigEntry<string>? PPGreen;
+        internal static ConfigEntry<string>? PPBlue;
+        internal static ConfigEntry<string>? PPWhite;
+        internal static ConfigEntry<string>? PPRedAllows;
+        internal static ConfigEntry<string>? PPGreenAllows;
+        internal static ConfigEntry<string>? PPBlueAllows;
 
         public static string crystalcolorre = ""; // need to reset everytime maybe?
         public string message_eng_NO_Portal = $"Portal Crystals/Key Required"; // Blue Portal Crystal
@@ -245,11 +254,33 @@ namespace RareMagicPortal
         public static string PortalKeyCyan = "$item_PortalKeyCyan";
         public static string PortalKeyOrange = "$item_PortalKeyOrange";
 
-        private SpriteTools IconColor = new SpriteTools();
+        SpriteTools IconColor = new SpriteTools();
+
+        public static Sprite IconBlack = null!;
+        public static Sprite IconYellow = null!;
+        public static Sprite IconRed = null!;
+        public static Sprite IconGreen = null!;
+        public static Sprite IconBlue = null!;
+        public static Sprite IconGold = null!;
+        public static Sprite IconWhite = null!;
+        public static Sprite IconDefault = null!;
+        public static Sprite IconPurple = null!;
+        public static Sprite IconTan = null!;
+
+        public static string ModelDefault = "small_portal";
+        public static string Model1 = "Torus_cell.002";
+        public static string Model2 = "RuneRing";
+        public static string Model3 = "Gates";
+        public static string Model4 = "QuadPortal";
+
+        static TeleportWorldDataCreator ClassDefault = new TeleportWorldDataCreatorA();
+        static TeleportWorldDataCreator ClassModel1 = new TeleportWorldDataCreatorB();
+        static TeleportWorldDataCreator ClassModel2 = new TeleportWorldDataCreatorC();
+        static TeleportWorldDataCreator ClassModel3 = new TeleportWorldDataCreatorD();
+        static TeleportWorldDataCreator ClassModel4 = new TeleportWorldDataCreatorE();
 
         public static Dictionary<string, Sprite> Icons = new Dictionary<string, Sprite>();
 
-        public static Sprite IconDefault = null!;
 
         internal static Localization english = null!;
         internal static Localization spanish = null!;
@@ -275,7 +306,11 @@ namespace RareMagicPortal
         internal static bool TargetPortalLoaded = false;
 
         internal static readonly Dictionary<TeleportWorld, TeleportWorldDataRMP> _teleportWorldDataCache = new();
+
+        static readonly Dictionary<TeleportWorld, ClassBase> _teleportWorldDataCacheDefault = new();
+
         private static readonly KeyboardShortcut _changePortalReq = new(KeyCode.E, KeyCode.LeftControl);
+        private static readonly KeyboardShortcut _portalRMPsacrifceKEY = new(KeyCode.E, KeyCode.LeftControl);
 
 
 
@@ -448,7 +483,7 @@ namespace RareMagicPortal
 
                 bool bo2 = false;
                 bool drinkactive = false;
-                if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele"))
+                if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
                 {
                     bo2 = true;
                     drinkactive = true;
@@ -577,9 +612,41 @@ namespace RareMagicPortal
                             }
                             TeleportingforWeight = 0;
                         }
+                        if (MagicPortalFluid.UsePortalProgression.Value)
+                        {
+                            List<string> allowlist = new List<string>();
+                            bool skip = false;
+                            switch (currentColor)
+                            {
+                                case "Red": allowlist = MagicPortalFluid.PPRedAllows.Value.Replace(" ", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); break;
+                                case "Green": allowlist = MagicPortalFluid.PPGreenAllows.Value.Replace(" ", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); break;
+                                case "Blue": allowlist = MagicPortalFluid.PPBlueAllows.Value.Replace(" ", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); break;
+                                case "White":
+                                    __result = true;
+                                    return false;
+
+                                default: skip = true; break;
+                            }
+
+                            if (skip)
+                                return true;
+
+                            foreach (var itemData in __instance.GetAllItems())
+                            {
+                                if (!itemData.m_shared.m_teleportable && itemData.m_dropPrefab != null && !allowlist.Contains(itemData.m_dropPrefab.name))
+                                {
+                                    __result = false;
+                                    return false;
+                                }
+                            }
+
+                            __result = true;
+                            return false;
+                        }
                     }
                 }
 
+           
                 if (bo2) // if status effect is active or teleportany color
                 {
                     if (PortalDrinkDenyloc.Count == 0 || !drinkactive) // might expand upon this in future
@@ -652,8 +719,24 @@ namespace RareMagicPortal
                 }
                 //RareMagicPortal.LogInfo($"Made it to Map during Telecheck");
                 string PortalName;
-                Minimap Instancpass = Minimap.instance;
-                HoldPins = Instancpass.m_pins;
+                Minimap Minimap = Minimap.instance;
+
+                Type TP = Type.GetType("TargetPortal.Map");
+                PropertyInfo myProperty = TP.GetProperty("activePins", BindingFlags.NonPublic | BindingFlags.Static);
+                Dictionary<Minimap.PinData, ZDO> activePins = (Dictionary<Minimap.PinData, ZDO>)myProperty.GetValue(null, null);
+
+                Minimap.PinData? closestPin = Minimap.GetClosestPin(Minimap.ScreenToWorldPoint(Input.mousePosition), Minimap.m_removeRadius * (Minimap.m_largeZoom * 2f));
+
+                if (!activePins.TryGetValue(closestPin, out ZDO portalZDO))
+                {
+
+                }
+                // portalZDO.m_uid
+                // var portal = portalZDO.GetPrefab();
+
+
+
+                HoldPins = Minimap.m_pins;
                 //return true;
 
                 try
@@ -669,6 +752,11 @@ namespace RareMagicPortal
                 {
                     Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_noteleport");
                     return false;
+                }
+
+                if (MagicPortalFluid.UsePortalProgression.Value)
+                {
+                    return true; // Don't do CrystalandKeyLogic check
                 }
 
                 if (PortalColorLogic.CrystalandKeyLogic(PortalName))
@@ -780,6 +868,12 @@ namespace RareMagicPortal
                 }
                 if (!m_hadTarget) // if no target continuie on with logic
                     return false;
+
+
+                if (MagicPortalFluid.UsePortalProgression.Value)
+                {
+                    return true; // don't do crystalandkeylogic
+                }
 
                 if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
                 {

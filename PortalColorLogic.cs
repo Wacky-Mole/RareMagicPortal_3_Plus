@@ -265,7 +265,7 @@ namespace RareMagicPortal
                     //if (!__instance.m_nview.m_zdo.m_vec3.ContainsKey(_teleportWorldColorHashCode))
                     //	__instance.m_nview.m_zdo.Set(_teleportWorldColorHashCode, Utils.ColorToVec3(color));
                     bool isthistrue = MagicPortalFluid._teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData);
-                    if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele"))
+                    if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
                     {
                         // override color for teleportanything color
                         if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow")
@@ -531,7 +531,7 @@ namespace RareMagicPortal
             private static void Prefix(ref TeleportWorld __instance)
             {
                 string PortalName = __instance.m_nview.m_zdo.GetString("tag");
-
+                
                 HoldMeDaddy = "";
                 if (PortalName.Contains(NameIdentifier))
                 {
@@ -576,6 +576,12 @@ namespace RareMagicPortal
                 string nextcolor;
                 Color currentcolorHex;
                 colorint = CrystalandKeyLogicColor(out currentcolor, out currentcolorHex, out nextcolor, PortalName, __instance);
+
+                string PPMreqs = "";
+                if (MagicPortalFluid.UsePortalProgression.Value)
+                {
+                    colorint = CrystalandKeyLogicColorPPM(out currentcolor, out currentcolorHex, out nextcolor, out PPMreqs, PortalName, __instance);
+                }
 
                 string tempholdstring = "";
                 if (PortalName.Contains(NameIdentifier))
@@ -642,8 +648,14 @@ namespace RareMagicPortal
                     {
                         teleportWorldData.Biome = Biome;
                         Color newColor = color;
-                        if (MagicPortalFluid.ConfigUseBiomeColors.Value)
+
+                        if (MagicPortalFluid.UsePortalProgression.Value)
                         {
+                            //overrides
+                        }
+                        else if (MagicPortalFluid.ConfigUseBiomeColors.Value)
+                        {
+
                             string BC = MagicPortalFluid.BiomeRepColors.Value;
                             string[] BCarray = BC.Split(',');
                             var results = Array.FindAll(BCarray, s => s.Contains(Biome));
@@ -713,7 +725,24 @@ namespace RareMagicPortal
                         }
                         // L-ctrl + E instead of _
 
-                        if (MagicPortalFluid.ConfigEnableCrystalsNKeys.Value)
+                        if (MagicPortalFluid.UsePortalProgression.Value)
+                        {
+                            __result =
+                                string.Format(
+                                    "{0}\n<size={4}>[<color={5}>{2}</color>] ADMIN override color change <color={6}>Portal</color>[{1}] Color to: [<color={7}>{3}</color>] </size> \n Portal Progression requires a sacrifice of {9} \n [<color={5}>{8}</color>] to Sacrifice",
+                                    __result,
+                                    currentcolor,
+                                    MagicPortalFluid.portalRMPKEY.Value + " + " + "E", //_changePortalReq,
+                                    nextcolor,
+                                    15,
+                                    "#" + ColorUtility.ToHtmlStringRGB(Color.yellow),
+                                    "#" + ColorUtility.ToHtmlStringRGB(color),
+                                    "#" + ColorUtility.ToHtmlStringRGB(PortalColors[nextcolor].HexName),
+                                    MagicPortalFluid.portalRMPsacrifceKEY.Value + " + " + "E",
+                                    "NextColor requires this stuff"
+                                    ); ;
+                        }
+                        else if (MagicPortalFluid.ConfigEnableCrystalsNKeys.Value)
                         {
                             __result =
                                 string.Format(
@@ -826,6 +855,24 @@ namespace RareMagicPortal
                 nextcolor = PortalColors[currentColor].NextColor;
                 Pos = PortalColors[currentColor].Pos;
             }
+
+
+        }
+        internal static int CrystalandKeyLogicColorPPM(out string currentColor, out Color currentColorHex, out string nextcolor, string PortalName = "", TeleportWorld __instance = null, int overrideInt = 0)
+        {
+            string BiomeC = "";
+            if (PortalName.Contains(NameIdentifier))
+            {
+                BiomeC = PortalName.Substring(PortalName.IndexOf(NameIdentifier));//
+                var index = PortalName.IndexOf(NameIdentifier);
+                PortalName = PortalName.Substring(0, index);
+            }
+            currentColor = MagicPortalFluid.CrystalKeyDefaultColor.Value;
+            if (MagicPortalFluid.CrystalKeyDefaultColor.Value == "None" || MagicPortalFluid.CrystalKeyDefaultColor.Value == "none")
+                currentColor = "Yellow";
+            currentColorHex = PortalColors[currentColor].HexName;
+            nextcolor = "Red";
+
         }
 
         internal static int CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextcolor, string PortalName = "", TeleportWorld __instance = null, int overrideInt = 0)

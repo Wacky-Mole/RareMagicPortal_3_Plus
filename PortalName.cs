@@ -6,6 +6,7 @@ namespace RareMagicPortal
     {
         public Dictionary<string, Portal> Portals { get; set; }
 
+        public List<string> PortalZDOs { get; set; } = new List<string>(); // names of currently used portals with this name // could be 
         public class Portal
         {
             public Dictionary<string, int> Portal_Crystal_Cost =

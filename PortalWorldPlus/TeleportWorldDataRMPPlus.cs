@@ -43,6 +43,7 @@ namespace RareMagicPortal.PortalWorld
                 return;
             }
 
+			/*
             if (__instance.m_model.name == PLUS.ModelDefault)  //  hopefully a better way can be found
                 PLUS._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassDefault.FactoryMethod(__instance));
             else if (__instance.m_model.name == PLUS.Model1)
@@ -53,6 +54,7 @@ namespace RareMagicPortal.PortalWorld
                 _teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel3.FactoryMethod(__instance));
             else if (__instance.m_model.name == PLUS.Model4)
                 _teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel4.FactoryMethod(__instance));
+			*/
         }
     }
 
