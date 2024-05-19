@@ -117,11 +117,12 @@ namespace RareMagicPortal
             }
             if (!string.IsNullOrEmpty(pinData.m_name))
                 MagicPortalFluid.checkiftagisPortal = pinData.m_name; // icons name
-            if (pinData.m_icon.name == "" || pinData.m_icon.name == "TargetPortalIcon") // only targetPortalIcon now, or not maybe new icons being set don't have name after messing with them
-            { // TargetPortals Icons have no name therefore this stupid check weeds out regular icons  // pull request for icon.name  TargetPortalIcon
+            if (pinData.m_icon.name == "TargetPortalIcon") 
+            { 
+
             }
             else
-                MagicPortalFluid.checkiftagisPortal = null;
+                MagicPortalFluid.checkiftagisPortal = null; // not sure what  this is
 
             if (MagicPortalFluid.checkiftagisPortal.Contains("$hud") || MagicPortalFluid.checkiftagisPortal.Contains("Day "))
                 MagicPortalFluid.checkiftagisPortal = null;

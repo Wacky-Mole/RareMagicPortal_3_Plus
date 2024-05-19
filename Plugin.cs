@@ -430,7 +430,7 @@ namespace RareMagicPortal
                 if (Player.m_localPlayer == null)
                     return true;
 
-                if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele"))
+                if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
                 {
                     __result = true;
                     return false;
@@ -729,11 +729,11 @@ namespace RareMagicPortal
 
                 if (!activePins.TryGetValue(closestPin, out ZDO portalZDO))
                 {
-
+                    //use PortalName and ZDO to get portal color and data
+                    string hello = portalZDO.ToString();
                 }
                 // portalZDO.m_uid
                 // var portal = portalZDO.GetPrefab();
-
 
 
                 HoldPins = Minimap.m_pins;
@@ -787,7 +787,7 @@ namespace RareMagicPortal
                 //RareMagicPortal.LogWarning("Here is MinimapStart");
             }
         }
-
+        /* No hack anymore
         [HarmonyPatch(typeof(Minimap), nameof(Minimap.UpdatePins))]
         public class AddMinimapRewriteNames
         {
@@ -804,6 +804,7 @@ namespace RareMagicPortal
                     if (pin.m_name.Length > 0 && __instance.m_mode == Minimap.MapMode.Large)
                     {
                         string NewName = pin.m_name;
+
                         if (NewName.Contains(PortalColorLogic.NameIdentifier))
                         {
                             var index = NewName.IndexOf(PortalColorLogic.NameIdentifier);
@@ -814,7 +815,7 @@ namespace RareMagicPortal
                     }
                 }
             }
-        }
+        } */
 
         [HarmonyPatch(typeof(TeleportWorldTrigger), nameof(TeleportWorldTrigger.OnTriggerEnter))]  // for Crystals and Keys
         internal class TeleportWorld_Teleport_CheckforCrystal
@@ -839,22 +840,11 @@ namespace RareMagicPortal
 
                 //PortalColorLogic.player = collider.GetComponent<Player>();
                 string PortalName = "";
-                if (!Chainloader.PluginInfos.ContainsKey("com.sweetgiorni.anyportal"))
-                { // check to see if AnyPortal is loaded // don't touch when anyportal is loaded
-                    PortalName = __instance.m_teleportWorld.GetText();
-                }
-                else // for anyportal
-                {
-                    ZDOID zDOID = __instance.m_teleportWorld.m_nview.GetZDO().GetZDOID("target");
-                    ZDO zDO = ZDOMan.instance.GetZDO(zDOID);
-                    if (zDO == null || !zDO.IsValid())
-                    {
-                    }
-                    else
-                    {
-                        PortalName = zDO.GetString("tag");
-                    }
-                }
+                //if (!Chainloader.PluginInfos.ContainsKey("com.sweetgiorni.anyportal"))
+
+                 PortalName = __instance.m_teleportWorld.GetText();
+                
+              
                 // end finding portal name
                 m_hadTarget = __instance.m_teleportWorld.m_hadTarget;
                 OutsideP = PortalName;
@@ -923,19 +913,24 @@ namespace RareMagicPortal
                                 PName = pin.m_name; // icons name - Portalname
 
                                 string BiomeC = "";
-                                if (PName.Contains(PortalColorLogic.NameIdentifier) && MagicPortalFluid.ConfigUseBiomeColors.Value)
-                                {
-                                    BiomeC = PName.Substring(PName.IndexOf(PortalColorLogic.NameIdentifier) + 1);//
-                                    var index = PName.IndexOf(PortalColorLogic.NameIdentifier);
-                                    PName = PName.Substring(0, index);
-                                    colorint = Int32.Parse(BiomeC);
-                                    //pin.m_nameElement.text = Localization.instance.Localize(PName); //Have to pass this stupid number, going to patch it in minimap update now, fuck this
-                                    //PortalColorLogic.CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextcolor, PName, null,colorint);
+
+                                
+                                Type TP = Type.GetType("TargetPortal.Map");
+                                PropertyInfo myProperty = TP.GetProperty("activePins", BindingFlags.NonPublic | BindingFlags.Static);
+                                Dictionary<Minimap.PinData, ZDO> activePins = (Dictionary<Minimap.PinData, ZDO>)myProperty.GetValue(null, null);
+
+                                //Minimap.PinData? closestPin = Minimap.GetClosestPin(Minimap.ScreenToWorldPoint(Input.mousePosition), Minimap.m_removeRadius * (Minimap.m_largeZoom * 2f));
+
+                                if (!activePins.TryGetValue(pin, out ZDO portalZDO))
+                                {       
+                                    string hello = portalZDO.ToString();
                                 }
-                                else
-                                {
-                                    colorint = PortalColorLogic.CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextcolor, PName); // kindof expensive task to do this cpu wize for all portals
-                                }
+                                //ZDO lookup
+                                // Get Color for BiomeC
+                                    
+                                 colorint = Int32.Parse(BiomeC);
+                                 colorint = PortalColorLogic.CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextcolor, PName); // kindof expensive task to do this cpu wize for all portals
+                                
 
                                 if (colorint == 0 || colorint == 999)
                                     pin.m_icon = IconDefault;
@@ -946,7 +941,7 @@ namespace RareMagicPortal
                                     pin.m_icon = Icons[givemecolor.ToString()];
                                 }
 
-                                pin.m_icon.name = "TargetPortalIcon"; // test after 2.4
+                               // pin.m_icon.name = "TargetPortalIcon"; 
                             }
                         }
                         catch { }
@@ -1050,10 +1045,7 @@ namespace RareMagicPortal
             CreateConfigValues();
             ReadAndWriteConfigValues();
             Localizer.Load();
-            //english = new Localization();
-            //english.SetupLanguage("English");
-            //spanish = new Localization();
-            //spanish.SetupLanguage("Spanish");
+
 
             LoadAssets();
             PortalDrink();
@@ -1808,7 +1800,7 @@ namespace RareMagicPortal
             ConfigFluid = config("2.PortalFluid", "Enable Portal Fluid", false,
                             "Enable PortalFluid requirement?");
 
-            ConfigSpawn = config("2.PortalFluid", "Portal Magic Fluid Spawn", 3,
+            ConfigSpawn = config("2.PortalFluid", "Portal Magic Fluid Spawn", 0,
                 "How much PortalMagicFluid to start with on a new character?");
 
             ConfigFluidValue = config("2.PortalFluid", "Portal Fluid Value", 0, "What is the value of MagicPortalFluid? " + System.Environment.NewLine + "A Value of 1 or more, makes the item saleable to trader");

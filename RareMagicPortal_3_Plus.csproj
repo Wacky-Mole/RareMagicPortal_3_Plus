@@ -140,6 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorfulLights.cs" />
+    <Compile Include="Patches\TargetPortalPatches.cs" />
     <Compile Include="Util\functions.cs" />
     <Compile Include="Libs\LocalizationManager.cs" />
     <Compile Include="PieceManager\MaterialReplacer.cs" />
@@ -192,6 +193,9 @@
   <ItemGroup>
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18.2" />
     <PackageReference Include="YamlDotNet" Version="13.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
