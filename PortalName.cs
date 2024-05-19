@@ -21,22 +21,22 @@ namespace RareMagicPortal
     {
         public Dictionary<string, Portal> Portals { get; set; }
 
+        public class ZDOP
+        {
+
+            public bool OverridePortal { get; set; } = false;
+            public string Color { get; set; } = "default";
+            public int SpecialMode { get; set; } = 0;
+            public string BiomeColor { get; set; }
+            public bool Active { get; set; } = true;
+            public string Password { get; set; } = "";
+            public string Coords { get; set; } = "";
+            public bool HideName { get; set; } = false;
+        }
         public class Portal
         {
 
             public Dictionary<string, ZDOP> PortalZDOs { get; set; }
-
-            public class ZDOP {
-
-                public bool OverridePortal { get; set; } = false;
-                public string Color { get; set; } = "default";
-                public int SpecialMode { get; set; } = 0;
-                public string BiomeColor { get; set; }        
-                public bool Active { get; set; } = true;
-                public string Password { get; set; } = "";
-                public string Coords { get; set; } = "";
-                public bool HideName { get; set; } = false;
-            }
 
 
             public Dictionary<string, int> Portal_Crystal_Cost =

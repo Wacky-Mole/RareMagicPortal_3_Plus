@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,57 @@ namespace RareMagicPortal
 {
     internal class functions
     {
+
+        internal static void GetAllTheDamnPiecesinRadius(Vector3 p, float radius, List<Piece> pieces)
+        {
+            foreach (Piece piece in Piece.s_allPieces)
+            {
+                if (piece.gameObject.layer == Piece.s_ghostLayer
+                    || Vector3.Distance(p, piece.transform.position) >= radius)
+                {
+                    continue;
+                }
+                pieces.Add(piece);
+            }
+        }
+
+        internal static CraftingStation GetCraftingStation(string name)
+        {
+            if (name == "")
+            {
+                return null;
+            }
+            foreach (Recipe recipe in ObjectDB.instance.m_recipes)
+            {
+                if (recipe?.m_craftingStation?.m_name == name)
+                {
+                    //Jotunn.Logger.LogMessage("got crafting station " + name);
+                    return recipe.m_craftingStation;
+                }
+            }
+            return null;
+        }
+
+        internal static List<GameObject> GetPieces()
+        {
+            List<GameObject> list = new List<GameObject>();
+            if (!ObjectDB.instance)
+            {
+                return list;
+            }
+            ItemDrop itemDrop = ObjectDB.instance.GetItemPrefab("Hammer")?.GetComponent<ItemDrop>();
+            if ((bool)itemDrop)
+            {
+                list.AddRange(Traverse.Create((object)itemDrop.m_itemData.m_shared.m_buildPieces).Field("m_pieces").GetValue<List<GameObject>>());
+            }
+            ItemDrop itemDrop2 = ObjectDB.instance.GetItemPrefab("Hoe")?.GetComponent<ItemDrop>();
+            if ((bool)itemDrop2)
+            {
+                list.AddRange(Traverse.Create((object)itemDrop2.m_itemData.m_shared.m_buildPieces).Field("m_pieces").GetValue<List<GameObject>>());
+            }
+            return list;
+        }
+
         public static void GetAllMaterials()
         {
             Material[] array = Resources.FindObjectsOfTypeAll<Material>();
