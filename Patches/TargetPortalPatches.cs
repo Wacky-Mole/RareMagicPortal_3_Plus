@@ -86,7 +86,7 @@ namespace RareMagicPortal_3_Plus
                     return true; // Don't do CrystalandKeyLogic check
                 }
 
-                if (PortalColorLogic.CrystalandKeyLogic(PortalName))
+                if (PortalColorLogic.CrystalandKeyLogic(PortalName, portalZDO.ToString()))
                 {
                     //RareMagicPortal.LogInfo($"True, so TargetPortalShould Take over");
 

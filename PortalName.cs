@@ -25,7 +25,7 @@ namespace RareMagicPortal
         {
 
             public bool OverridePortal { get; set; } = false;
-            public string Color { get; set; } = "default";
+            public string Color { get; set; } = "";
             public int SpecialMode { get; set; } = 0;
             public string BiomeColor { get; set; }
             public bool Active { get; set; } = true;
@@ -36,7 +36,7 @@ namespace RareMagicPortal
         public class Portal
         {
 
-            public Dictionary<string, ZDOP> PortalZDOs { get; set; }
+            public Dictionary<string, ZDOP> PortalZDOs = new();
 
 
             public Dictionary<string, int> Portal_Crystal_Cost =
@@ -52,13 +52,15 @@ namespace RareMagicPortal
 
             public Dictionary<string, bool> Portal_Key =
                     new Dictionary<string, bool>() { };
-                        /*
-                                  {"Red", false},
-                                  {"Green", false },
-                                  {"Blue", false },
-                                  {"Purple", false },
-                                  {"Tan", false },
-                                  {"Gold", false } }; */
+            /*
+                      {"Red", false},
+                      {"Green", false },
+                      {"Blue", false },
+                      {"Purple", false },
+                      {"Tan", false },
+                      {"Gold", false } }; */
+
+            public string Color { get; set; } = "Yellow";
 
             public bool Free_Passage { get; set; } = false;
 

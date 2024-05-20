@@ -91,8 +91,8 @@ namespace RareMagicPortal_3_Plus.Patches
                 {
                     return true; // don't do crystalandkeylogic
                 }
-
-                if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
+                
+                if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.m_zdo.ToString(), __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
                 {
                     // Teleporting = true;
                     return true;

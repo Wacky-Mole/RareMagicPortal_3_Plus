@@ -85,7 +85,7 @@ namespace RareMagicPortal
 		}
 		*/
 
-        internal static void ServerZDOymlUpdate(int Colorint, string Portalname) // MESSAGE SENDER
+        internal static void ServerZDOymlUpdate(int Colorint, string Portalname, string ZDOID) // MESSAGE SENDER
         {
             if (ZNet.instance.IsServer())// && ZNet.instance.IsDedicated()) removed dedicated  // so no singleplayer announcement
                 return;
@@ -97,8 +97,8 @@ namespace RareMagicPortal
 
             ZPackage pkg = new ZPackage(); // Create ZPackage
 
-            pkg.Write(Portalname + "," + Colorint);
-            MagicPortalFluid.RareMagicPortal.LogInfo($"Sending the Server a update for {Portalname} with Color {Colorint}");
+            pkg.Write(Portalname + "," + Colorint + "," + ZDOID);
+            MagicPortalFluid.RareMagicPortal.LogInfo($"Sending the Server a update for {Portalname} with Color {Colorint} with ZDO {ZDOID}");
 
             MagicPortalFluid.JustSent = 1;
             ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(), "RequestServerAnnouncementRMP", new object[] { pkg });
@@ -119,9 +119,10 @@ namespace RareMagicPortal
                         string[] msgArray = msg.Split(',');
                         string PortalName = msgArray[0];
                         int Colorint = Convert.ToInt32(msgArray[1]);
-                        MagicPortalFluid.RareMagicPortal.LogInfo($"Server has recieved a YML update from {playername} for {PortalName} with Color {Colorint}");
+                        string ZDOP = msgArray[2];
+                        MagicPortalFluid.RareMagicPortal.LogInfo($"Server has recieved a YML update from {playername} for {PortalName} with Color {Colorint} for ZDO {ZDOP}");
 
-                        PortalColorLogic.updateYmltoColorChange(PortalName, Colorint);
+                        PortalColorLogic.updateYmltoColorChange(PortalName, Colorint, ZDOP);
 
                         //YMLPortalData.Value has been updated
                         return;

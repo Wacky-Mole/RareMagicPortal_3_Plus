@@ -141,10 +141,11 @@ namespace RareMagicPortal_3_Plus.Patches
                             PortalColorLogic.PortalColor pcol = (PortalColorLogic.PortalColor)intS;
                             currentColor = pcol.ToString();
                         }
+                        
 
                         if (!PortalColorLogic.PortalN.Portals.ContainsKey(PortalName)) // if doesn't contain use defaults
                         {
-                            PortalColorLogic.WritetoYML(PortalName);
+                            PortalColorLogic.WritetoYML(PortalName, portalW.m_nview.m_zdo.ToString());
                         }
                         //RareMagicPortal.LogInfo("Here 3");
                         OdinsKin = PortalColorLogic.PortalN.Portals[PortalName].Admin_only_Access;
