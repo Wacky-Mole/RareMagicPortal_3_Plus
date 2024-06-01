@@ -144,6 +144,7 @@
     <Compile Include="Patches\piece.cs" />
     <Compile Include="Patches\TargetPortalPatches.cs" />
     <Compile Include="Patches\TeleportWorld.cs" />
+    <Compile Include="PortalMode\PortalMode.cs" />
     <Compile Include="Util\functions.cs" />
     <Compile Include="Libs\LocalizationManager.cs" />
     <Compile Include="PieceManager\MaterialReplacer.cs" />
