@@ -78,7 +78,7 @@ namespace RareMagicPortal_3_Plus.Patches
         }
 
         [HarmonyPatch(typeof(Inventory), "IsTeleportable")]
-        public static class     
+        public static class istele     
         {
             [HarmonyPriority(Priority.LowerThanNormal)]
             internal static bool Prefix(ref bool __result, ref Inventory __instance)

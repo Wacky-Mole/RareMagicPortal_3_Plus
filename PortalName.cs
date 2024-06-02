@@ -27,6 +27,7 @@ namespace RareMagicPortal
             public bool OverridePortal { get; set; } = false;
             public string Color { get; set; } = "";
             public int SpecialMode { get; set; } = 0;
+            public bool CrystalActive { get; set; } = false;
             public string BiomeColor { get; set; }
             public bool Active { get; set; } = true;
             public string Password { get; set; } = "";
@@ -35,12 +36,10 @@ namespace RareMagicPortal
         }
         public class Portal
         {
+        
 
-            public Dictionary<string, ZDOP> PortalZDOs = new();
-
-
-            public Dictionary<string, int> Portal_Crystal_Cost =
-                    new Dictionary<string, int>() { };
+            //public Dictionary<string, int> Portal_Crystal_Cost =
+                 //   new Dictionary<string, int>() { };
             /*
                                   {"Red", 0},
                                   {"Green", 0},
@@ -50,8 +49,8 @@ namespace RareMagicPortal
                                   {"Gold", 0 }};
             */
 
-            public Dictionary<string, bool> Portal_Key =
-                    new Dictionary<string, bool>() { };
+            //public Dictionary<string, bool> Portal_Key =
+             //       new Dictionary<string, bool>() { };
             /*
                       {"Red", false},
                       {"Green", false },
@@ -61,6 +60,8 @@ namespace RareMagicPortal
                       {"Gold", false } }; */
 
             public string Color { get; set; } = "Yellow";
+            public bool Gold_Allow { get; set; } = false;
+            public bool CrystalActive { get; set; } = false;
 
             public bool Free_Passage { get; set; } = false;
 
@@ -70,7 +71,7 @@ namespace RareMagicPortal
 
             public List<string> AdditionalAllowItems { get; set; } = new List<string>();// { "Blackmetal", "Iron" };
 
-            public string BiomeColor { get; set; }
+            // public string BiomeColor { get; set; }
 
             public int SpecialMode { get; set; } = 0; 
 
@@ -78,7 +79,7 @@ namespace RareMagicPortal
 
             public bool Admin_only_Access { get; set; } = false;
 
-            public bool Gold_Allow { get; set; } = false;
+            public Dictionary<string, ZDOP> PortalZDOs = new();
         }
     }
 }

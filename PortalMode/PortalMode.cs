@@ -1,9 +1,11 @@
-﻿using System;
+﻿using RareMagicPortal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace RareMagicPortal_3_Plus.PortalMode
 {
@@ -28,6 +30,8 @@ namespace RareMagicPortal_3_Plus.PortalMode
         private PortalMode currentMode = PortalMode.Normal;
         private string password;
         private Vector3 targetCoordinates;
+        private InputPopup inputPopup;
+        private Dictionary<string, Vector3> transportLocations;
 
         private void Awake()
         {
@@ -40,6 +44,17 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
             RegisterRPCMethods();
             allowedUsers = new List<string>();
+            transportLocations = new Dictionary<string, Vector3>
+            {
+                { "Home", new Vector3(100, 0, 100) },
+                { "Market", new Vector3(200, 0, 200) },
+                // Add more predefined locations here
+            };
+
+            // Load initial state from ZDO
+            currentMode = (PortalMode)m_nview.GetZDO().GetInt("PortalMode", (int)PortalMode.Normal);
+            password = m_nview.GetZDO().GetString("PortalPassword", "");
+            targetCoordinates = m_nview.GetZDO().GetVec3("PortalCoordinates", Vector3.zero);
         }
 
         private void RegisterRPCMethods()
@@ -54,6 +69,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             if (!IsAdmin()) return;
 
             currentMode = mode;
+            m_nview.GetZDO().Set("PortalMode", (int)mode);
             m_nview.InvokeRPC(ZNetView.Everybody, "RPC_SetMode", (int)mode);
         }
 
@@ -71,14 +87,13 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     // Normal portal behavior
                     break;
                 case PortalMode.TargetPortal:
-                    if (IsTargetPortalModInstalled())
+                    if (MagicPortalFluid.TargetPortalLoaded)
                     {
                         // Handle TargetPortal behavior
                     }
                     else
                     {
-                        // Make portal invisible or private
-                        gameObject.SetActive(false);
+                        //Load Normal behavior if not installed
                     }
                     break;
                 case PortalMode.Rainbow:
@@ -107,8 +122,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
         private bool IsAdmin()
         {
-            // Implement your admin check logic here
-            return true; // Placeholder for actual admin check
+            return MagicPortalFluid.isAdmin; 
         }
 
         public void SetPassword(string pwd)
@@ -116,6 +130,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             if (!IsAdmin()) return;
 
             password = pwd;
+            m_nview.GetZDO().Set("PortalPassword", pwd);
             m_nview.InvokeRPC(ZNetView.Everybody, "RPC_SetPassword", pwd);
         }
 
@@ -129,6 +144,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             if (!IsAdmin()) return;
 
             targetCoordinates = coords;
+            m_nview.GetZDO().Set("PortalCoordinates", coords);
             m_nview.InvokeRPC(ZNetView.Everybody, "RPC_SetCoordinates", coords);
         }
 
@@ -162,33 +178,138 @@ namespace RareMagicPortal_3_Plus.PortalMode
             {
                 case PortalMode.PasswordLock:
                 case PortalMode.OneWayPasswordLock:
-                    if (!CheckPassword(player))
+                    inputPopup.ShowInputPopup("Enter Password:", (input) =>
                     {
-                        player.Message(MessageHud.MessageType.Center, "$msg_incorrectpassword");
-                        return;
-                    }
+                        if (!CheckPassword(input))
+                        {
+                            player.Message(MessageHud.MessageType.Center, "$msg_incorrectpassword");
+                            return;
+                        }
+                        Teleport(player);
+                    });
                     break;
                 case PortalMode.AllowedUsersOnly:
-                    if (!IsUserAllowed(player.GetPlayerID()))
+                    if (!IsUserAllowed(player.GetPlayerName()))
                     {
                         player.Message(MessageHud.MessageType.Center, "$msg_notallowed");
                         return;
                     }
+                    Teleport(player);
+                    break;
+                case PortalMode.CordsPortal:
+                    if (IsAdmin())
+                    {
+                        inputPopup.ShowInputPopup("Enter Coordinates (x,y,z):", (input) =>
+                        {
+                            if (TryParseCoordinates(input, out Vector3 coords))
+                            {
+                                SetCoordinates(coords);
+                                Teleport(player);
+                            }
+                            else
+                            {
+                                player.Message(MessageHud.MessageType.Center, "$msg_invalidcoordinates");
+                            }
+                        });
+                    }
+                    break;
+                case PortalMode.TransportNetwork:
+                    // Listen for chat messages
+                    Chat.instance.m_onNewChatMessage += OnNewChatMessage;
+                    break;
+                default:
+                    Teleport(player);
                     break;
             }
-
-            Teleport(player);
         }
 
-        private bool CheckPassword(Player player)
+        private void OnTriggerExit(Collider collider)
         {
-            // Implement password checking logic
-            return true; // Placeholder
+            Player player = collider.GetComponent<Player>();
+            if (player == null || Player.m_localPlayer != player) return;
+
+            if (currentMode == PortalMode.TransportNetwork)
+            {
+                // Stop listening for chat messages
+                Chat.instance.m_onNewChatMessage -= OnNewChatMessage;
+            }
+        }
+
+        private void OnNewChatMessage(Talker.Type type, string user, string message)
+        {
+            if (type != Talker.Type.Normal || Player.m_localPlayer == null) return;
+
+            // Check if the player is standing on the portal
+            if (Vector3.Distance(Player.m_localPlayer.transform.position, transform.position) > 1.0f) return;
+
+            // Check if the message matches a location name
+            if (transportLocations.TryGetValue(message, out Vector3 targetLocation))
+            {
+                TeleportToLocation(Player.m_localPlayer, targetLocation);
+            }
+            else
+            {
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_invalidlocation");
+            }
+        }
+
+        private void TeleportToLocation(Player player, Vector3 location)
+        {
+            player.TeleportTo(location, Quaternion.identity, true);
+        }
+
+        private bool CheckPassword(string inputPassword)
+        {
+            return inputPassword == password;
+        }
+
+        private bool TryParseCoordinates(string input, out Vector3 coords)
+        {
+            coords = Vector3.zero;
+            string[] parts = input.Split(',');
+            if (parts.Length != 3) return false;
+
+            if (float.TryParse(parts[0], out float x) &&
+                float.TryParse(parts[1], out float y) &&
+                float.TryParse(parts[2], out float z))
+            {
+                coords = new Vector3(x, y, z);
+                return true;
+            }
+
+            return false;
         }
 
         private void Teleport(Player player)
         {
-            // Implement teleportation logic based on the currentMode
+            if (currentMode == PortalMode.CordsPortal)
+            {
+                player.TeleportTo(targetCoordinates, Quaternion.identity, true);
+            }
+            else if (currentMode == PortalMode.OneWay)
+            {
+                // Implement one-way teleportation logic
+                Vector3 oneWayTarget = GetOneWayTarget();
+                player.TeleportTo(oneWayTarget, Quaternion.identity, true);
+            }
+            else
+            {
+                // Implement other teleportation logic based on the currentMode
+            }
+        }
+
+        private Vector3 GetOneWayTarget()
+        {
+            // Define the target location for one-way teleportation
+            return new Vector3(100, 0, 100); // Example coordinates
+        }
+
+        public void LockToOneWay()
+        {
+            if (!IsAdmin()) return;
+
+            SetMode(PortalMode.OneWay);
+            // Additional logic to lock the portal to one-way mode if needed
         }
     }
 
