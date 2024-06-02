@@ -314,7 +314,7 @@ namespace RareMagicPortal
 
                         int colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, __instance);
 
-                        if (MagicPortalFluid.ConfigUseBiomeColors.Value) // obviously teleportWorldData needs to be set
+                        if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On) // obviously teleportWorldData needs to be set
                         {
                             if (PortalName.Contains(NameIdentifier)) // don't remove just remove anything past 1 that slipped through
                             {
@@ -526,7 +526,7 @@ namespace RareMagicPortal
                 colorint = CrystalandKeyLogicColor(out currentcolor, out currentcolorHex, out nextcolor, PortalName, __instance);
 
                 string PPMreqs = "";
-                if (MagicPortalFluid.UsePortalProgression.Value)
+                if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
                 {
                     colorint = CrystalandKeyLogicColorPPM(out currentcolor, out currentcolorHex, out nextcolor,  PortalName, __instance);
                 }
@@ -597,11 +597,11 @@ namespace RareMagicPortal
                         teleportWorldData.Biome = Biome;
                         Color newColor = color;
 
-                        if (MagicPortalFluid.UsePortalProgression.Value)
+                        if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
                         {
                             //overrides
                         }
-                        else if (MagicPortalFluid.ConfigUseBiomeColors.Value)
+                        else if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
                         {
 
                             string BC = MagicPortalFluid.BiomeRepColors.Value;
@@ -633,7 +633,7 @@ namespace RareMagicPortal
                 bool write = false;
                 if (MagicPortalFluid._teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData2)) // run at every hover unfortunetly
                 {
-                    if (MagicPortalFluid.ConfigUseBiomeColors.Value && (tempholdstring == "" || reloaded))
+                    if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && (tempholdstring == "" || reloaded))
                     {
                         if (teleportWorldData2.BiomeColor == "skip" || __instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode) == "skip") { }
                         else
@@ -673,7 +673,7 @@ namespace RareMagicPortal
                         }
                         // L-ctrl + E instead of _
 
-                        if (MagicPortalFluid.UsePortalProgression.Value)
+                        if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
                         {
                             __result =
                                 string.Format(
@@ -791,7 +791,7 @@ namespace RareMagicPortal
                 var index = PortalName.IndexOf(NameIdentifier);
                 PortalName = PortalName.Substring(0, index);
             }
-            if (BiomeC != "" && MagicPortalFluid.ConfigUseBiomeColors.Value && !skip)
+            if (BiomeC != "" && MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && !skip)
             {
                 // RMP.LogInfo("BiomeC info is " + BiomeC);
                 BiomeC = BiomeC.Remove(0, 1);
@@ -825,7 +825,7 @@ namespace RareMagicPortal
 
         }
 
-        internal static int CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextcolor, string PortalName = "", TeleportWorld __instance = null, int overrideInt = 0)
+        internal static int CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextcolor,  string PortalName ,  string ZDOName ="", TeleportWorld __instance = null, int overrideInt = 0)
         {
             string BiomeC = "";
             string BiomeCol = "";
@@ -844,14 +844,17 @@ namespace RareMagicPortal
             bool OdinsKin = false;
             bool Free_Passage = false;
             // RMP.LogInfo("here 1");
-            if (!PortalN.Portals.ContainsKey(PortalName)) // if doesn't contain use defaults
+            if (ZDOName == "")
+                ZDOName = __instance.m_nview.m_zdo.ToString();
+
+            if (!PortalN.Portals.ContainsKey(PortalName) && !PortalN.Portals[PortalName]!.PortalZDOs.ContainsKey(ZDOName)) // if doesn't contain use defaults
             {
                 WritetoYML(PortalName, __instance.m_nview.m_zdo.ToString());
             }
             OdinsKin = PortalN.Portals[PortalName].Admin_only_Access;
             Free_Passage = PortalN.Portals[PortalName].Free_Passage;
-            var Portal_Crystal_Cost = PortalN.Portals[PortalName].Portal_Crystal_Cost; // rgbG  // 0 means it can't be used, (Keys only) anything greater means the cost. -1 means same as 0
-            var Portal_Key = PortalN.Portals[PortalName].Portal_Key; // rgbG
+            var Portal_Crystal_Cost = CrystalForPortal; 
+            var Portal_Key = PortalN.Portals[PortalName].PortalZDOs[].Color // rgbG
             string BiomeForceColor = PortalN.Portals[PortalName].BiomeColor;
             // So the logic is at start it check is BiomeColor is null or skip, this gets set in hover, it gets overwritten in interact(because admin or owner said no)
             // special cases  if admin set then all portals are admin- don't override, freepassage don't override, teleportanything, don't override
@@ -896,7 +899,7 @@ namespace RareMagicPortal
                 }
             }
             //RMP.LogInfo("here 3");
-            if ((BiomeC != "" || BiomeCol != "") && MagicPortalFluid.ConfigUseBiomeColors.Value)
+            if ((BiomeC != "" || BiomeCol != "") && MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
             {
                 if (__instance == null)
                 {
@@ -1100,7 +1103,7 @@ namespace RareMagicPortal
                     MagicPortalFluid.RareMagicPortal.LogInfo("Single client only or Server but not dedicated");
                     var yamlfull = MagicPortalFluid.WelcomeString + Environment.NewLine + serializer.Serialize(PortalN); // build everytime
 
-                    if (!MagicPortalFluid.RiskyYMLSave.Value)
+                    if (!MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.On)
                     {
                         MagicPortalFluid.JustWrote = 1;
                         File.WriteAllText(MagicPortalFluid.YMLCurrentFile, yamlfull); //overwrite
@@ -1116,7 +1119,7 @@ namespace RareMagicPortal
                         MagicPortalFluid.JustWrote = 2;
                     }
 
-                    if (MagicPortalFluid.ConfigEnableYMLLogs.Value)
+                    if (MagicPortalFluid.ConfigEnableYMLLogs.Value == MagicPortalFluid.Toggle.On)
                         MagicPortalFluid.RareMagicPortal.LogInfo(yamlfull);
 
                     if (ZNet.instance.IsServer()) // not just dedicated COOP
@@ -1142,7 +1145,7 @@ namespace RareMagicPortal
                 WritetoYML(PortalName, zdoID);
             }
 
-            if (MagicPortalFluid.ConfigUseBiomeColors.Value && BiomeColor != "skip" && PortalN.Portals[PortalName].PortalZDOs[zdoID].BiomeColor != "skip")
+            if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && BiomeColor != "skip" && PortalN.Portals[PortalName].PortalZDOs[zdoID].BiomeColor != "skip")
             {
                 flag = true;
                 int intS = Int32.Parse(PortalN.Portals[PortalName].PortalZDOs[zdoID].BiomeColor);
@@ -1294,7 +1297,7 @@ namespace RareMagicPortal
                     CorK = "$rmp_crystalorkey";
 
                 var hud = MessageHud.MessageType.Center;
-                if (MagicPortalFluid.ConfigMessageLeft.Value)
+                if (MagicPortalFluid.ConfigMessageLeft.Value == MagicPortalFluid.Toggle.On)
                     hud = MessageHud.MessageType.TopLeft;
                 //RMP.LogInfo("FlagCarry " + flagCarry + " Lowest " + lowest);
                 switch (flagCarry)

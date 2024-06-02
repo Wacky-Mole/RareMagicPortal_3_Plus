@@ -156,7 +156,7 @@ namespace RareMagicPortal_3_Plus.Patches
                                 // Get Color for BiomeC
 
                                 colorint = Int32.Parse(BiomeC);
-                                colorint = PortalColorLogic.CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextcolor, PName); // kindof expensive task to do this cpu wize for all portals
+                                colorint = PortalColorLogic.CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextcolor, PName, portalZDO.ToString()); // kindof expensive task to do this cpu wize for all portals
 
 
                                 if (colorint == 0 || colorint == 999)

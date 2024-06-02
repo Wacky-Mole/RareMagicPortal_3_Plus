@@ -54,7 +54,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 MagicPortalFluid.NoMoreLoading = true;
                 MagicPortalFluid.JustWaitforInventory = true;
 
-                if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated() && MagicPortalFluid.RiskyYMLSave.Value)
+                if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated() && MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.On)
                 {
                     var serializer = new SerializerBuilder()
                      .Build();
@@ -220,7 +220,7 @@ namespace RareMagicPortal_3_Plus.Patches
                             }
                             MagicPortalFluid.TeleportingforWeight = 0;
                         }
-                        if (MagicPortalFluid.UsePortalProgression.Value)
+                        if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
                         {
                             List<string> allowlist = new List<string>();
                             bool skip = false;

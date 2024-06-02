@@ -81,7 +81,7 @@ namespace RareMagicPortal_3_Plus
                     return false;
                 }
 
-                if (MagicPortalFluid.UsePortalProgression.Value)
+                if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
                 {
                     return true; // Don't do CrystalandKeyLogic check
                 }

@@ -26,60 +26,34 @@ namespace RareMagicPortal
 
             public bool OverridePortal { get; set; } = false;
             public string Color { get; set; } = "";
-            public int SpecialMode { get; set; } = 0;
             public bool CrystalActive { get; set; } = false;
+            public int SpecialMode { get; set; } = 0;
             public string BiomeColor { get; set; }
             public bool Active { get; set; } = true;
             public string Password { get; set; } = "";
             public string Coords { get; set; } = "";
             public bool HideName { get; set; } = false;
+            public string Creator { get; set; } = "";
         }
         public class Portal
         {
-        
-
-            //public Dictionary<string, int> Portal_Crystal_Cost =
-                 //   new Dictionary<string, int>() { };
-            /*
-                                  {"Red", 0},
-                                  {"Green", 0},
-                                  {"Blue", 0 },
-                                  {"Purple", 0 },
-                                  {"Tan", 0 },
-                                  {"Gold", 0 }};
-            */
-
-            //public Dictionary<string, bool> Portal_Key =
-             //       new Dictionary<string, bool>() { };
-            /*
-                      {"Red", false},
-                      {"Green", false },
-                      {"Blue", false },
-                      {"Purple", false },
-                      {"Tan", false },
-                      {"Gold", false } }; */
-
+       
             public string Color { get; set; } = "Yellow";
-            public bool Gold_Allow { get; set; } = false;
-            public bool CrystalActive { get; set; } = false;
-
+            public int SpecialMode { get; set; } = 0;
+            public bool Gold_Allow { get; set; } = true;
             public bool Free_Passage { get; set; } = false;
-
             public bool TeleportAnything { get; set; } = false;
+            public bool Admin_only_Access { get; set; } = false;
+            public float MaxWeight { get; set; } = 0;
 
             public List<string> AdditionalProhibitItems { get; set; } = new List<string>();// { "Blackmetal", "Iron" };
 
             public List<string> AdditionalAllowItems { get; set; } = new List<string>();// { "Blackmetal", "Iron" };
 
-            // public string BiomeColor { get; set; }
-
-            public int SpecialMode { get; set; } = 0; 
-
             public List<string> AllowedUsers { get; set; } = new List<string>();// { "SteamID1", "SteamID2" };
-
-            public bool Admin_only_Access { get; set; } = false;
-
+             
             public Dictionary<string, ZDOP> PortalZDOs = new();
+            public bool EndPart { get; set; } = true;
         }
     }
 }
