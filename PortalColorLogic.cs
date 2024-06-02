@@ -853,22 +853,10 @@ namespace RareMagicPortal
             }
             OdinsKin = PortalN.Portals[PortalName].Admin_only_Access;
             Free_Passage = PortalN.Portals[PortalName].Free_Passage;
-            var Portal_Crystal_Cost = CrystalForPortal; 
-            var Portal_Key = PortalN.Portals[PortalName].PortalZDOs[].Color // rgbG
-            string BiomeForceColor = PortalN.Portals[PortalName].BiomeColor;
-            // So the logic is at start it check is BiomeColor is null or skip, this gets set in hover, it gets overwritten in interact(because admin or owner said no)
-            // special cases  if admin set then all portals are admin- don't override, freepassage don't override, teleportanything, don't override
-            // We dont' actually want to set the yaml main color, but now we want indivudal portals be be overwritten manually.
-            // we need to only check the zdo or teleportWorldData if it's not skip or color, because other than that we have no reference,
-            // this could be a problem for some logic- specificly targetworld data- this can't be pulled in its instance,
-            // I don't know how to fix this for TargetPortal other than changing the portalname to give me info
-            // I could use BiomeColor skip as a sort of guess. If it's not skip then most likly it is default force Biome
-            // use the pos of pin. vector3 to identify portal and get Color
-            // set an identifier on tagname- yep- sucks, but you got do what got do
-            // well that won't work because you need the exact name to do the connect check. I could patch that I guess
-            // Fuck... Either I do the name thing with patches or I pretty much remake target Portal in RMP to get the instance of the portals for each icon.
-            // damn name thing still - fuck i finally got it.
-            //RMP.LogInfo("here 2");
+            var Portal_Crystal_Cost = CrystalForPortal;
+            var Portal_Key = PortalN.Portals[PortalName].PortalZDOs[ZDOName].Color;
+            string BiomeForceColor = PortalN.Portals[PortalName].PortalZDOs[ZDOName].BiomeColor;
+
             if (PortalName != "" && PortalName != "Empty tag")
             {
                 if (OdinsKin && MagicPortalFluid.AdminColor.Value != "none")
