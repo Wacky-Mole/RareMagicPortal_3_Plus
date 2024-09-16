@@ -48,7 +48,7 @@ namespace RareMagicPortal_3_Plus.Patches
             {
                 MagicPortalFluid.RareMagicPortal.LogInfo("Logoff? Save text file, don't delete");
 
-                MagicPortalFluid.context.StopCoroutine(MagicPortalFluid.RemovedDestroyedTeleportWorldsCoroutine());
+                //MagicPortalFluid.context.StopCoroutine(MagicPortalFluid.RemovedDestroyedTeleportWorldsCoroutine());
                 //context.StopCoroutine(myCoroutineRMP);
 
                 MagicPortalFluid.NoMoreLoading = true;
@@ -302,7 +302,7 @@ namespace RareMagicPortal_3_Plus.Patches
             internal static void Prefix()
             {
                 ZRoutedRpc.instance.Register("RequestServerAnnouncementRMP", new Action<long, ZPackage>(functions.RPC_RequestServerAnnouncementRMP)); // Our Server Handler
-                ((MonoBehaviour)(object)MagicPortalFluid.context).StartCoroutine(MagicPortalFluid.RemovedDestroyedTeleportWorldsCoroutine()); // moved to this incase the stop and start joining
+                //((MonoBehaviour)(object)MagicPortalFluid.context).StartCoroutine(MagicPortalFluid.RemovedDestroyedTeleportWorldsCoroutine()); // moved to this incase the stop and start joining
                                                                                                             //ZRoutedRpc.instance.Register("EventServerAnnouncementRMP", new Action<long, ZPackage>(RPC_EventServerAnnouncementRMP)); // event handler
             }
         }

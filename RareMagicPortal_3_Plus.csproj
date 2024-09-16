@@ -82,6 +82,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libs\LocalizationManager.dll</HintPath>
     </Reference>
+    <Reference Include="PieceManager, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\WackyLeaderBoard\Libs\PieceManager.dll</HintPath>
+    </Reference>
     <Reference Include="ServerSync">
       <HintPath>Libs\ServerSync.dll</HintPath>
     </Reference>
@@ -144,15 +148,12 @@
     <Compile Include="Patches\piece.cs" />
     <Compile Include="Patches\TargetPortalPatches.cs" />
     <Compile Include="Patches\TeleportWorld.cs" />
+    <Compile Include="PortalColorLogic.cs" />
     <Compile Include="PortalMode\PassPopup.cs" />
     <Compile Include="PortalMode\PortalMode.cs" />
     <Compile Include="Util\functions.cs" />
     <Compile Include="Libs\LocalizationManager.cs" />
-    <Compile Include="PieceManager\MaterialReplacer.cs" />
-    <Compile Include="PieceManager\PieceManager.cs" />
-    <Compile Include="PieceManager\SnapPointMaker.cs" />
     <Compile Include="Plugin.cs" />
-    <Compile Include="PortalColorLogic.cs" />
     <Compile Include="PortalName.cs" />
     <Compile Include="PortalWorldPlus\Enumeration.cs" />
     <Compile Include="PortalWorldPlus\FireLights.cs" />

@@ -71,14 +71,15 @@ using static Interpolate;
 
 namespace RareMagicPortal
 {
-
     public static class Globals
     {
         public static Color Gold = new Color(1f, 215f / 255f, 0, 1f);
         public static Color m_colorTargetfound = new Color(191f / 255f, 150f / 255f, 0, 25);
         public static Color lightcolor = new Color(1f, 100f / 255f, 0, 1f);
+
         //Material PortalDefMaterial = originalMaterials["portal_small"];
         public static Color flamesstart = new Color(1f, 194f / 255f, 34f / 255f, 1f);
+
         public static Color flamesend = new Color(1f, 0, 0, 1f);
 
         public static Color Purple = new Color(107f / 255f, 63f / 255f, 160 / 255f, 1f);
@@ -86,9 +87,7 @@ namespace RareMagicPortal
         public static Color Brown = new Color(193f / 255f, 69f / 255f, 19f / 255f, 1f);
 
         public static Dictionary<string, Material> originalMaterials;
-
     }
-
 
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     [BepInDependency("org.bepinex.plugins.targetportal", BepInDependency.DependencyFlags.SoftDependency)]
@@ -132,7 +131,7 @@ namespace RareMagicPortal
         internal static List<RecipeData> recipeDatas = new List<RecipeData>();
         internal static string assetPath;
         internal static string assetPathyml;
-        public static List<string> PiecetoLookFor = new List<string>{ "portal_wood", "portal_stone" }; //name
+        public static List<string> PiecetoLookFor = new List<string> { "portal_wood", "portal_stone" }; //name
         public static List<string> PieceTokenLookFor = new List<string> { "$piece_portal", "$piece_stone" }; //m_name
         public static Vector3 tempvalue;
         public static bool loadfilesonce = false;
@@ -177,7 +176,6 @@ namespace RareMagicPortal
 
         // internal static ConfigEntry<bool>? ConfigEnableKeys;
         internal static ConfigEntry<int>? ConfigCrystalsConsumable;
-
 
         internal static ConfigEntry<string>? DefaultColor;
 
@@ -238,7 +236,6 @@ namespace RareMagicPortal
         internal static ConfigEntry<string>? ColorWHITEAllows;
         internal static ConfigEntry<string>? ColorGOLDAllows;
 
-
         public static string crystalcolorre = ""; // need to reset everytime maybe?
         public string message_eng_NO_Portal = $"Portal Crystals/Key Required"; // Blue Portal Crystal
         public string message_eng_MasterCost = $", Gold Crystals Required"; // 3, Master Crystals Required
@@ -272,7 +269,7 @@ namespace RareMagicPortal
         public static string PortalKeyCyan = "$item_PortalKeyCyan";
         public static string PortalKeyOrange = "$item_PortalKeyOrange";
 
-        SpriteTools IconColor = new SpriteTools();
+        private SpriteTools IconColor = new SpriteTools();
 
         public static Sprite IconBlack = null!;
         public static Sprite IconYellow = null!;
@@ -291,14 +288,13 @@ namespace RareMagicPortal
         public static string Model3 = "Gates";
         public static string Model4 = "QuadPortal";
 
-        static TeleportWorldDataCreator ClassDefault = new TeleportWorldDataCreatorA();
-        static TeleportWorldDataCreator ClassModel1 = new TeleportWorldDataCreatorB();
-        static TeleportWorldDataCreator ClassModel2 = new TeleportWorldDataCreatorC();
-        static TeleportWorldDataCreator ClassModel3 = new TeleportWorldDataCreatorD();
-        static TeleportWorldDataCreator ClassModel4 = new TeleportWorldDataCreatorE();
+        private static TeleportWorldDataCreator ClassDefault = new TeleportWorldDataCreatorA();
+        private static TeleportWorldDataCreator ClassModel1 = new TeleportWorldDataCreatorB();
+        private static TeleportWorldDataCreator ClassModel2 = new TeleportWorldDataCreatorC();
+        private static TeleportWorldDataCreator ClassModel3 = new TeleportWorldDataCreatorD();
+        private static TeleportWorldDataCreator ClassModel4 = new TeleportWorldDataCreatorE();
 
         public static Dictionary<string, Sprite> Icons = new Dictionary<string, Sprite>();
-
 
         internal static Localization english = null!;
         internal static Localization spanish = null!;
@@ -309,7 +305,7 @@ namespace RareMagicPortal
         internal static readonly List<string> portalPrefabs = new List<string>();
         internal static char StringSeparator = 'Ⰴ'; // handcuffs  The fifth letter of the Glagolitic alphabet.
 
-        public static string WelcomeString = "#Hello, this is the Portal yml file. It keeps track of all portals you enter";
+        public static string WelcomeString = "#Hello, this is the portal yml file. It keeps track of all portals in the world";
 
         private static Coroutine myCoroutineRMP;
         public static ItemDrop.ItemData Crystal { get; internal set; }
@@ -325,17 +321,16 @@ namespace RareMagicPortal
 
         internal static readonly Dictionary<TeleportWorld, TeleportWorldDataRMP> _teleportWorldDataCache = new();
 
-        static readonly Dictionary<TeleportWorld, ClassBase> _teleportWorldDataCacheDefault = new();
+        private static readonly Dictionary<TeleportWorld, ClassBase> _teleportWorldDataCacheDefault = new();
 
         private static readonly KeyboardShortcut _changePortalReq = new(KeyCode.E, KeyCode.LeftControl);
         private static readonly KeyboardShortcut _portalRMPsacrifceKEY = new(KeyCode.E, KeyCode.LeftControl);
+
         public enum Toggle
         {
             On = 1,
             Off = 0,
         }
-
-
 
         internal static IEnumerator RemovedDestroyedTeleportWorldsCoroutine()
         {
@@ -372,28 +367,25 @@ namespace RareMagicPortal
             yield break;
         }
 
-
         public void Awake()
         {
             CreateConfigValues();
             ReadAndWriteConfigValues();
             Localizer.Load();
 
-
-            LoadAssets();
-            PortalDrink();
+            //LoadAssets();
+           // PortalDrink();
 
             assetPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), typeof(MagicPortalFluid).Namespace);
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), (string)null);
 
-            SetupWatcher();
-            setupYMLFolderWatcher();
+           // SetupWatcher();
+            //setupYMLFolderWatcher();
 
             YMLPortalData.ValueChanged += CustomSyncEventDetected;
             YMLPortalSmallData.ValueChanged += CustomSyncSmallEvent;
 
-            IconColors();
-
+           // IconColors();
 
             RareMagicPortal.LogInfo($"MagicPortalFluid has loaded start assets");
         }
@@ -626,7 +618,6 @@ namespace RareMagicPortal
             Worldname = ZNet.instance.GetWorldName();
             RareMagicPortal.LogInfo("WorldName " + Worldname);
             YMLCurrentFile = Path.Combine(YMLFULLFOLDER, Worldname + ".yml");
-
 
             if (!File.Exists(YMLCurrentFile))
             {
@@ -1042,8 +1033,6 @@ namespace RareMagicPortal
             }
         }
 
-
-
         #region ConfigOptions
 
         internal static ConfigEntry<bool>? _serverConfigLocked;
@@ -1100,15 +1089,13 @@ namespace RareMagicPortal
 
             portalRMPCRYSTALKEY = config("1.Portal Config", "ON/OFF for Crystal Requirement", new KeyboardShortcut(KeyCode.LeftAlt), "Modifier key that has to be pressed while hovering over Portal + E", false);
 
-
             ConfigFluid = config("2.PortalFluid", "Enable Portal Fluid", false,
                             "Enable PortalFluid requirement?");
 
             ConfigSpawn = config("2.PortalFluid", "Portal Magic Fluid Spawn", 0,
                 "How much PortalMagicFluid to start with on a new character?");
 
-           // ConfigFluidValue = config("2.PortalFluid", "Portal Fluid Value", 0, "What is the value of MagicPortalFluid? " + System.Environment.NewLine + "A Value of 1 or more, makes the item saleable to trader"); Apart of ItemManager now
-
+            // ConfigFluidValue = config("2.PortalFluid", "Portal Fluid Value", 0, "What is the value of MagicPortalFluid? " + System.Environment.NewLine + "A Value of 1 or more, makes the item saleable to trader"); Apart of ItemManager now
 
             ConfigTable = config("3.Portal Config", "CraftingStation Requirement", DefaultTable,
                 "Which CraftingStation is required nearby?" + System.Environment.NewLine + "Default is Workbench = $piece_workbench, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstation
@@ -1130,29 +1117,25 @@ namespace RareMagicPortal
 
             ConfigMaxWeight = config("3.Portal Config", "Max Weight Allowed for new Portals", 0, "This affects all new/renamed portals - Enter the max weight that can transit through a portal at a time. Value of 0 disables the check");
 
-            MaxPortalsPerPerson= config("3.Portal Config", "Max Portals Per Player", 0, "The YML keeps track of creator of Portals, a Value of 0 disables the check");
+            MaxPortalsPerPerson = config("3.Portal Config", "Max Portals Per Player", 0, "The YML keeps track of creator of Portals, a Value of 0 disables the check");
 
             AdminOnlyMakesPortals = config("3.Portal Config", "Only Admin Can Build", Toggle.Off, "Only The Admins Can Build Portals");
-
 
             ConfigEnableCrystalsNKeys = config("4.Portal Crystals", "CrystalActive", false, "Enable Portal Crystals and Keys Usage for All new ports by default" + System.Environment.NewLine + " Only Admins can change the colors on these portals");
 
             ConfigEnableGoldAsMaster = config("4.Portal Crystals", "Use Gold as Portal Master", Toggle.On, "Enabled Gold Key and Crystal as Master Key to all (Red,Green,Blue,Purple,Tan,Gold)");
 
-            ConfigCrystalsConsumable = config("4.Portal Crystals", "Crystal Consume Per Transit", 1, "What is the number of crystals to consume for each Portal transport with Crystals enabled?" + System.Environment.NewLine + " Gold/Master gets set" + System.Environment.NewLine);           
+            ConfigCrystalsConsumable = config("4.Portal Crystals", "Crystal Consume Per Transit", 1, "What is the number of crystals to consume for each Portal transport with Crystals enabled?" + System.Environment.NewLine + " Gold/Master gets set" + System.Environment.NewLine);
 
             ConfigMessageLeft = config("4.Portal Crystals", "Use Top Left Message", Toggle.Off, "In case a mod is interfering with Center Messages for Portal tags, display on TopLeft instead.");
-
 
             PortalDrinkTimer = config("5.Portal Drink", "Portal Drink Timer", 120, "How Long Odin's Drink lasts");
 
             PortalDrinkDeny = config("5.Portal Drink", "Portal Drink Wont Allow", "", "Deny list even with Portal Drink, 'Bronze,BlackMetal,BlackMetalScrap,Copper,CopperOre,CopperScrap,Tin,TinOre,IronOre,Iron,IronScrap,Silver,SilverOre,DragonEgg'");
 
-
             ConfigUseBiomeColors = config("6.BiomeColors", "Use Biome Colors by Default", Toggle.Off, "This will Override - Default Color and Use Specific Colors for Biomes");
 
             BiomeRepColors = config("6.BiomeColors", "Biome Colors", "Meadows:Tan,BlackForest:Blue,Swamp:Green,Mountain:Black,Plains:Orange,Mistlands:Purple,DeepNorth:Cyan,AshLands:Red,Ocean:Blue", "Biomes and their related Colors. - No spaces");
-
 
             DefaultColor = config("7.Colors", "Default Color", "Yellow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold are available Colors");
 
@@ -1167,7 +1150,6 @@ namespace RareMagicPortal
             PortalDrinkColor = config("7.Colors", "Portal Drink Color", "Rainbow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or Rainbow (Alternates between colors every second) are the available Colors that can be selected for the Portal Drink Mode for Portals - Only 1 can be set - Default is Rainbow ");
 
             PreventColorChange = config("7.Colors", "Prevent Color Changing", Toggle.Off, "If true, only admins can change color. This will be overriden if CrystalActive is set for Portal");
-
 
             ColorYELLOWAllows = config("8.ColorsAllow", "Color Yellow Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
@@ -1188,8 +1170,6 @@ namespace RareMagicPortal
             ColorWHITEAllows = config("8.ColorsAllow", "Color White Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
             ColorGOLDAllows = config("8.ColorsAllow", "Color Gold Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
-
-
 
             GemColorGold = config("9.CrystalSelector", "Use for Crystal Gold", CrystalMaster, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
 
