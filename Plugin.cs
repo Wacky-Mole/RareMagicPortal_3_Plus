@@ -1074,126 +1074,147 @@ namespace RareMagicPortal
 
         internal void CreateConfigValues()
         {
-            _serverConfigLocked = config("1.General", "Force Server Config", true, "Force Server Config");
+
+            string general = "0.General---------------";
+            _serverConfigLocked = config(general, "Force Server Config", true, "Force Server Config");
             _ = ConfigSync.AddLockingConfigEntry(_serverConfigLocked);
 
-            ConfigEnableYMLLogs = config("1.General", "YML Portal Logs", Toggle.Off, "Show YML Portal Logs after Every update", false);
+            ConfigEnableYMLLogs = config(general, "YML Portal Logs", Toggle.Off, "Show YML Portal Logs after Every update", false);
 
-            RiskyYMLSave = config("1.General", "Risky Server Save", Toggle.Off, "Only save YML updates when server shuts down");
+            RiskyYMLSave = config(general, "Risky Server Save", Toggle.Off, "Only save YML updates when server shuts down");
 
-            UseSmallUpdates = config("1.General", "Use Small Server Updates", Toggle.On, "Only sends a tiny part of the YML to clients");
+            UseSmallUpdates = config(general, "Use Small Server Updates", Toggle.On, "Only sends a tiny part of the YML to clients");
 
-            PreventTargetPortalFromChanging = config("1.General", "PrventTargetPortalChange", Toggle.On, "Prevent People (non creator/admin) from changing TargetPortal Mode. Groups/Private/Public etc");
+            PreventTargetPortalFromChanging = config(general, "PrventTargetPortalChange", Toggle.On, "Prevent People (non creator/admin) from changing TargetPortal Mode. Groups/Private/Public etc");
 
-            portalRMPKEY = config("1.Portal Config", "Modifier key for Color", new KeyboardShortcut(KeyCode.CapsLock), "Modifier keY that has to be pressed while hovering over Portal + E", false);
+            portalRMPKEY = config(general, "Modifier key for Color", new KeyboardShortcut(KeyCode.CapsLock), "Modifier keY that has to be pressed while hovering over Portal + E", false);
 
-            portalRMPMODEKEY = config("1.Portal Config", "Modifier key for PortalMode", new KeyboardShortcut(KeyCode.LeftControl), "Modifier key that has to be pressed while hovering over Portal + E", false);
+            portalRMPMODEKEY = config(general, "Modifier key for PortalMode", new KeyboardShortcut(KeyCode.LeftControl), "Modifier key that has to be pressed while hovering over Portal + E", false);
 
-            portalRMPCRYSTALKEY = config("1.Portal Config", "ON/OFF for Crystal Requirement", new KeyboardShortcut(KeyCode.LeftAlt), "Modifier key that has to be pressed while hovering over Portal + E", false);
+            portalRMPCRYSTALKEY = config(general, "ON/OFF for Crystal Requirement", new KeyboardShortcut(KeyCode.LeftAlt), "Modifier key that has to be pressed while hovering over Portal + E", false);
 
-            ConfigFluid = config("2.PortalFluid", "Enable Portal Fluid", false,
+
+            string fluid = "1.PortalFluid-----------";
+
+            ConfigFluid = config(fluid, "Enable Portal Fluid", false,
                             "Enable PortalFluid requirement?");
 
-            ConfigSpawn = config("2.PortalFluid", "Portal Magic Fluid Spawn", 0,
+            ConfigSpawn = config(fluid, "Portal Magic Fluid Spawn", 0,
                 "How much PortalMagicFluid to start with on a new character?");
 
             // ConfigFluidValue = config("2.PortalFluid", "Portal Fluid Value", 0, "What is the value of MagicPortalFluid? " + System.Environment.NewLine + "A Value of 1 or more, makes the item saleable to trader"); Apart of ItemManager now
 
-            ConfigTable = config("3.Portal Config", "CraftingStation Requirement", DefaultTable,
+
+
+            string portal = "2.Portal-----------";
+            ConfigTable = config(portal, "CraftingStation Requirement", DefaultTable,
                 "Which CraftingStation is required nearby?" + System.Environment.NewLine + "Default is Workbench = $piece_workbench, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstation
 
-            ConfigTableLvl = config("3.Portal Config", "Level of CraftingStation Req", 1,
+            ConfigTableLvl = config(portal, "Level of CraftingStation Req", 1,
                 "What level of CraftingStation is required for placing Portal?");
 
-            ConfigCreator = config("3.Portal Config", "Only Creator Can Deconstruct", true, "Only the Creator/Admin of the Portal can deconstruct it. It can still be destroyed");
+            ConfigCreator = config(portal, "Only Creator Can Deconstruct", true, "Only the Creator/Admin of the Portal can deconstruct it. It can still be destroyed");
 
-            ConfiglHealth = config("3.Portal Config", "Portal Health", 400f, "Health of Portal");
+            ConfiglHealth = config(portal, "Portal Health", 400f, "Health of Portal");
 
-            ConfigAddRestricted = config("3.Portal Config", "AdditionalProhibitItems", "", "Additional Items to Restrict by Default - 'Wood,Stone'");
+            ConfigAddRestricted = config(portal, "AdditionalProhibitItems", "", "Additional Items to Restrict by Default - 'Wood,Stone'");
 
-            ConfigAllowItems = config("3.Portal Config", "AdditionalAllowItems", "", "Additional Items to be allowed by Default - 'Wood,Stone'");
+            ConfigAllowItems = config(portal, "AdditionalAllowItems", "", "Additional Items to be allowed by Default - 'Wood,Stone'");
 
-            ConfigCreatorLock = config("3.Portal Config", "Only Creator Can Change Name", false, "Only Creator can change Portal name");
+            ConfigCreatorLock = config(portal, "Only Creator Can Change Name", false, "Only Creator can change Portal name");
 
-            ConfigTargetPortalAnimation = config("3.Portal Config", "Force Portal Animation", Toggle.Off, "Forces Portal Animation for Target Portal Mod, is not synced and only applies the config if the mod is loaded", false);
+            ConfigTargetPortalAnimation = config(portal, "Force Portal Animation", Toggle.Off, "Forces Portal Animation for Target Portal Mod, is not synced and only applies the config if the mod is loaded", false);
 
-            ConfigMaxWeight = config("3.Portal Config", "Max Weight Allowed for new Portals", 0, "This affects all new/renamed portals - Enter the max weight that can transit through a portal at a time. Value of 0 disables the check");
+            ConfigMaxWeight = config(portal, "Max Weight Allowed for new Portals", 0, "This affects all new/renamed portals - Enter the max weight that can transit through a portal at a time. Value of 0 disables the check");
 
-            MaxPortalsPerPerson = config("3.Portal Config", "Max Portals Per Player", 0, "The YML keeps track of creator of Portals, a Value of 0 disables the check");
+            MaxPortalsPerPerson = config(portal, "Max Portals Per Player", 0, "The YML keeps track of creator of Portals, a Value of 0 disables the check");
 
-            AdminOnlyMakesPortals = config("3.Portal Config", "Only Admin Can Build", Toggle.Off, "Only The Admins Can Build Portals");
+            AdminOnlyMakesPortals = config(portal, "Only Admin Can Build", Toggle.Off, "Only The Admins Can Build Portals");
 
-            ConfigEnableCrystalsNKeys = config("4.Portal Crystals", "CrystalActive", false, "Enable Portal Crystals and Keys Usage for All new ports by default" + System.Environment.NewLine + " Only Admins can change the colors on these portals");
 
-            ConfigEnableGoldAsMaster = config("4.Portal Crystals", "Use Gold as Portal Master", Toggle.On, "Enabled Gold Key and Crystal as Master Key to all (Red,Green,Blue,Purple,Tan,Gold)");
+            string crystals = "3.Crystals-----------";
+            ConfigEnableCrystalsNKeys = config(crystals, "CrystalActive", false, "Enable Portal Crystals and Keys Usage for All new ports by default" + System.Environment.NewLine + " Only Admins can change the colors on these portals");
 
-            ConfigCrystalsConsumable = config("4.Portal Crystals", "Crystal Consume Per Transit", 1, "What is the number of crystals to consume for each Portal transport with Crystals enabled?" + System.Environment.NewLine + " Gold/Master gets set" + System.Environment.NewLine);
+            ConfigEnableGoldAsMaster = config(crystals, "Use Gold as Portal Master", Toggle.On, "Enabled Gold Key and Crystal as Master Key to all (Red,Green,Blue,Purple,Tan,Gold)");
 
-            ConfigMessageLeft = config("4.Portal Crystals", "Use Top Left Message", Toggle.Off, "In case a mod is interfering with Center Messages for Portal tags, display on TopLeft instead.");
+            ConfigCrystalsConsumable = config(crystals, "Crystal Consume Per Transit", 1, "What is the number of crystals to consume for each Portal transport with Crystals enabled?" + System.Environment.NewLine + " Gold/Master gets set" + System.Environment.NewLine);
 
-            PortalDrinkTimer = config("5.Portal Drink", "Portal Drink Timer", 120, "How Long Odin's Drink lasts");
+            ConfigMessageLeft = config(crystals, "Use Top Left Message", Toggle.Off, "In case a mod is interfering with Center Messages for Portal tags, display on TopLeft instead.");
 
-            PortalDrinkDeny = config("5.Portal Drink", "Portal Drink Wont Allow", "", "Deny list even with Portal Drink, 'Bronze,BlackMetal,BlackMetalScrap,Copper,CopperOre,CopperScrap,Tin,TinOre,IronOre,Iron,IronScrap,Silver,SilverOre,DragonEgg'");
 
-            ConfigUseBiomeColors = config("6.BiomeColors", "Use Biome Colors by Default", Toggle.Off, "This will Override - Default Color and Use Specific Colors for Biomes");
+            string drink = "4.Drink-----------";
+            PortalDrinkTimer = config(drink, "Portal Drink Timer", 120, "How Long Odin's Drink lasts");
 
-            BiomeRepColors = config("6.BiomeColors", "Biome Colors", "Meadows:Tan,BlackForest:Blue,Swamp:Green,Mountain:Black,Plains:Orange,Mistlands:Purple,DeepNorth:Cyan,AshLands:Red,Ocean:Blue", "Biomes and their related Colors. - No spaces");
+            PortalDrinkDeny = config(drink, "Portal Drink Wont Allow", "", "Deny list even with Portal Drink, 'Bronze,BlackMetal,BlackMetalScrap,Copper,CopperOre,CopperScrap,Tin,TinOre,IronOre,Iron,IronScrap,Silver,SilverOre,DragonEgg'");
 
-            DefaultColor = config("7.Colors", "Default Color", "Yellow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold are available Colors");
 
-            EnabledColors = config("7.Colors", "Enabled Colors for Portals", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold are available Colors that can be enabled, removing them disables the color");
+            string biome = "5.BiomeColors-----------";
+            ConfigUseBiomeColors = config(biome, "Use Biome Colors by Default", Toggle.Off, "This will Override - Default Color and Use Specific Colors for Biomes");
 
-            FreePassageColor = config("7.Colors", "Free Passage Color", "Yellow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available Colors that can be selected for the Free Passage Color - Only 1 can be set - Default is Yellow");
+            BiomeRepColors = config(biome, "Biome Colors", "Meadows:Tan,BlackForest:Blue,Swamp:Green,Mountain:Black,Plains:Orange,Mistlands:Purple,DeepNorth:Cyan,AshLands:Red,Ocean:Blue", "Biomes and their related Colors. - No spaces");
+
+
+            string colors = "6.Colors-----------";
+            DefaultColor = config(colors, "Default Color", "Yellow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold are available Colors");
+
+            EnabledColors = config(colors, "Enabled Colors for Portals", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold are available Colors that can be enabled, removing them disables the color");
+
+            FreePassageColor = config(colors, "Free Passage Color", "Yellow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available Colors that can be selected for the Free Passage Color - Only 1 can be set - Default is Yellow");
 
             AdminColor = config("7.Colors", "Admin only Color", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available Colors that can be selected for the Admin only portals - Only 1 can be set - Default is none");
 
-            TelePortAnythingColor = config("7.Colors", "TelePortAnythingColor", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available Colors that can be selected for the TeleportAnything only portals - Only 1 can be set - Default is none");
+            TelePortAnythingColor = config(colors, "TelePortAnythingColor", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available Colors that can be selected for the TeleportAnything only portals - Only 1 can be set - Default is none");
 
             PortalDrinkColor = config("7.Colors", "Portal Drink Color", "Rainbow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or Rainbow (Alternates between colors every second) are the available Colors that can be selected for the Portal Drink Mode for Portals - Only 1 can be set - Default is Rainbow ");
 
-            PreventColorChange = config("7.Colors", "Prevent Color Changing", Toggle.Off, "If true, only admins can change color. This will be overriden if CrystalActive is set for Portal");
+            PreventColorChange = config(colors, "Prevent Color Changing", Toggle.Off, "If true, only admins can change color. This will be overriden if CrystalActive is set for Portal");
 
-            ColorYELLOWAllows = config("8.ColorsAllow", "Color Yellow Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
-            ColorBLUEAllows = config("8.ColorsAllow", "Color Blue Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
+            string colors_allow = "7.Colors Allow-----------";
+            ColorYELLOWAllows = config(colors_allow, "Color Yellow Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
-            ColorGREENAllows = config("8.ColorsAllow", "Color Green Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
+            ColorBLUEAllows = config(colors_allow, "Color Blue Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
-            ColorPURPLEAllows = config("8.ColorsAllow", "Color Purple Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
+            ColorGREENAllows = config(colors_allow, "Color Green Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
-            ColorTANAllows = config("8.ColorsAllow", "Color Tan Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
+            ColorPURPLEAllows = config(colors_allow, "Color Purple Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
-            ColorCYANAllows = config("8.ColorsAllow", "Color Cyan Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
+            ColorTANAllows = config(colors_allow, "Color Tan Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
-            ColorORANGEAllows = config("8.ColorsAllow", "Color Orange Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
+            ColorCYANAllows = config(colors_allow, "Color Cyan Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
-            ColorBLACKAllows = config("8.ColorsAllow", "Color Black Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
+            ColorORANGEAllows = config(colors_allow, "Color Orange Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
-            ColorWHITEAllows = config("8.ColorsAllow", "Color White Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
+            ColorBLACKAllows = config(colors_allow, "Color Black Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
-            ColorGOLDAllows = config("8.ColorsAllow", "Color Gold Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
+            ColorWHITEAllows = config(colors_allow, "Color White Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
-            GemColorGold = config("9.CrystalSelector", "Use for Crystal Gold", CrystalMaster, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            ColorGOLDAllows = config(colors_allow, "Color Gold Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
-            GemColorRed = config("9.CrystalSelector", "Use for Crystal Red", CrystalRed, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
 
-            GemColorGreen = config("9.CrystalSelector", "Use for Crystal Green", CrystalGreen, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            string crystal_selector = "8.CrystalSelector--------";
 
-            GemColorBlue = config("9.CrystalSelector", "Use for Crystal Blue", CrystalBlue, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorGold = config(crystal_selector, "Use for Crystal Gold", CrystalMaster, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
 
-            GemColorYellow = config("9.CrystalSelector", "Use for Crystal Yellow", CrystalYellow, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorRed = config(crystal_selector, "Use for Crystal Red", CrystalRed, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
 
-            GemColorPurple = config("9.CrystalSelector", "Use for Crystal Purple", CrystalPurple, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorGreen = config(crystal_selector, "Use for Crystal Green", CrystalGreen, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
 
-            GemColorTan = config("9.CrystalSelector", "Use for Crystal Tan", CrystalTan, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorBlue = config(crystal_selector, "Use for Crystal Blue", CrystalBlue, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
 
-            GemColorCyan = config("9.CrystalSelector", "Use for Crystal Cyan", CrystalCyan, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorYellow = config(crystal_selector, "Use for Crystal Yellow", CrystalYellow, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
 
-            GemColorOrange = config("9.CrystalSelector", "Use for Crystal Orange", CrystalOrange, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorPurple = config(crystal_selector, "Use for Crystal Purple", CrystalPurple, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
 
-            GemColorWhite = config("9.CrystalSelector", "Use for Crystal White", CrystalWhite, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorTan = config(crystal_selector, "Use for Crystal Tan", CrystalTan, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
 
-            GemColorBlack = config("9.CrystalSelector", "Use for Crystal Black", CrystalBlack, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorCyan = config(crystal_selector, "Use for Crystal Cyan", CrystalCyan, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+
+            GemColorOrange = config(crystal_selector, "Use for Crystal Orange", CrystalOrange, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+
+            GemColorWhite = config(crystal_selector, "Use for Crystal White", CrystalWhite, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+
+            GemColorBlack = config(crystal_selector, "Use for Crystal Black", CrystalBlack, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
         }
 
         internal void ReadAndWriteConfigValues()
