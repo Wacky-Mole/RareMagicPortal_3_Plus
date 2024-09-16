@@ -165,7 +165,9 @@ namespace RareMagicPortal
         internal static bool Globaliscreator = false;
 
         internal static ConfigEntry<bool>? ConfigFluid;
+        internal static ConfigEntry<bool>? ConfigFluidStone;
         internal static ConfigEntry<int>? ConfigFluidAmount;
+        internal static ConfigEntry<int>? ConfigFluidAmountStone;
         internal static ConfigEntry<int>? ConfigSpawn;
         internal static ConfigEntry<string>? ConfigTableWood;
         internal static ConfigEntry<string>? ConfigTableStone;
@@ -378,29 +380,29 @@ namespace RareMagicPortal
             ReadAndWriteConfigValues();
             Localizer.Load();
 
-            //LoadAssets();
-           // PortalDrink();
+           // LoadAssets();
+            PortalDrink();
 
             assetPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), typeof(MagicPortalFluid).Namespace);
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), (string)null);
 
-           // SetupWatcher();
-            //setupYMLFolderWatcher();
+            SetupWatcher();
+            setupYMLFolderWatcher();
 
             YMLPortalData.ValueChanged += CustomSyncEventDetected;
             YMLPortalSmallData.ValueChanged += CustomSyncSmallEvent;
 
-           // IconColors();
+            IconColors();
 
-            RareMagicPortal.LogInfo($"MagicPortalFluid has loaded start assets");
+            RareMagicPortal.LogInfo($"MagicPortalFluid loaded start assets");
         }
 
         internal void IconColors()
         {
             context = this;
 
-            Texture2D tex = IconColor.loadTexture("portal.png");
-            Texture2D temp = IconColor.loadTexture("portaliconTarget.png");
+            Texture2D tex = IconColor.loadTexture("icons/portal.png");
+            Texture2D temp = IconColor.loadTexture("icons/portaliconTarget.png");
             IconDefault = IconColor.CreateSprite(temp, false);
 
             foreach (var col in PortalColorLogic.PortalColors)
@@ -429,6 +431,7 @@ namespace RareMagicPortal
             setupYMLFile();
             ReadYMLValuesBoring();
             PortalColorLogic.reloadcolors();
+            
         }
 
         // end startup
@@ -455,7 +458,6 @@ namespace RareMagicPortal
 
         internal void LoadAssets()
         {
-            //ObjectDB Dat = ObjectDB.instance;
 
             Item portalmagicfluid = new("portalmagicfluid", "portalmagicfluid", "assetsEmbedded");
             portalmagicfluid.Name.English("Magical Portal Fluid");
@@ -595,10 +597,6 @@ namespace RareMagicPortal
             //PortalKeyBlack.Snapshot();
         }
 
-        internal void UnLoadAssets()
-        {
-            portalmagicfluid.Unload(false);
-        }
 
         public void setupYMLFolderWatcher()
         {
@@ -617,7 +615,7 @@ namespace RareMagicPortal
             watcherfolder.EnableRaisingEvents = true;
         }
 
-        internal static void setupYMLFile()
+        internal static void setupYMLFile() // example file
 
         {
             Worldname = ZNet.instance.GetWorldName();
@@ -689,8 +687,8 @@ namespace RareMagicPortal
                         PortalColorLogic.PortalN.Portals.Add(portalNCheck, ymlsmall);
                     }
 
-                    JustWrote = 2;
-                    JustSent = 0; // ready for another send
+                    //JustWrote = 2;
+                    //JustSent = 0; // ready for another send
                 }
             }
         }
@@ -727,18 +725,12 @@ namespace RareMagicPortal
                     //RareMagicPortal.LogInfo("Server Portal UPdates Are being Saved " + Worldname);
                     //File.WriteAllText(YMLCurrentFile, SyncedString);
                 }
-                JustWrote = 2;
-                JustSent = 0; // ready for another send
+                //JustWrote = 2;
+                //JustSent = 0; // ready for another send
             }
             if (!ZNet.instance.IsServer())
             {
-                isLocal = false;
-                bool admin = ConfigSync.IsAdmin;
-                isAdmin = admin;
-                if (isAdmin)
-                    RareMagicPortal.LogInfo("You are RMP admin - full update");
-                else
-                    RareMagicPortal.LogInfo("You are NOT RMP admin - full update");
+                isAdmin = ConfigSync.IsAdmin;
             }
         }
 
@@ -746,8 +738,7 @@ namespace RareMagicPortal
         {
             yield return new WaitForSeconds(1);
 
-            JustWrote = 0; // lets manual update happen no problem
-                           //StopCoroutine(WaitforReadWrote()); not needed
+            JustWrote = 0; 
         }
 
         private IEnumerator WaitforJustSent()
@@ -757,43 +748,43 @@ namespace RareMagicPortal
             JustSent = 0;
         }
 
-        internal void ReadYMLValues(object sender, FileSystemEventArgs e) // Thx Azumatt // This gets hit after writing
+        internal void ReadYMLValues(object sender, FileSystemEventArgs e)  // This gets hit after writing
         {
             if (!File.Exists(YMLCurrentFile)) return;
-            if (isAdmin && JustWrote == 0) // if local admin or ServerSync admin
+
+            if (ZNet.instance.IsServer())
             {
-                var yml = File.ReadAllText(YMLCurrentFile);
+               // if ( JustWrote == 0) // if local admin or ServerSync admin
+              //  {
+                    var yml = File.ReadAllText(YMLCurrentFile);
 
-                var deserializer = new DeserializerBuilder()
-                    .Build();
+                    var deserializer = new DeserializerBuilder()
+                        .Build();
 
-                PortalColorLogic.PortalN.Portals.Clear();
-                PortalColorLogic.PortalN = deserializer.Deserialize<PortalName>(yml);
-                if (ZNet.instance.IsServer())//&& ZNet.instance.IsDedicated()) Any Server
+                    PortalColorLogic.PortalN.Portals.Clear();
+                    PortalColorLogic.PortalN = deserializer.Deserialize<PortalName>(yml);
+                    if (ZNet.instance.IsServer())//&& ZNet.instance.IsDedicated()) Any Server
+                    {
+                        RareMagicPortal.LogInfo("Server Portal YML Manual UPdate " + Worldname);
+                        YMLPortalData.Value = yml;
+                    }
+                    else
+                    {
+                        RareMagicPortal.LogInfo("Client Admin Manual YML UPdate " + Worldname);
+                        if (ConfigEnableYMLLogs.Value == Toggle.On)
+                            RareMagicPortal.LogInfo(yml);
+                    }
+               // }
+               /*
+                if (JustWrote == 2)
                 {
-                    RareMagicPortal.LogInfo("Server Portal YML Manual UPdate " + Worldname);
-                    YMLPortalData.Value = yml;
+                    JustWrote = 3; // stops from doing again
+                    StartCoroutine(WaitforReadWrote());
                 }
-                else
-                {
-                    RareMagicPortal.LogInfo("Client Admin Manual YML UPdate " + Worldname);
-                    if (ConfigEnableYMLLogs.Value == Toggle.On)
-                        RareMagicPortal.LogInfo(yml);
-                }
-            }
 
-            if (JustWrote == 2)
-            {
-                JustWrote = 3; // stops from doing again
-                StartCoroutine(WaitforReadWrote());
-            }
-
-            if (JustWrote == 1)
-                JustWrote = 2;
-
-            if (!isAdmin)
-            {
-                //RareMagicPortal.LogInfo("Portal Values Didn't change because you are not an admin");
+                if (JustWrote == 1)
+                    JustWrote = 2;
+               */
             }
         }
 
@@ -863,82 +854,10 @@ namespace RareMagicPortal
         {
             if (!File.Exists(ConfigFileFullPath)) return;
 
-            bool admin = ConfigSync.IsAdmin;
-            bool locked = ConfigSync.IsLocked;
-            bool islocaladmin = false;
-            bool isdedServer = false;
-            if (ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
-                islocaladmin = true;
-            if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated())
-                isdedServer = true;
+            PortalChanger();
+            ReadAndWriteConfigValues();
+            RareMagicPortal.LogInfo("Read Config Values loaded");
 
-            if (admin || islocaladmin || isdedServer) // Server Sync Admin Only
-            {
-                isAdmin = admin; // need to check this
-                try
-                {
-                    if (islocaladmin)
-                    {
-                        isAdmin = true;
-                        RareMagicPortal.LogInfo("ReadConfigValues loaded- you are a local admin");
-                        Config.Reload();
-                        ReadAndWriteConfigValues();
-                        PortalChanger();
-                    }
-                    else if (isdedServer)
-                    {
-                        RareMagicPortal.LogInfo("ReadConfigValues loaded- you the dedicated Server");
-                        Config.Reload();
-                        ReadAndWriteConfigValues();
-                        PortalChanger();
-                    }
-                    else if (ConfigSync.IsSourceOfTruth)
-                    {
-                        RareMagicPortal.LogInfo("ReadConfigValues loaded- you are an admin - on a server");
-                        Config.Reload();
-                        ReadAndWriteConfigValues();
-                        PortalChanger();
-                    }
-                    else
-                    {
-                        // false so remote config is being used
-                        RareMagicPortal.LogInfo("Server values loaded");
-                        ReadAndWriteConfigValues();
-                        PortalChanger();
-                    }
-                }
-                catch
-                {
-                    RareMagicPortal.LogInfo($"There was an issue loading your {ConfigFileName}");
-                    RareMagicPortal.LogInfo("Please check your config entries for spelling and format!");
-                }
-            }
-            else
-            {
-                isAdmin = false;
-                RareMagicPortal.LogInfo("You are not ServerSync admin");
-                try
-                {
-                    if (ConfigSync.IsSourceOfTruth && !locked)
-                    {
-                        RareMagicPortal.LogInfo("ReadConfigValues loaded- You are an local admin"); // Server hits this on dedicated
-                        ReadAndWriteConfigValues();
-                        PortalChanger();
-                        isAdmin = true; // local admin as well
-                    }
-                    else
-                    {
-                        RareMagicPortal.LogInfo("You are not an Server admin - Server Sync Values loaded "); // regular non admin clients
-                        ReadAndWriteConfigValues();
-                        PortalChanger();
-                    }
-                }
-                catch
-                {
-                    RareMagicPortal.LogInfo($"There was an issue loading your {ConfigFileName}");
-                    RareMagicPortal.LogInfo("Please check your config entries for spelling and format!");
-                }
-            }
         }
 
        
@@ -981,27 +900,30 @@ namespace RareMagicPortal
             petercomponent2.m_craftingStation = functions.GetCraftingStation(CraftingStationforPaul2.m_name);
 
 
-            foreach (var portalName in portalNames)          
+
+            bool fluidFound1 = false;
+            foreach (var res in petercomponent1.m_resources)
             {
-                var peter = functions.GetPieces().Find((GameObject g) => Utils.GetPrefabName(g) == portalName);
-
-
-                Piece petercomponent = peter1.GetComponent<Piece>();
-                // Check if "PortalMagicFluid" is among the portal's resources
-                bool fluidFound = false;
-                foreach (var res in petercomponent.m_resources)
+                if (res.m_resItem.name == "PortalMagicFluid")
                 {
-                    if (res.m_resItem.name == "PortalMagicFluid")
-                    {
-                        fluidFound = true;
-                        break;
-                    }
+                    fluidFound1 = true;
+                    break;
                 }
+            }
+            bool fluidFound2 = false;
+            foreach (var res in petercomponent2.m_resources)
+            {
+                if (res.m_resItem.name == "PortalMagicFluid")
+                {
+                    fluidFound2 = true;
+                    break;
+                }
+            }
 
-                if (ConfigFluid.Value && !fluidFound)
+            if (ConfigFluid.Value && !fluidFound1) // wood
                 {
                     // ConfigFluid is true, but "PortalMagicFluid" is not found, so add it to the portal's resources
-                    List<Piece.Requirement> updatedRequirements = petercomponent.m_resources.ToList();
+                    List<Piece.Requirement> updatedRequirements = petercomponent1.m_resources.ToList();
                     var portalMagicFluid = ObjectDB.instance.GetItemPrefab("PortalMagicFluid")?.GetComponent<ItemDrop>();
 
                     if (portalMagicFluid != null)
@@ -1013,7 +935,7 @@ namespace RareMagicPortal
                             m_recover = true // Set to true if you want the resource to be recoverable when destroying the portal
                         });
 
-                        petercomponent.m_resources = updatedRequirements.ToArray();
+                        petercomponent1.m_resources = updatedRequirements.ToArray();
                         RareMagicPortal.LogInfo("Added PortalMagicFluid to portal requirements.");
                     }
                     else
@@ -1021,14 +943,14 @@ namespace RareMagicPortal
                         RareMagicPortal.LogError("PortalMagicFluid item not found in ObjectDB.");
                     }
                 }
-                else if (!ConfigFluid.Value && fluidFound)
+                else if (!ConfigFluid.Value && fluidFound1)
                 {
                     // ConfigFluid is false, and "PortalMagicFluid" is found, so remove it from the portal's resources
-                    List<Piece.Requirement> updatedRequirements = petercomponent.m_resources
+                    List<Piece.Requirement> updatedRequirements = petercomponent1.m_resources
                         .Where(res => res.m_resItem.name != "PortalMagicFluid")
                         .ToList();
 
-                    petercomponent.m_resources = updatedRequirements.ToArray();
+                    petercomponent1.m_resources = updatedRequirements.ToArray();
                     RareMagicPortal.LogInfo("Removed PortalMagicFluid from portal requirements.");
                 }
                 else
@@ -1037,7 +959,46 @@ namespace RareMagicPortal
                     //RareMagicPortal.LogInfo("No changes made to PortalMagicFluid requirements.");
                 }
 
-            }      
+            if (ConfigFluidStone.Value && !fluidFound2) // stone
+            {
+                // ConfigFluid is true, but "PortalMagicFluid" is not found, so add it to the portal's resources
+                List<Piece.Requirement> updatedRequirements = petercomponent2.m_resources.ToList();
+                var portalMagicFluid = ObjectDB.instance.GetItemPrefab("PortalMagicFluid")?.GetComponent<ItemDrop>();
+
+                if (portalMagicFluid != null)
+                {
+                    updatedRequirements.Add(new Piece.Requirement
+                    {
+                        m_amount = ConfigFluidAmountStone.Value,
+                        m_resItem = portalMagicFluid,
+                        m_recover = true // Set to true if you want the resource to be recoverable when destroying the portal
+                    });
+
+                    petercomponent2.m_resources = updatedRequirements.ToArray();
+                    RareMagicPortal.LogInfo("Added PortalMagicFluid to Stone portal requirements.");
+                }
+                else
+                {
+                    RareMagicPortal.LogError("PortalMagicFluid item not found in ObjectDB.");
+                }
+            }
+            else if (!ConfigFluid.Value && fluidFound1)
+            {
+                // ConfigFluid is false, and "PortalMagicFluid" is found, so remove it from the portal's resources
+                List<Piece.Requirement> updatedRequirements = petercomponent2.m_resources
+                    .Where(res => res.m_resItem.name != "PortalMagicFluid")
+                    .ToList();
+
+                petercomponent2.m_resources = updatedRequirements.ToArray();
+                RareMagicPortal.LogInfo("Removed PortalMagicFluid from Stoneportal requirements.");
+            }
+            else
+            {
+                // No changes needed
+                //RareMagicPortal.LogInfo("No changes made to PortalMagicFluid requirements.");
+            }
+
+
         }
 
         internal static void StartingFirsttime()
@@ -1140,16 +1101,16 @@ namespace RareMagicPortal
 
             string fluid = "1.PortalFluid-----------";
 
-            ConfigFluid = config(fluid, "Enable Portal Fluid", false,
-                            "Enable PortalFluid requirement?");
+            ConfigFluid = config(fluid, "Add PortalFluid to Wood Portal", false, "Add PortalFluid to Wood Portal?");
 
-            ConfigFluidAmount = config(fluid, "Fluid Per Portal", 1,
-                            "How much Fluid Per Portal");
+            ConfigFluidStone = config(fluid, "Add PortalFluid to Stone Portal", false, "Add PortalFluid to Stone Portal?");
 
-            ConfigSpawn = config(fluid, "Portal Magic Fluid Spawn", 0,
-                "How much PortalMagicFluid to start with on a new character?");
+            ConfigFluidAmount = config(fluid, "Fluid Per Wood Portal", 1, "How much Fluid Per Portal");
 
-            // ConfigFluidValue = config("2.PortalFluid", "Portal Fluid Value", 0, "What is the value of MagicPortalFluid? " + System.Environment.NewLine + "A Value of 1 or more, makes the item saleable to trader"); Apart of ItemManager now
+            ConfigFluidAmountStone = config(fluid, "Fluid Per Stone Portal", 2, "How much Fluid Per Portal");
+
+            ConfigSpawn = config(fluid, "Portal Magic Fluid Spawn", 0, "How much PortalMagicFluid to start with on a new character?");
+
 
 
 
@@ -1173,6 +1134,8 @@ namespace RareMagicPortal
             ConfigAllowItems = config(portal, "AdditionalAllowItems", "", "Additional Items to be allowed by Default - 'Wood,Stone'");
 
             ConfigCreatorLock = config(portal, "Only Creator Can Change Name", false, "Only Creator can change Portal name");
+
+            UsePortalProgression = config(portal, "Portal Progression", Toggle.Off, "Actives Portal Progression Mode");
 
             ConfigTargetPortalAnimation = config(portal, "Force Portal Animation", Toggle.Off, "Forces Portal Animation for Target Portal Mod, is not synced and only applies the config if the mod is loaded", false);
 

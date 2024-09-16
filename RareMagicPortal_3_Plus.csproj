@@ -171,7 +171,9 @@
     <Content Include=".gitignore" />
     <Content Include="assets\DropAssetBundleInThisFolder.txt" />
     <Content Include="environment.props" />
-    <Content Include="icons\portaldrink.png" />
+    <EmbeddedResource Include="icons\portaldrink.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="ILRepack.targets" />
     <Content Include="Libs\ItemManager.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -192,8 +194,12 @@
     <Content Include="Libs\System.ValueTuple.dll" />
     <Content Include="Libs\YamlDotNet.dll" />
     <Content Include="portal.png" />
-    <Content Include="portalicon.png" />
-    <Content Include="portaliconTarget.png" />
+    <Content Include="icons\portalicon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\portaliconTarget.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="README.md" />
     <Content Include="Thunderstore\CHANGELOG.md" />
     <Content Include="Thunderstore\icon.png" />

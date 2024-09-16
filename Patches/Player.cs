@@ -76,7 +76,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 return true;
             }
         }
-
+        /*
         [HarmonyPatch(typeof(Inventory), "IsTeleportable")]
         public static class istele     
         {
@@ -293,6 +293,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 return true;
             }
         }
+        */
 
 
         [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
