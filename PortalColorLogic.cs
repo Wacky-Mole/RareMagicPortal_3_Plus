@@ -312,7 +312,7 @@ namespace RareMagicPortal
                         //RMP.LogInfo("Hello you jerk");
                         string PortalName = __instance.m_nview.m_zdo.GetString("tag");
 
-                        int colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, __instance);
+                        int colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance);
 
                         if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On) // obviously teleportWorldData needs to be set
                         {
@@ -419,7 +419,7 @@ namespace RareMagicPortal
                         {
                             MagicPortalFluid.Globaliscreator = sameperson; // set this for yml permissions
 
-                            int colorint = CrystalandKeyLogicColor(out string currentcolorskip, out Color colorskip, out string nextcolorskip, PortalName, __instance);
+                            int colorint = CrystalandKeyLogicColor(out string currentcolorskip, out Color colorskip, out string nextcolorskip, PortalName,"", __instance);
                             colorint = PortalColors[nextcolorskip].Pos; // inc 1 color// should loop around for last one
                             Color setcolor = PortalColors[nextcolorskip].HexName; // inc for hexname
 
@@ -437,7 +437,7 @@ namespace RareMagicPortal
                             __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeColorHashCode, "skip");
 
                             updateYmltoColorChange(PortalName, colorint, __instance.m_nview.m_zdo.ToString(), teleportWorldData.BiomeColor); // update yaml
-                            colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, __instance);// Do this again now that it has been updated.
+                            colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName,"", __instance);// Do this again now that it has been updated.
 
                             return false; // stop interaction on changing name
                         }
@@ -523,7 +523,7 @@ namespace RareMagicPortal
                 string currentcolor = "Default";
                 string nextcolor;
                 Color currentcolorHex;
-                colorint = CrystalandKeyLogicColor(out currentcolor, out currentcolorHex, out nextcolor, PortalName, __instance);
+                colorint = CrystalandKeyLogicColor(out currentcolor, out currentcolorHex, out nextcolor, PortalName, "", __instance);
 
                 string PPMreqs = "";
                 if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
@@ -544,7 +544,7 @@ namespace RareMagicPortal
                     PortalName = PortalName.Substring(0, index);
                     //RMP.LogInfo("PortalName " + PortalName);
                 }
-                if (currentcolor == MagicPortalFluid.FreePassageColor.Value && !MagicPortalFluid.ConfigUseBiomeColors.Value && !PortalN.Portals[PortalName].Free_Passage && MagicPortalFluid.JustSent == 0) // to fix existing player issues
+                if (currentcolor == MagicPortalFluid.FreePassageColor.Value && MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.Off && !PortalN.Portals[PortalName].Free_Passage && MagicPortalFluid.JustSent == 0) // to fix existing player issues
                     updateYmltoColorChange(PortalName, PortalColors[MagicPortalFluid.FreePassageColor.Value].Pos, __instance.m_nview.m_zdo.ToString());  // WritetoYML(PortalName, currentcolor);// updates for people
 
                 if (PortalName == "" && reloaded)
@@ -571,17 +571,17 @@ namespace RareMagicPortal
                 Color color = currentcolorHex;
                 text = currentcolor + " " + "Crystal Portal";
 
-                if (PortalName == "" && currentcolor != MagicPortalFluid.CrystalKeyDefaultColor.Value && MagicPortalFluid.JustSent == 0)
+                if (PortalName == "" && currentcolor != MagicPortalFluid.DefaultColor.Value && MagicPortalFluid.JustSent == 0)
                 {
-                    if (MagicPortalFluid.CrystalKeyDefaultColor.Value == "None" || MagicPortalFluid.CrystalKeyDefaultColor.Value == "none")
+                    if (MagicPortalFluid.DefaultColor.Value == "None" || MagicPortalFluid.DefaultColor.Value == "none")
                         colorint = 1;
                     else
                     {
                         try
                         {
-                            colorint = PortalColors[MagicPortalFluid.CrystalKeyDefaultColor.Value].Pos;
+                            colorint = PortalColors[MagicPortalFluid.DefaultColor.Value].Pos;
                         }
-                        catch { RMP.LogWarning($"DefaultPortalColor {MagicPortalFluid.CrystalKeyDefaultColor.Value} is not an option,this will cause repeating network traffic on no name portals"); }
+                        catch { RMP.LogWarning($"DefaultPortalColor {MagicPortalFluid.DefaultColor.Value} is not an option,this will cause repeating network traffic on no name portals"); }
                     }
                 }
 
@@ -815,8 +815,8 @@ namespace RareMagicPortal
                 var index = PortalName.IndexOf(NameIdentifier);
                 PortalName = PortalName.Substring(0, index);
             }
-            currentColor = MagicPortalFluid.CrystalKeyDefaultColor.Value;
-            if (MagicPortalFluid.CrystalKeyDefaultColor.Value == "None" || MagicPortalFluid.CrystalKeyDefaultColor.Value == "none")
+            currentColor = MagicPortalFluid.DefaultColor.Value;
+            if (MagicPortalFluid.DefaultColor.Value == "None" || MagicPortalFluid.DefaultColor.Value == "none")
                 currentColor = "Yellow";
             currentColorHex = PortalColors[currentColor].HexName;
             nextcolor = "Red";
@@ -925,17 +925,17 @@ namespace RareMagicPortal
             //RMP.LogInfo("here 4");
             if (PortalName == "")
             {
-                if (MagicPortalFluid.CrystalKeyDefaultColor.Value == "None" || MagicPortalFluid.CrystalKeyDefaultColor.Value == "none")
+                if (MagicPortalFluid.DefaultColor.Value == "None" || MagicPortalFluid.DefaultColor.Value == "none")
                 {
                     currentColor = MagicPortalFluid.FreePassageColor.Value;
                     currentColorHex = PortalColors[MagicPortalFluid.FreePassageColor.Value].HexName;
                     nextcolor = PortalColors[MagicPortalFluid.FreePassageColor.Value].NextColor;
                     return PortalColors[MagicPortalFluid.FreePassageColor.Value].Pos;
                 }
-                currentColor = MagicPortalFluid.CrystalKeyDefaultColor.Value;
-                currentColorHex = PortalColors[MagicPortalFluid.CrystalKeyDefaultColor.Value].HexName;
-                nextcolor = PortalColors[MagicPortalFluid.CrystalKeyDefaultColor.Value].NextColor;
-                return PortalColors[MagicPortalFluid.CrystalKeyDefaultColor.Value].Pos;
+                currentColor = MagicPortalFluid.DefaultColor.Value;
+                currentColorHex = PortalColors[MagicPortalFluid.DefaultColor.Value].HexName;
+                nextcolor = PortalColors[MagicPortalFluid.DefaultColor.Value].NextColor;
+                return PortalColors[MagicPortalFluid.DefaultColor.Value].Pos;
             }
             //RMP.LogInfo("here 5");
             foreach (var pc in PortalColors)
@@ -943,17 +943,16 @@ namespace RareMagicPortal
                 var name = pc.Key;
                 if (pc.Value.Enabled)
                 {
-                    if (MagicPortalFluid.ConfigEnableGoldAsMaster.Value && pc.Key == "Gold")
+                    if (MagicPortalFluid.ConfigEnableGoldAsMaster.Value == MagicPortalFluid.Toggle.On && pc.Key == "Gold")
                         continue;
                     try
                     {
-                        if (Portal_Crystal_Cost[name] > 0 || Portal_Key[name])
-                        {
+                            name = PortalN.Portals[PortalName].PortalZDOs[ZDOName].Color;
                             currentColor = name;
                             currentColorHex = PortalColors[currentColor].HexName;
                             nextcolor = pc.Value.NextColor; //PortalColor.Red.ToString();
                             return pc.Value.Pos;
-                        }
+                        
                     }
                     catch
                     {
@@ -962,7 +961,7 @@ namespace RareMagicPortal
                     }// not in file so maybe add?
                 }
             }
-            if (MagicPortalFluid.ConfigEnableGoldAsMaster.Value && (Portal_Crystal_Cost["Gold"] > 0 || Portal_Key["Gold"])) // Gold Check
+            if (MagicPortalFluid.ConfigEnableGoldAsMaster.Value == MagicPortalFluid.Toggle.On && PortalN.Portals[PortalName].PortalZDOs[ZDOName].Color == "Gold") // Gold Check
             {
                 currentColor = "Gold";
                 currentColorHex = PortalColors[currentColor].HexName;
@@ -997,11 +996,11 @@ namespace RareMagicPortal
 
             foreach (var col in PortalColors) // reset all to 0 and false
             {
-                PortalN.Portals[PortalName].Portal_Crystal_Cost[col.Key] = 0;
-                PortalN.Portals[PortalName].Portal_Key[col.Key] = false;
+             //   PortalN.Portals[PortalName].Portal_Crystal_Cost[col.Key] = 0;
+                //PortalN.Portals[PortalName].Portal_Key[col.Key] = false;
             }
-            PortalN.Portals[PortalName].Portal_Crystal_Cost[ColorName] = MagicPortalFluid.ConfigCrystalsConsumable.Value; // set to default consume for int
-            PortalN.Portals[PortalName].Portal_Key[ColorName] = true; // set to true
+           // PortalN.Portals[PortalName].Portal_Crystal_Cost[ColorName] = MagicPortalFluid.ConfigCrystalsConsumable.Value; // set to default consume for int
+           // PortalN.Portals[PortalName].Portal_Key[ColorName] = true; // set to true
 
             if (MagicPortalFluid.FreePassageColor.Value == ColorName) // for starting Portal Yellow
             {
@@ -1015,10 +1014,10 @@ namespace RareMagicPortal
                     PortalN.Portals[PortalName].Admin_only_Access = true;
                     PortalN.Portals[PortalName].TeleportAnything = true;
                 }
-                if (MagicPortalFluid.ConfigEnableGoldAsMaster.Value)
+                if (MagicPortalFluid.ConfigEnableGoldAsMaster.Value == MagicPortalFluid.Toggle.On)
                 {
-                    PortalN.Portals[PortalName].Portal_Crystal_Cost["Gold"] = 1;
-                    PortalN.Portals[PortalName].Portal_Key["Gold"] = true;
+                   // PortalN.Portals[PortalName].Portal_Crystal_Cost["Gold"] = 1;
+                   // PortalN.Portals[PortalName].Portal_Key["Gold"] = true;
                 }
                 if (MagicPortalFluid.FreePassageColor.Value == ColorName)
                 {
@@ -1030,7 +1029,7 @@ namespace RareMagicPortal
                 }
             }
             if (BiomeCol != null)
-                PortalN.Portals[PortalName].BiomeColor = BiomeCol;
+                PortalN.Portals[PortalName].PortalZDOs[zdoID].BiomeColor = BiomeCol;
 
             if (PortalName == "")
             {
@@ -1059,7 +1058,7 @@ namespace RareMagicPortal
                 //if (!MagicPortalFluid.UseSmallUpdates.Value)
                 yamlfull = MagicPortalFluid.WelcomeString + Environment.NewLine + serializer.Serialize(PortalN); // build everytime
 
-                if (!MagicPortalFluid.RiskyYMLSave.Value)
+                if (MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.Off)
                 {
                     MagicPortalFluid.JustWrote = 1;
                     File.WriteAllText(MagicPortalFluid.YMLCurrentFile, yamlfull); //overwrite
@@ -1074,7 +1073,7 @@ namespace RareMagicPortal
 
                     MagicPortalFluid.JustWrote = 2;
                 }
-                if (MagicPortalFluid.UseSmallUpdates.Value)
+                if (MagicPortalFluid.UseSmallUpdates.Value == MagicPortalFluid.Toggle.On)
                     MagicPortalFluid.YMLPortalSmallData.Value = ymlsmall;
                 else
                     MagicPortalFluid.YMLPortalData.Value = yamlfull; // send out to clients from server only
@@ -1091,7 +1090,7 @@ namespace RareMagicPortal
                     MagicPortalFluid.RareMagicPortal.LogInfo("Single client only or Server but not dedicated");
                     var yamlfull = MagicPortalFluid.WelcomeString + Environment.NewLine + serializer.Serialize(PortalN); // build everytime
 
-                    if (!MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.On)
+                    if (MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.Off)
                     {
                         MagicPortalFluid.JustWrote = 1;
                         File.WriteAllText(MagicPortalFluid.YMLCurrentFile, yamlfull); //overwrite
@@ -1144,8 +1143,8 @@ namespace RareMagicPortal
 
             OdinsKin = PortalN.Portals[PortalName].Admin_only_Access;
             Free_Passage = PortalN.Portals[PortalName].Free_Passage;
-            var Portal_Crystal_Cost = PortalN.Portals[PortalName].Portal_Crystal_Cost; // rgbG  // 0 means it can't be used, (Keys only) anything greater means the cost. -1 means same as 0
-            var Portal_Key_Cost = PortalN.Portals[PortalName].Portal_Key; // rgbG
+            var Portal_Crystal_Cost = PortalN.Portals[PortalName].PortalZDOs[zdoID].Color; // rgbG  // 0 means it can't be used, (Keys only) anything greater means the cost. -1 means same as 0
+            var Portal_Key_Cost = PortalN.Portals[PortalName].PortalZDOs[zdoID].Color;
             var TeleportEvery = PortalN.Portals[PortalName].TeleportAnything;
 
             Player player = Player.m_localPlayer;
@@ -1211,16 +1210,16 @@ namespace RareMagicPortal
 
                 if (flag) // override PortalName
                 {
-                    Portal_Crystal_Cost = new Dictionary<string, int>();
-                    Portal_Key_Cost = new Dictionary<string, bool>();
+                   // Portal_Crystal_Cost = new Dictionary<string, int>();
+                    //Portal_Key_Cost = new Dictionary<string, bool>();
 
-                    Portal_Crystal_Cost.Add(currentColor, MagicPortalFluid.ConfigCrystalsConsumable.Value);
-                    Portal_Key_Cost.Add(currentColor, true);
+                    //Portal_Crystal_Cost.Add(currentColor, MagicPortalFluid.ConfigCrystalsConsumable.Value);
+                    //Portal_Key_Cost.Add(currentColor, true);
 
-                    if (MagicPortalFluid.ConfigEnableGoldAsMaster.Value)
+                    if (MagicPortalFluid.ConfigEnableGoldAsMaster.Value == MagicPortalFluid.Toggle.On)
                     {
-                        Portal_Crystal_Cost.Add("Gold", MagicPortalFluid.ConfigCrystalsConsumable.Value);
-                        Portal_Key_Cost.Add("Gold", true);
+                       // Portal_Crystal_Cost.Add("Gold", MagicPortalFluid.ConfigCrystalsConsumable.Value);
+                        //Portal_Key_Cost.Add("Gold", true);
                     }
                 }
 
@@ -1232,20 +1231,18 @@ namespace RareMagicPortal
                 int coun = PortalColors.Count;
                 foreach (var col in PortalColors)
                 {
-                    if (!Portal_Crystal_Cost.TryGetValue(col.Key, out int Stuff)) // true then not in there
-                        continue;
 
-                    if ((Portal_Crystal_Cost[col.Key] > 0 || Portal_Key_Cost[col.Key]) && !foundAccess)
+                    if (MagicPortalFluid.ConfigCrystalsConsumable.Value > 0  && !foundAccess)
                     {
                         if (CrystalCount[col.Key] == 0)
                             flagCarry = col.Value.Pos;
-                        else if (Portal_Crystal_Cost[col.Key] > CrystalCount[col.Key]) // has less than required
+                        else if (MagicPortalFluid.ConfigCrystalsConsumable.Value > CrystalCount[col.Key]) // has less than required
                             flagCarry = 100 + col.Value.Pos;
                         else flagCarry = 200 + col.Value.Pos; // has more than required
 
-                        if (Portal_Key_Cost[col.Key])
+                        //if (Portal_Key_Cost[col.Key])
                         {
-                            if (Portal_Crystal_Cost[col.Key] == 0)
+                            if (MagicPortalFluid.ConfigCrystalsConsumable.Value == 0)
                             {
                                 crystalorkey = 1;
                                 if (KeyCount[col.Key] > 0)
@@ -1339,133 +1336,132 @@ namespace RareMagicPortal
                         return false;
 
                     case 101:
-                        player.Message(hud, $"{Portal_Crystal_Cost["Yellow"]} $rmp_required_yellow {PortalName}");
+                        player.Message(hud, $"{MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_required_yellow {PortalName}");
                         return false;
 
                     case 102:
-                        player.Message(hud, $"{Portal_Crystal_Cost["Red"]} $rmp_required_red {PortalName}");
+                        player.Message(hud, $"{MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_required_red {PortalName}");
                         return false;
 
                     case 103:
-                        player.Message(hud, $"{Portal_Crystal_Cost["Green"]} $rmp_required_green {PortalName}");
+                        player.Message(hud, $"{MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_required_green {PortalName}");
                         return false;
 
                     case 104:
-                        player.Message(hud, $"{Portal_Crystal_Cost["Blue"]} $rmp_required_blue {PortalName}");
+                        player.Message(hud, $"{MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_required_blue {PortalName}");
                         return false;
 
                     case 105:
-                        player.Message(hud, $"{Portal_Crystal_Cost["Purple"]} $rmp_required_purple {PortalName}");
+                        player.Message(hud, $"{MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_required_purple {PortalName}");
                         return false;
 
                     case 106:
-                        player.Message(hud, $"{Portal_Crystal_Cost["Tan"]} $rmp_required_tan {PortalName}");
+                        player.Message(hud, $"{MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_required_tan {PortalName}");
                         return false;
 
                     case 107:
-                        player.Message(hud, $"{Portal_Crystal_Cost["Cyan"]} $rmp_required_cyan {PortalName}");
+                        player.Message(hud, $"{MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_required_cyan {PortalName}");
                         return false;
 
                     case 108:
-                        player.Message(hud, $"{Portal_Crystal_Cost["Orange"]} $rmp_required_orange {PortalName}");
+                        player.Message(hud, $"{MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_required_orange {PortalName}");
                         return false;
 
                     case 120:
-                        player.Message(hud, $"{Portal_Crystal_Cost["White"]} $rmp_required_white {PortalName}");
+                        player.Message(hud, $"{MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_required_white {PortalName}");
                         return false;
 
                     case 121:
-                        player.Message(hud, $"{Portal_Crystal_Cost["Black"]} $rmp_required_black {PortalName}");
+                        player.Message(hud, $"{MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_required_black {PortalName}");
                         return false;
 
                     case 122:
-                        player.Message(hud, $"{Portal_Crystal_Cost["Gold"]} $rmp_required_gold {PortalName}");
+                        player.Message(hud, $"{MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_required_gold {PortalName}");
                         return false;
 
                     case 201:
                         player.Message(MessageHud.MessageType.Center, $"$rmp_crystalgrants_access");
-                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {Portal_Crystal_Cost["Yellow"]} $rmp_consumed_yellow");
-                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorYellow.Value, Portal_Crystal_Cost["Yellow"]); // becareful of server devcommands and god, debug! Spent so much time and this probably still works!
+                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_consumed_yellow");
+                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorYellow.Value, MagicPortalFluid.ConfigCrystalsConsumable.Value); // becareful of server devcommands and god, debug! Spent so much time and this probably still works!
                         //removeItems.Add(MagicPortalFluid.GemColorYellow.Value, Portal_Crystal_Cost["Yellow"]);
                         //inventoryRemove = true;
                         return true;
 
                     case 202:
                         player.Message(MessageHud.MessageType.Center, $"$rmp_crystalgrants_access");
-                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {Portal_Crystal_Cost["Red"]} $rmp_consumed_red");
-                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorRed.Value, Portal_Crystal_Cost["Red"]);
+                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_consumed_red");
+                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorRed.Value, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                        // removeItems.Add(MagicPortalFluid.GemColorRed.Value, Portal_Crystal_Cost["Red"]);
                         //inventoryRemove = true;
                         return true;
 
                     case 203:
                         player.Message(MessageHud.MessageType.Center, $"$rmp_crystalgrants_access");
-                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {Portal_Crystal_Cost["Green"]} $rmp_consumed_green");
-                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorGreen.Value, Portal_Crystal_Cost["Green"]);
+                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_consumed_green");
+                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorGreen.Value, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                         //removeItems.Add(MagicPortalFluid.GemColorGreen.Value, Portal_Crystal_Cost["Green"]);
                         //inventoryRemove = true;
                         return true;
 
                     case 204:
                         player.Message(MessageHud.MessageType.Center, $"$rmp_crystalgrants_access");
-                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {Portal_Crystal_Cost["Blue"]} $rmp_consumed_blue");
-                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorBlue.Value, Portal_Crystal_Cost["Blue"]);
+                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_consumed_blue");
+                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorBlue.Value, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                         //removeItems.Add(MagicPortalFluid.GemColorBlue.Value, Portal_Crystal_Cost["Blue"]);
                         //inventoryRemove = true;
                         return true;
 
                     case 205:
                         player.Message(MessageHud.MessageType.Center, $"$rmp_crystalgrants_access");
-                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {Portal_Crystal_Cost["Purple"]} $rmp_consumed_purple");
-                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorPurple.Value, Portal_Crystal_Cost["Purple"]);
+                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_consumed_purple");
+                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorPurple.Value, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                         //removeItems.Add(MagicPortalFluid.GemColorPurple.Value, Portal_Crystal_Cost["Purple"]);
                         //inventoryRemove = true;
                         return true;
 
                     case 206:
                         player.Message(MessageHud.MessageType.Center, $"$rmp_crystalgrants_access");
-                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {Portal_Crystal_Cost["Tan"]} $rmp_consumed_tan");
-                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorTan.Value, Portal_Crystal_Cost["Tan"]);
+                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_consumed_tan");
+                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorTan.Value, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                         //removeItems.Add(MagicPortalFluid.GemColorTan.Value, Portal_Crystal_Cost["Tan"]);
                         //inventoryRemove = true;
                         return true;
 
                     case 207:
                         player.Message(MessageHud.MessageType.Center, $"$rmp_crystalgrants_access");
-                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {Portal_Crystal_Cost["Cyan"]} $rmp_consumed_cyan");
-                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorCyan.Value, Portal_Crystal_Cost["Cyan"]);
+                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_consumed_cyan");
+                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorCyan.Value, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                         //removeItems.Add(MagicPortalFluid.GemColorCyan.Value, Portal_Crystal_Cost["Cyan"]);
                         //inventoryRemove = true;
                         return true;
 
                     case 208:
                         player.Message(MessageHud.MessageType.Center, $"$rmp_crystalgrants_access");
-                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {Portal_Crystal_Cost["Orange"]} $rmp_consumed_orange");
-                        Player.m_localPlayer.m_inventory.RemoveItem( MagicPortalFluid.GemColorOrange.Value, Portal_Crystal_Cost["Orange"]);
+                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_consumed_orange");
+                        Player.m_localPlayer.m_inventory.RemoveItem( MagicPortalFluid.GemColorOrange.Value, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                         //removeItems.Add(MagicPortalFluid.GemColorOrange.Value, Portal_Crystal_Cost["Orange"]);
                         //inventoryRemove = true;
                         return true;
 
                     case 220:
                         player.Message(MessageHud.MessageType.Center, $"$rmp_crystalgrants_access");
-                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {Portal_Crystal_Cost["White"]} $rmp_consumed_white");
-                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorWhite.Value, Portal_Crystal_Cost["White"]);
+                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_consumed_white");
+                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorWhite.Value, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                         //removeItems.Add(MagicPortalFluid.GemColorWhite.Value, Portal_Crystal_Cost["White"]);
                         //inventoryRemove = true;
                         return true;
 
                     case 221:
                         player.Message(MessageHud.MessageType.Center, $"$rmp_crystalgrants_access");
-                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {Portal_Crystal_Cost["Black"]} $rmp_consumed_black");
-                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorBlack.Value, Portal_Crystal_Cost["Black"]);
-                        //removeItems.Add(MagicPortalFluid.GemColorBlack.Value, Portal_Crystal_Cost["Black"]);
+                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_consumed_black");
+                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorBlack.Value, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                        // inventoryRemove = true;
                         return true;
 
                     case 222:
                         player.Message(MessageHud.MessageType.Center, $"$rmp_crystalgrants_access");
-                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {Portal_Crystal_Cost["Gold"]} $rmp_consumed_gold");
-                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorGold.Value, Portal_Crystal_Cost["Gold"]);
+                        player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} $rmp_consumed_gold");
+                        Player.m_localPlayer.m_inventory.RemoveItem(MagicPortalFluid.GemColorGold.Value, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                         //removeItems.Add(MagicPortalFluid.GemColorGold.Value, Portal_Crystal_Cost["Gold"]);
                         //inventoryRemove = true;
                         return true;
@@ -1576,33 +1572,33 @@ namespace RareMagicPortal
             PortalN.Portals[PortalName].Admin_only_Access = false;
 
                        
-            if (MagicPortalFluid.CrystalKeyDefaultColor.Value == "None" || MagicPortalFluid.CrystalKeyDefaultColor.Value == "none")
+            if (MagicPortalFluid.DefaultColor.Value == "None" || MagicPortalFluid.DefaultColor.Value == "none")
             {
                 PortalN.Portals[PortalName].Free_Passage = false; // already false, but just to rei
                 colorint = 1; // yellow
-                PortalN.Portals[PortalName].Portal_Crystal_Cost["Yellow"] = MagicPortalFluid.ConfigCrystalsConsumable.Value;
-                PortalN.Portals[PortalName].Portal_Key["Yellow"] = true;
+                //PortalN.Portals[PortalName].Portal_Crystal_Cost["Yellow"] = MagicPortalFluid.ConfigCrystalsConsumable.Value;
+               // PortalN.Portals[PortalName].Portal_Key["Yellow"] = true;
                 PortalN.Portals[PortalName].Color = "Yellow";
             }
             else
             {
-                PortalN.Portals[PortalName].Portal_Crystal_Cost[MagicPortalFluid.CrystalKeyDefaultColor.Value] = MagicPortalFluid.ConfigCrystalsConsumable.Value;
-                PortalN.Portals[PortalName].Portal_Key[MagicPortalFluid.CrystalKeyDefaultColor.Value] = true;
-                colorint = PortalColors[MagicPortalFluid.CrystalKeyDefaultColor.Value].Pos;
-                PortalN.Portals[PortalName].Color = MagicPortalFluid.CrystalKeyDefaultColor.Value;
+                //PortalN.Portals[PortalName].Portal_Crystal_Cost[MagicPortalFluid.DefaultColor.Value] = MagicPortalFluid.ConfigCrystalsConsumable.Value;
+                //PortalN.Portals[PortalName].Portal_Key[MagicPortalFluid.DefaultColor.Value] = true;
+                colorint = PortalColors[MagicPortalFluid.DefaultColor.Value].Pos;
+                PortalN.Portals[PortalName].Color = MagicPortalFluid.DefaultColor.Value;
             }
 
             if (MagicPortalFluid.FreePassageColor.Value == "None" || MagicPortalFluid.FreePassageColor.Value == "none") { } // already set something above
-            else if (MagicPortalFluid.CrystalKeyDefaultColor.Value == MagicPortalFluid.FreePassageColor.Value || MagicPortalFluid.FreePassageColor.Value == "Yellow" && colorint == 1)
+            else if (MagicPortalFluid.DefaultColor.Value == MagicPortalFluid.FreePassageColor.Value || MagicPortalFluid.FreePassageColor.Value == "Yellow" && colorint == 1)
             {
                 PortalN.Portals[PortalName].Free_Passage = true;
                 colorint = PortalColors[MagicPortalFluid.FreePassageColor.Value].Pos;
-                PortalN.Portals[PortalName].Portal_Crystal_Cost[MagicPortalFluid.FreePassageColor.Value] = 0;
-                PortalN.Portals[PortalName].Portal_Key[MagicPortalFluid.FreePassageColor.Value] = false;
+               // PortalN.Portals[PortalName].Portal_Crystal_Cost[MagicPortalFluid.FreePassageColor.Value] = 0;
+                //PortalN.Portals[PortalName].Portal_Key[MagicPortalFluid.FreePassageColor.Value] = false;
             }
 
             if (MagicPortalFluid.TelePortAnythingColor.Value == "None" || MagicPortalFluid.TelePortAnythingColor.Value == "none") { } // already set something above
-            else if (MagicPortalFluid.CrystalKeyDefaultColor.Value == MagicPortalFluid.TelePortAnythingColor.Value || MagicPortalFluid.TelePortAnythingColor.Value == "Yellow" && colorint == 1)
+            else if (MagicPortalFluid.DefaultColor.Value == MagicPortalFluid.TelePortAnythingColor.Value || MagicPortalFluid.TelePortAnythingColor.Value == "Yellow" && colorint == 1)
             {
                 PortalN.Portals[PortalName].TeleportAnything = true;
                 colorint = PortalColors[MagicPortalFluid.TelePortAnythingColor.Value].Pos;
@@ -1611,7 +1607,7 @@ namespace RareMagicPortal
             }
 
             if (MagicPortalFluid.AdminColor.Value == "None" || MagicPortalFluid.AdminColor.Value == "none") { } // already set something above
-            else if (MagicPortalFluid.CrystalKeyDefaultColor.Value == MagicPortalFluid.AdminColor.Value || MagicPortalFluid.AdminColor.Value == "Yellow" && colorint == 1)
+            else if (MagicPortalFluid.DefaultColor.Value == MagicPortalFluid.AdminColor.Value || MagicPortalFluid.AdminColor.Value == "Yellow" && colorint == 1)
             {
                 PortalN.Portals[PortalName].Admin_only_Access = true;
                 colorint = PortalColors[MagicPortalFluid.AdminColor.Value].Pos;

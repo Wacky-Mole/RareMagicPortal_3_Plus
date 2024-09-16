@@ -34,13 +34,14 @@ namespace RareMagicPortal_3_Plus.PortalMode
         private Dictionary<string, Vector3> transportLocations;
 
         private void Awake()
-        {
+        {/*
             m_nview = GetComponent<ZNetView>();
             if (m_nview.GetZDO() == null)
             {
                 enabled = false;
                 return;
             }
+            */
 
             RegisterRPCMethods();
             allowedUsers = new List<string>();
@@ -215,7 +216,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     break;
                 case PortalMode.TransportNetwork:
                     // Listen for chat messages
-                    Chat.instance.m_onNewChatMessage += OnNewChatMessage;
+                   // Chat.instance.m_onNewChatMessage += OnNewChatMessage;
                     break;
                 default:
                     Teleport(player);
@@ -231,7 +232,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             if (currentMode == PortalMode.TransportNetwork)
             {
                 // Stop listening for chat messages
-                Chat.instance.m_onNewChatMessage -= OnNewChatMessage;
+                //Chat.instance.m_onNewChatMessage -= OnNewChatMessage;
             }
         }
 
@@ -240,7 +241,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             if (type != Talker.Type.Normal || Player.m_localPlayer == null) return;
 
             // Check if the player is standing on the portal
-            if (Vector3.Distance(Player.m_localPlayer.transform.position, transform.position) > 1.0f) return;
+           // if (Vector3.Distance(Player.m_localPlayer.transform.position, transform.position) > 1.0f) return;
 
             // Check if the message matches a location name
             if (transportLocations.TryGetValue(message, out Vector3 targetLocation))

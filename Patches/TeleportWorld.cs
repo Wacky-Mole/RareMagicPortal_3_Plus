@@ -28,12 +28,12 @@ namespace RareMagicPortal_3_Plus.Patches
                     __result = true;
                     return false;
                 }
-                if (MagicPortalFluid.TargetPortalLoaded && !MagicPortalFluid.ConfigTargetPortalAnimation.Value)
+                if (MagicPortalFluid.TargetPortalLoaded && MagicPortalFluid.ConfigTargetPortalAnimation.Value == MagicPortalFluid.Toggle.Off)
                 {
                     __result = false;
                     return false;
                 }
-                if (MagicPortalFluid.TargetPortalLoaded && MagicPortalFluid.ConfigTargetPortalAnimation.Value)
+                if (MagicPortalFluid.TargetPortalLoaded && MagicPortalFluid.ConfigTargetPortalAnimation.Value == MagicPortalFluid.Toggle.On)
                 {
                     __result = true;
                     return false;
@@ -87,7 +87,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     return false;
 
 
-                if (MagicPortalFluid.UsePortalProgression.Value)
+                if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
                 {
                     return true; // don't do crystalandkeylogic
                 }
