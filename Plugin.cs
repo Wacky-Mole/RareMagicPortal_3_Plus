@@ -143,9 +143,9 @@ namespace RareMagicPortal
         public static bool LoggingOntoServerFirst = true;
         internal static Dictionary<string, Material> originalMaterials;
 
-        public static bool FluidwasTrue = false;
         public static bool piecehaslvl = false;
         public static string DefaultTable = "$piece_workbench";
+        public static string DefaultTableStone = "$piece_stonecutter";
         internal static string YMLCurrentFile = Path.Combine(YMLFULLFOLDER, Worldname + ".yml");
         internal static int JustWrote = 0;
         internal static bool JustWait = false;
@@ -165,11 +165,14 @@ namespace RareMagicPortal
         internal static bool Globaliscreator = false;
 
         internal static ConfigEntry<bool>? ConfigFluid;
+        internal static ConfigEntry<int>? ConfigFluidAmount;
         internal static ConfigEntry<int>? ConfigSpawn;
-        internal static ConfigEntry<string>? ConfigTable;
+        internal static ConfigEntry<string>? ConfigTableWood;
+        internal static ConfigEntry<string>? ConfigTableStone;
         internal static ConfigEntry<int>? ConfigTableLvl;
         internal static ConfigEntry<bool>? ConfigCreator;
-        internal static ConfigEntry<float>? ConfiglHealth;
+        internal static ConfigEntry<float>? ConfiglHealthWood;
+        internal static ConfigEntry<float>? ConfiglHealthStone;
         internal static ConfigEntry<bool>? ConfigCreatorLock;
         internal static ConfigEntry<int>? ConfigFluidValue;
         internal static ConfigEntry<bool>? ConfigEnableCrystalsNKeys;
@@ -938,62 +941,103 @@ namespace RareMagicPortal
             }
         }
 
-        // changing portals section
-        internal static void PortalChanger()
+       
+        internal static void PortalChanger() // changing portals section
         {
-            var peter = functions.GetPieces().Find((GameObject g) => Utils.GetPrefabName(g) == "portal_wood"); //item prefab loaded from hammer
-            if (peter != null)
+             //item prefab loaded from hammer
+
+            List<string> portalNames = new List<string> { "portal_wood", "portal_stone" };
+
+            var peter1 = functions.GetPieces().Find((GameObject g) => Utils.GetPrefabName(g) == "portal_wood");
+            if (peter1 == null)
             {
-                WearNTear por = peter.GetComponent<WearNTear>();
-                por.m_health = ConfiglHealth.Value; // set New Portal Health
+                RareMagicPortal.LogInfo($"portal_wood prefab not found.");
+                return;
+            }
 
-                List<Piece.Requirement> requirements = new List<Piece.Requirement>();
-                requirements.Add(new Piece.Requirement
+            
+            var peter2 = functions.GetPieces().Find((GameObject g) => Utils.GetPrefabName(g) == "portal_stone");
+            if (peter2 == null)
+            {
+                RareMagicPortal.LogInfo($"portal_stone prefab not found.");
+                return;
+            }
+
+            WearNTear por1 = peter1.GetComponent<WearNTear>();
+            WearNTear por2 = peter2.GetComponent<WearNTear>();
+            por1.m_health = ConfiglHealthWood.Value; 
+            por2.m_health = ConfiglHealthStone.Value; 
+            Piece petercomponent1 = peter1.GetComponent<Piece>();
+            Piece petercomponent2 = peter2.GetComponent<Piece>();
+
+            var CraftingStationforPaul1 = functions.GetCraftingStation(ConfigTableWood.Value);
+            if (CraftingStationforPaul1 == null)          
+                CraftingStationforPaul1.m_name = DefaultTable;     
+            petercomponent1.m_craftingStation = functions.GetCraftingStation(CraftingStationforPaul1.m_name);
+
+            var CraftingStationforPaul2 = functions.GetCraftingStation(ConfigTableStone.Value);
+            if (CraftingStationforPaul2 == null)
+                CraftingStationforPaul2.m_name = DefaultTableStone;
+            petercomponent2.m_craftingStation = functions.GetCraftingStation(CraftingStationforPaul2.m_name);
+
+
+            foreach (var portalName in portalNames)          
+            {
+                var peter = functions.GetPieces().Find((GameObject g) => Utils.GetPrefabName(g) == portalName);
+
+
+                Piece petercomponent = peter1.GetComponent<Piece>();
+                // Check if "PortalMagicFluid" is among the portal's resources
+                bool fluidFound = false;
+                foreach (var res in petercomponent.m_resources)
                 {
-                    m_amount = 20,
-                    m_resItem = ObjectDB.instance.GetItemPrefab("FineWood").GetComponent<ItemDrop>(),
-                    m_recover = true
-                });
-                if (ConfigFluid.Value)
-                { // make this more dynamic
-                    requirements.Add(new Piece.Requirement
+                    if (res.m_resItem.name == "PortalMagicFluid")
                     {
-                        m_amount = 1,
-                        m_resItem = ObjectDB.instance.GetItemPrefab("PortalMagicFluid").GetComponent<ItemDrop>(),
-                        m_recover = true
-                    });
-                }
-                requirements.Add(new Piece.Requirement
-                {
-                    m_amount = 10,
-                    m_resItem = ObjectDB.instance.GetItemPrefab("GreydwarfEye").GetComponent<ItemDrop>(),
-                    m_recover = true
-                });
-                requirements.Add(new Piece.Requirement
-                {
-                    m_amount = 2,
-                    m_resItem = ObjectDB.instance.GetItemPrefab("SurtlingCore").GetComponent<ItemDrop>(),
-                    m_recover = true
-                });
-
-                var CraftingStationforPaul = functions.GetCraftingStation(ConfigTable.Value);
-                if (CraftingStationforPaul == null)
-                {
-                    CraftingStationforPaul.m_name = DefaultTable;
+                        fluidFound = true;
+                        break;
+                    }
                 }
 
-                Piece petercomponent = peter.GetComponent<Piece>();
-                petercomponent.m_craftingStation = functions.GetCraftingStation(CraftingStationforPaul.m_name); // sets crafting station workbench/forge /ect
+                if (ConfigFluid.Value && !fluidFound)
+                {
+                    // ConfigFluid is true, but "PortalMagicFluid" is not found, so add it to the portal's resources
+                    List<Piece.Requirement> updatedRequirements = petercomponent.m_resources.ToList();
+                    var portalMagicFluid = ObjectDB.instance.GetItemPrefab("PortalMagicFluid")?.GetComponent<ItemDrop>();
 
-                if (ConfigFluid.Value)
-                    FluidwasTrue = true;
+                    if (portalMagicFluid != null)
+                    {
+                        updatedRequirements.Add(new Piece.Requirement
+                        {
+                            m_amount = ConfigFluidAmount.Value, 
+                            m_resItem = portalMagicFluid,
+                            m_recover = true // Set to true if you want the resource to be recoverable when destroying the portal
+                        });
 
-                if (ConfigFluid.Value || FluidwasTrue)
-                    petercomponent.m_resources = requirements.ToArray(); // always update?
+                        petercomponent.m_resources = updatedRequirements.ToArray();
+                        RareMagicPortal.LogInfo("Added PortalMagicFluid to portal requirements.");
+                    }
+                    else
+                    {
+                        RareMagicPortal.LogError("PortalMagicFluid item not found in ObjectDB.");
+                    }
+                }
+                else if (!ConfigFluid.Value && fluidFound)
+                {
+                    // ConfigFluid is false, and "PortalMagicFluid" is found, so remove it from the portal's resources
+                    List<Piece.Requirement> updatedRequirements = petercomponent.m_resources
+                        .Where(res => res.m_resItem.name != "PortalMagicFluid")
+                        .ToList();
 
-                //RareMagicPortal.LogInfo($"There changing fluid value {PortalFluidname}");
-                ObjectDB.instance.GetItemPrefab(PortalFluidname).GetComponent<ItemDrop>().m_itemData.m_shared.m_value = ConfigFluidValue.Value;
-            }       // if loop
+                    petercomponent.m_resources = updatedRequirements.ToArray();
+                    RareMagicPortal.LogInfo("Removed PortalMagicFluid from portal requirements.");
+                }
+                else
+                {
+                    // No changes needed
+                    //RareMagicPortal.LogInfo("No changes made to PortalMagicFluid requirements.");
+                }
+
+            }      
         }
 
         internal static void StartingFirsttime()
@@ -1099,6 +1143,9 @@ namespace RareMagicPortal
             ConfigFluid = config(fluid, "Enable Portal Fluid", false,
                             "Enable PortalFluid requirement?");
 
+            ConfigFluidAmount = config(fluid, "Fluid Per Portal", 1,
+                            "How much Fluid Per Portal");
+
             ConfigSpawn = config(fluid, "Portal Magic Fluid Spawn", 0,
                 "How much PortalMagicFluid to start with on a new character?");
 
@@ -1107,15 +1154,19 @@ namespace RareMagicPortal
 
 
             string portal = "2.Portal-----------";
-            ConfigTable = config(portal, "CraftingStation Requirement", DefaultTable,
-                "Which CraftingStation is required nearby?" + System.Environment.NewLine + "Default is Workbench = $piece_workbench, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstation
+            ConfigTableStone = config(portal, "Station Requirement Stone", DefaultTableStone,
+                "Which CraftingStation is required nearby for Stone Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_stonecutter, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstationConfigTable = config(portal, "CraftingStation Requirement", DefaultTable,
+            
+            ConfigTableWood = config(portal, "Station Requirement Wood", DefaultTable,"Which CraftingStation is required nearby for Wood Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_workbench, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstation
 
             ConfigTableLvl = config(portal, "Level of CraftingStation Req", 1,
                 "What level of CraftingStation is required for placing Portal?");
 
             ConfigCreator = config(portal, "Only Creator Can Deconstruct", true, "Only the Creator/Admin of the Portal can deconstruct it. It can still be destroyed");
 
-            ConfiglHealth = config(portal, "Portal Health", 400f, "Health of Portal");
+            ConfiglHealthStone = config(portal, "Portal Health Stone", 1000f, "Health of Portal Stone");
+
+            ConfiglHealthWood = config(portal, "Portal Health Wood", 400f, "Health of Portal Wood");
 
             ConfigAddRestricted = config(portal, "AdditionalProhibitItems", "", "Additional Items to Restrict by Default - 'Wood,Stone'");
 
