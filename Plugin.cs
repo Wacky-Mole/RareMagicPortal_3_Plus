@@ -299,7 +299,7 @@ namespace RareMagicPortal
         internal static Localization english = null!;
         internal static Localization spanish = null!;
 
-        public static CustomSE AllowTeleEverything = new CustomSE("yippeTele");
+        public static CustomSE AllowTeleEverything;
         public static List<StatusEffect> statusEffectactive;
 
         internal static readonly List<string> portalPrefabs = new List<string>();
@@ -369,6 +369,8 @@ namespace RareMagicPortal
 
         public void Awake()
         {
+
+            AllowTeleEverything = new CustomSE("yippeTele");
             CreateConfigValues();
             ReadAndWriteConfigValues();
             Localizer.Load();
