@@ -780,9 +780,8 @@ namespace RareMagicPortal
             if (!PortalN.Portals.ContainsKey(portalName))
             {
                 //RMP.LogInfo($"Portal '{portalName}' not found. Writing to YML.");
-                WritetoYML(portalName);
+                WritetoYML(portalName, zdoName);
             }
-
 
             if (!PortalN.Portals[portalName].PortalZDOs.ContainsKey(zdoName))
             {
@@ -1004,27 +1003,6 @@ namespace RareMagicPortal
           File.WriteAllText(MagicPortalFluid.YMLCurrentFile, formattedContent.ToString());
           MagicPortalFluid.JustWrote = 2;
       }
-      /*
-        private static void WriteYmlToFile(string ymlContent)
-        {
-            MagicPortalFluid.JustWrote = 1;
-            File.WriteAllText(MagicPortalFluid.YMLCurrentFile, ymlContent);
-
-            // Adding extra newlines for readability
-            string formattedContent = "";
-            foreach (string line in File.ReadLines(MagicPortalFluid.YMLCurrentFile))
-            {
-                formattedContent += line + Environment.NewLine;
-                if (line.Contains("EndPart"))
-                {
-                    formattedContent += Environment.NewLine;
-                }
-            }
-
-            File.WriteAllText(MagicPortalFluid.YMLCurrentFile, formattedContent);
-            MagicPortalFluid.JustWrote = 2;
-        }
-*/
 
         internal static bool CrystalandKeyLogic(string PortalName,string zdoID, string BiomeColor = "")
         {
