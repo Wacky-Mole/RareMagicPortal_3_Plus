@@ -150,37 +150,44 @@ namespace RareMagicPortal
         internal static string HandlePortalClick()
         {
             Minimap instance = Minimap.instance;
-            List<Minimap.PinData> paul = instance.m_pins;
-            Vector3 pos = instance.ScreenToWorldPoint(Input.mousePosition);
-            float radius = instance.m_removeRadius * (instance.m_largeZoom * 2f);
+            List<Minimap.PinData> pins = instance.m_pins;
+            Vector3 mousePosition = instance.ScreenToWorldPoint(Input.mousePosition);
+            float searchRadius = instance.m_removeRadius * (instance.m_largeZoom * 2f);
 
-            MagicPortalFluid.checkiftagisPortal = "";
-            Minimap.PinData pinData = null;
-            float num = 999999f;
-            foreach (Minimap.PinData pin in paul)
+            MagicPortalFluid.checkiftagisPortal = null;
+            Minimap.PinData closestPin = null;
+            float closestDistance = float.MaxValue;
+
+            foreach (Minimap.PinData pin in pins)
             {
-                //pin.m_save = true;
-                float num2 = Utils.DistanceXZ(pos, pin.m_pos);
-                if (num2 < radius && (num2 < num || pinData == null))
+                float distance = Utils.DistanceXZ(mousePosition, pin.m_pos);
+                if (distance < searchRadius && (distance < closestDistance || closestPin == null))
                 {
-                    pinData = pin;
-                    num = num2;
-                    //pin.m_save = true;
+                    closestPin = pin;
+                    closestDistance = distance;
                 }
             }
-            if (!string.IsNullOrEmpty(pinData.m_name))
-                MagicPortalFluid.checkiftagisPortal = pinData.m_name; // icons name
-            if (pinData.m_icon.name == "TargetPortalIcon") 
-            { 
 
+            if (closestPin != null && !string.IsNullOrEmpty(closestPin.m_name))
+            {
+                MagicPortalFluid.checkiftagisPortal = closestPin.m_name;
+
+                // Check if the pin is related to TargetPortal
+                if (closestPin.m_icon.name != "TargetPortalIcon")
+                {
+                    MagicPortalFluid.checkiftagisPortal = null;
+                }
             }
-            else
-                MagicPortalFluid.checkiftagisPortal = null; // not sure what  this is
 
-            if (MagicPortalFluid.checkiftagisPortal.Contains("$hud") || MagicPortalFluid.checkiftagisPortal.Contains("Day "))
+            // Additional filtering
+            if (MagicPortalFluid.checkiftagisPortal != null &&
+                (MagicPortalFluid.checkiftagisPortal.Contains("$hud") || MagicPortalFluid.checkiftagisPortal.Contains("Day ")))
+            {
                 MagicPortalFluid.checkiftagisPortal = null;
+            }
 
             return MagicPortalFluid.checkiftagisPortal;
         }
+
     }
 }

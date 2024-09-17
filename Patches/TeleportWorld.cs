@@ -43,69 +43,55 @@ namespace RareMagicPortal_3_Plus.Patches
         }
 
 
-
-        [HarmonyPatch(typeof(TeleportWorldTrigger), nameof(TeleportWorldTrigger.OnTriggerEnter))]  // for Crystals and Keys
+        [HarmonyPatch(typeof(TeleportWorldTrigger), nameof(TeleportWorldTrigger.OnTriggerEnter))]
         internal class TeleportWorld_Teleport_CheckforCrystal
         {
-            internal class SkipPortalException : Exception
-            {
-            }
+            private static readonly string targetPortalPluginKey = "org.bepinex.plugins.targetportal";
 
-            //throw new SkipPortalException(); This is used for return false instead/ keeps other mods from loading patches.
-
-            private static string OutsideP = null;
+            // Throw exception only if necessary to skip patches from other mods
+            internal class SkipPortalException : Exception { }
 
             [HarmonyPriority(Priority.HigherThanNormal)]
             internal static bool Prefix(TeleportWorldTrigger __instance, Collider colliderIn)
             {
-                //finding portal name
+                // Early return if the collider is not the local player
                 if (colliderIn.GetComponent<Player>() != Player.m_localPlayer)
                 {
                     throw new SkipPortalException();
                 }
+
                 MagicPortalFluid.TeleportingforWeight = 1;
-
-                //PortalColorLogic.player = collider.GetComponent<Player>();
-                string PortalName = "";
-                //if (!Chainloader.PluginInfos.ContainsKey("com.sweetgiorni.anyportal"))
-
-                PortalName = __instance.m_teleportWorld.GetText();
-
-
-                // end finding portal name
+                string portalName = __instance.m_teleportWorld.GetText();
                 MagicPortalFluid.m_hadTarget = __instance.m_teleportWorld.m_hadTarget;
-                OutsideP = PortalName;
-                // keep player and m_hadTarget for future patch for targetportal
 
-                if (Chainloader.PluginInfos.ContainsKey("org.bepinex.plugins.targetportal"))
+                // If TargetPortal mod is loaded, handle with its logic
+                bool targetPortalLoaded = Chainloader.PluginInfos.ContainsKey(targetPortalPluginKey);
+                if (targetPortalLoaded)
                 {
                     MagicPortalFluid.Teleporting = true;
-                    return true; // skip on checking because we don't know where this is going
-                                 // we will catch in map for tele check
+                    return true; // Skip further checks, let TargetPortal handle it
                 }
-                if (!MagicPortalFluid.m_hadTarget) // if no target continuie on with logic
-                    return false;
 
-
-                if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
+                // If there is no target or we use portal progression, proceed with custom logic
+                if (!MagicPortalFluid.m_hadTarget || MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
                 {
-                    return true; // don't do crystalandkeylogic
-                }
-                
-                if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.m_zdo.ToString(), __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
-                {
-                    // Teleporting = true;
                     return true;
                 }
-                else // false never gets run
+
+                // Check crystal and key logic
+                if (PortalColorLogic.CrystalandKeyLogic(portalName, __instance.m_teleportWorld.m_nview.m_zdo.ToString(), __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
+                {
+                    return true;
+                }
+                else
                 {
                     MagicPortalFluid.Teleporting = false;
-                    if (Chainloader.PluginInfos.ContainsKey("org.bepinex.plugins.targetportal")) // or any other mods that need to be skipped // this shoudn't be hit
-                        throw new SkipPortalException();  // stops other mods from executing  // little worried about betterwards and loveisward
-                    else return false;
+                    if (targetPortalLoaded)
+                    {
+                        throw new SkipPortalException();
+                    }
+                    return false;
                 }
-
-                //else return true;
             }
 
             internal static Exception? Finalizer(Exception __exception) => __exception is SkipPortalException ? null : __exception;
@@ -114,71 +100,67 @@ namespace RareMagicPortal_3_Plus.Patches
             [HarmonyPriority(Priority.Low)]
             internal static void Postfix(TeleportWorldTrigger __instance)
             {
-                if (MagicPortalFluid.Teleporting && Chainloader.PluginInfos.ContainsKey("org.bepinex.plugins.targetportal"))
+                if (MagicPortalFluid.Teleporting && Chainloader.PluginInfos.ContainsKey(targetPortalPluginKey))
                 {
-                    //RareMagicPortal.LogInfo($"Made it to Portal Trigger");
-                    int colorint;
-                    String PName;
-                    String PortalName;
-                    Minimap instance = Minimap.instance;
-                    List<Minimap.PinData> paul = instance.m_pins;
+                    UpdatePortalIcons();
+                }
+            }
 
-                    //instance.ShowPointOnMap(__instance.transform.position);
-                    try
+            // Helper method to update portal icons
+            private static void UpdatePortalIcons()
+            {
+                try
+                {
+                    Minimap minimap = Minimap.instance;
+                    List<Minimap.PinData> pins = minimap.m_pins;
+
+                    // Get TargetPortal.Map's activePins property
+                    var activePins = GetActivePins();
+                    if (activePins == null) return;
+
+                    foreach (Minimap.PinData pin in pins)
                     {
-                        //PortalName = HandlePortalClick(); //This is making minimap instance correctly
-                    }
-                    catch { }
-                    //List<Minimap.PinData> paul = HoldPins;
-                    foreach (Minimap.PinData pin in paul)
-                    {
-                        PName = null;
-                        try
+                        if (pin.m_icon.name == "TargetPortalIcon" && activePins.TryGetValue(pin, out ZDO portalZDO))
                         {
-                            if (pin.m_icon.name == "TargetPortalIcon") // only selects correct icon now
-                            {
-                                PName = pin.m_name; // icons name - Portalname
+                            int colorint = PortalColorLogic.CrystalandKeyLogicColor(
+                                out string currentColor,
+                                out Color currentColorHex,
+                                out string nextColor,
+                                pin.m_name,
+                                portalZDO.ToString()
+                            );
 
-                                string BiomeC = "";
-
-
-                                Type TP = Type.GetType("TargetPortal.Map");
-                                PropertyInfo myProperty = TP.GetProperty("activePins", BindingFlags.NonPublic | BindingFlags.Static);
-                                Dictionary<Minimap.PinData, ZDO> activePins = (Dictionary<Minimap.PinData, ZDO>)myProperty.GetValue(null, null);
-
-                                //Minimap.PinData? closestPin = Minimap.GetClosestPin(Minimap.ScreenToWorldPoint(Input.mousePosition), Minimap.m_removeRadius * (Minimap.m_largeZoom * 2f));
-
-                                if (!activePins.TryGetValue(pin, out ZDO portalZDO))
-                                {
-                                    string hello = portalZDO.ToString();
-                                }
-                                //ZDO lookup
-                                // Get Color for BiomeC
-
-                                colorint = Int32.Parse(BiomeC);
-                                colorint = PortalColorLogic.CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextcolor, PName, portalZDO.ToString()); // kindof expensive task to do this cpu wize for all portals
-
-
-                                if (colorint == 0 || colorint == 999)
-                                    pin.m_icon = MagicPortalFluid.IconDefault;
-                                else
-                                {
-                                    PortalColorLogic.PortalColor givemecolor = (PortalColorLogic.PortalColor)colorint;
-                                    //RareMagicPortal.LogInfo(" Icon color here " + givemecolor.ToString());
-                                    pin.m_icon = MagicPortalFluid.Icons[givemecolor.ToString()];
-                                }
-
-                                // pin.m_icon.name = "TargetPortalIcon"; 
-                            }
+                            // Update the icon based on the colorint
+                            pin.m_icon = colorint == 0 || colorint == 999 ? MagicPortalFluid.IconDefault : MagicPortalFluid.Icons[((PortalColorLogic.PortalColor)colorint).ToString()];
                         }
-                        catch { }
-                    }// foreach
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception for debugging purposes
+                    // RMP.LogInfo($"Error in UpdatePortalIcons: {ex.Message}");
+                }
+            }
+
+            // Helper method to get TargetPortal.Map's activePins property using reflection
+            private static Dictionary<Minimap.PinData, ZDO>? GetActivePins()
+            {
+                try
+                {
+                    Type tpType = Type.GetType("TargetPortal.Map, TargetPortal");
+                    if (tpType == null) return null;
+
+                    PropertyInfo activePinsProperty = tpType.GetProperty("activePins", BindingFlags.NonPublic | BindingFlags.Static);
+                    if (activePinsProperty == null) return null;
+
+                    return (Dictionary<Minimap.PinData, ZDO>?)activePinsProperty.GetValue(null, null);
+                }
+                catch
+                {
+                    return null;
                 }
             }
         }
-
-
-
 
     }
 }

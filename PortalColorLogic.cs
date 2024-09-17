@@ -201,17 +201,6 @@ namespace RareMagicPortal
                 }
                 //RareMagicPortal.LogInfo("Adding Portal Awake for all Portals");
 
-                MagicPortalFluid._teleportWorldDataCache.Add(__instance, new TeleportWorldDataRMP(__instance));
-                try
-                {
-                    if (__instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode) == "skip")
-                    {
-                        RMP.LogDebug("Portal BiomeColor skip Awake");
-                        MagicPortalFluid._teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData);
-                        teleportWorldData.BiomeColor = "skip";
-                    }
-                }
-                catch { }
             }
 
             [HarmonyPostfix]
@@ -318,51 +307,11 @@ namespace RareMagicPortal
 
                         if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On) // obviously teleportWorldData needs to be set
                         {
-                            if (PortalName.Contains(NameIdentifier)) // don't remove just remove anything past 1 that slipped through
-                            {
-                                var MorethanNecCount = PortalName.Count(f => f == NameIdentifier);// count
-                                if (MorethanNecCount > 1)
-                                {
-                                    var index = PortalName.IndexOf(NameIdentifier);
-                                    PortalName = PortalName.Substring(0, index);
-                                    string newstring = PortalName + NameIdentifier + PortalColors[currentcolor].Pos;
-                                    __instance.SetText(newstring);// correct string
-                                }
-                            }
+
 
                             if (teleportWorldData.BiomeColor != "skip" && teleportWorldData.BiomeColor != "")
                             {
-                                //RMP.LogInfo("Should use BiomeColor " + currentcolor);
-                                //BiomeLogicCheck(out currentcolor, out color, out nextcolor, out colorint, PortalName); // BiomeForce Check
 
-                                /*
-                                    var Biome = "Meadows"; // in case not set yet. // Should get set on hover
-
-                                    if (__instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeHashCode) != "")
-                                        Biome = __instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeHashCode);
-
-                                    teleportWorldData.Biome = Biome;
-                                    // RMP.LogInfo("Update Biome call");
-
-                                    string BC = MagicPortalFluid.BiomeRepColors.Value;
-                                    string[] BCarray = BC.Split(',');
-                                    var results = Array.FindAll(BCarray, s => s.Contains(Biome));
-                                    //RMP.LogInfo("Biome is currently " + Biome+ " BCcarry length "+BCarray.Length +" results " + results.Length);
-                                    List<string> single = results[0].Split(':').ToList(); // should only be 1
-                                    foreach (var col in PortalColors)
-                                    {
-                                        if (col.Key == single[1])
-                                        {
-                                            teleportWorldData.BiomeColor = col.Key;
-                                            //PortalColorLogic.updateYmltoColorChange("", colorint); // No I shouldn't do it in pairs, needs to be individual
-                                            color = col.Value.HexName;
-                                            __instance.SetText(PortalName + NameIdentifier + col.Value.Pos);
-                                        }
-                                    }
-
-                                    Color BiomeCol = PortalColors[teleportWorldData.BiomeColor].HexName;
-                                    color = BiomeCol;
-                                    */
 
                                 if (color != teleportWorldData.OldColor)
                                 {  // don't waste resources
@@ -384,14 +333,6 @@ namespace RareMagicPortal
             }
         }
 
-        /*
-        [HarmonyPatch(typeof(TextInput), nameof(TextInput.RequestText))]
-        public static class PortalTextBoxOverride
-        {
-            internal static void Postfix(TextInput __instance, ref __results)
-            {
-            }
-        }*/
 
         [HarmonyPriority(Priority.High)]
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.Interact))]

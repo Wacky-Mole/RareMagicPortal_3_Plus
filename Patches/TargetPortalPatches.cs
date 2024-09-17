@@ -26,12 +26,11 @@ namespace RareMagicPortal_3_Plus
             }
         }
 
+
         [HarmonyPatch(typeof(Minimap), nameof(Minimap.OnMapLeftClick))]
-        internal class MapLeftClickForRareMagic // for magic portal
+        internal class MapLeftClickForRareMagic
         {
-            internal class SkipPortalException2 : Exception // skip all other mods if targetportal is installed and passes everything else
-            {
-            }
+            internal class SkipPortalException2 : Exception { }
 
             [HarmonyPriority(Priority.HigherThanNormal)]
             internal static bool Prefix()
@@ -40,69 +39,88 @@ namespace RareMagicPortal_3_Plus
                 {
                     return true;
                 }
+
+                // Check if TargetPortal mod is loaded
                 if (!Chainloader.PluginInfos.ContainsKey("org.bepinex.plugins.targetportal"))
-                { // check to see if targetportal is loaded
+                {
                     return true;
                 }
-                //RareMagicPortal.LogInfo($"Made it to Map during Telecheck");
-                string PortalName;
-                Minimap Minimap = Minimap.instance;
-
-                Type TP = Type.GetType("TargetPortal.Map");
-                PropertyInfo myProperty = TP.GetProperty("activePins", BindingFlags.NonPublic | BindingFlags.Static);
-                Dictionary<Minimap.PinData, ZDO> activePins = (Dictionary<Minimap.PinData, ZDO>)myProperty.GetValue(null, null);
-
-                Minimap.PinData? closestPin = Minimap.GetClosestPin(Minimap.ScreenToWorldPoint(Input.mousePosition), Minimap.m_removeRadius * (Minimap.m_largeZoom * 2f));
-
-                if (!activePins.TryGetValue(closestPin, out ZDO portalZDO))
-                {
-                    //use PortalName and ZDO to get portal color and data
-                    string hello = portalZDO.ToString();
-                }
-                // portalZDO.m_uid
-                // var portal = portalZDO.GetPrefab();
-
-
-                MagicPortalFluid.HoldPins = Minimap.m_pins;
-                //return true;
 
                 try
                 {
-                    PortalName = functions.HandlePortalClick(); //my handleportal click
-                }
-                catch { PortalName = null; }
-                if (PortalName == null)
-                {
-                    throw new SkipPortalException2();//return false; and stop TargetPortals from executing
-                }
-                if (!Player.m_localPlayer.IsTeleportable())
-                {
-                    Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_noteleport");
-                    return false;
-                }
+                    Minimap minimap = Minimap.instance;
 
-                if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
-                {
-                    return true; // Don't do CrystalandKeyLogic check
-                }
+                    // Get the TargetPortal.Map type
+                    Type tpType = Type.GetType("TargetPortal.Map, TargetPortal");
+                    if (tpType == null)
+                    {
+                        return true; // If the type cannot be found, do not interfere
+                    }
 
-                if (PortalColorLogic.CrystalandKeyLogic(PortalName, portalZDO.ToString()))
-                {
-                    //RareMagicPortal.LogInfo($"True, so TargetPortalShould Take over");
+                    // Get the 'activePins' property using reflection
+                    PropertyInfo activePinsProperty = tpType.GetProperty("activePins", BindingFlags.NonPublic | BindingFlags.Static);
+                    if (activePinsProperty == null)
+                    {
+                        return true; // If the property is not found, do not interfere
+                    }
 
-                    //HandleTeleport(Instancpass);
-                    return true; // allow TargetPortal to do it's checks
-                                 //throw new SkipPortalException2();//return false; and stop TargetPortals from executing
+                    // Get the value of 'activePins'
+                    var activePins = (Dictionary<Minimap.PinData, ZDO>)activePinsProperty.GetValue(null, null);
+
+                    // Find the closest pin to the mouse position
+                    Minimap.PinData? closestPin = minimap.GetClosestPin(minimap.ScreenToWorldPoint(Input.mousePosition), minimap.m_removeRadius * (minimap.m_largeZoom * 2f));
+                    if (closestPin == null || !activePins.TryGetValue(closestPin, out ZDO portalZDO))
+                    {
+                        return true; // If no valid pin is found or it doesn't exist in activePins, skip further processing
+                    }
+
+                    // Get the portal name using your HandlePortalClick method
+                    string portalName = null;
+                    try
+                    {
+                        portalName = functions.HandlePortalClick();
+                    }
+                    catch
+                    {
+                        portalName = null;
+                    }
+
+                    if (portalName == null)
+                    {
+                        throw new SkipPortalException2(); // Stop TargetPortals from executing
+                    }
+
+                    if (!Player.m_localPlayer.IsTeleportable())
+                    {
+                        Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_noteleport");
+                        return false;
+                    }
+
+                    if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
+                    {
+                        return true; // Allow TargetPortal to handle this
+                    }
+
+                    if (PortalColorLogic.CrystalandKeyLogic(portalName, portalZDO.ToString()))
+                    {
+                        return true; // Allow TargetPortal to do its checks
+                    }
+                    else
+                    {
+                        throw new SkipPortalException2(); // Stop TargetPortals from executing
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    //RareMagicPortal.LogInfo($"TargetPortal is forced to stop");
-                    throw new SkipPortalException2();//return false; and stop TargetPortals from executing
+                    // Log the exception for debugging purposes
+                    // RMP.LogInfo($"Error while accessing activePins: {ex.Message}");
+                    return true; // Ensure the original method runs if there is an error
                 }
             }
 
             internal static Exception? Finalizer(Exception __exception) => __exception is SkipPortalException2 ? null : __exception;
         }
+
 
         [HarmonyPatch(typeof(Minimap), nameof(Minimap.Start))]
         [HarmonyPriority(Priority.Low)]
@@ -110,10 +128,13 @@ namespace RareMagicPortal_3_Plus
         {
             internal static void Postfix(Minimap __instance)
             {
-                MagicPortalFluid.HoldPins = Minimap.instance.m_pins;
-                //RareMagicPortal.LogWarning("Here is MinimapStart");
+                // Make a shallow copy of the pins list
+                MagicPortalFluid.HoldPins = new List<Minimap.PinData>(Minimap.instance.m_pins);
+
+                // RareMagicPortal.LogWarning("Here is MinimapStart");
             }
         }
+
         /* No hack anymore
         [HarmonyPatch(typeof(Minimap), nameof(Minimap.UpdatePins))]
         public class AddMinimapRewriteNames
