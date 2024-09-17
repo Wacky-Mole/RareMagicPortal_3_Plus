@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Rendering;
 using YamlDotNet.Serialization;
@@ -761,157 +762,112 @@ namespace RareMagicPortal
 
         }
 
-        internal static int CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextcolor,  string PortalName ,  string ZDOName ="", TeleportWorld __instance = null, int overrideInt = 0)
+        internal static int CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextColor, string portalName, string zdoName = "", TeleportWorld instance = null, int overrideInt = 0)
         {
-            string BiomeC = "";
-            string BiomeCol = "";
+            string biomeColor = "";
 
-            if (__instance != null && BiomeC == "" && __instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode) != "skip")
+            if (instance != null && instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode) != "skip")
             {
-                BiomeCol = __instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode);
+                biomeColor = instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode);
             }
 
-            int CrystalForPortal = MagicPortalFluid.ConfigCrystalsConsumable.Value;
-            bool OdinsKin = false;
-            bool Free_Passage = false;
-            // RMP.LogInfo("here 1");
-            if (ZDOName == "")
-                ZDOName = __instance.m_nview.m_zdo.ToString();
+            int crystalCost = MagicPortalFluid.ConfigCrystalsConsumable.Value;
 
-            if (!PortalN.Portals.ContainsKey(PortalName) ) // if doesn't contain use defaults
-            {
-                WritetoYML(PortalName, __instance.m_nview.m_zdo.ToString());
-            }
+            if (zdoName == "")
+                zdoName = instance.m_nview.m_zdo.ToString();
 
-            if (!PortalN.Portals[PortalName].PortalZDOs.ContainsKey(ZDOName)) // Doesn't contain ZDOname
+            // Ensure the portal and ZDO exist in the PortalN dictionary
+            if (!PortalN.Portals.ContainsKey(portalName))
             {
-                WritetoYML(PortalName, __instance.m_nview.m_zdo.ToString(), true);
+                //RMP.LogInfo($"Portal '{portalName}' not found. Writing to YML.");
+                WritetoYML(portalName);
             }
 
 
-            if (PortalName != "" && PortalName != "Empty tag")
+            if (!PortalN.Portals[portalName].PortalZDOs.ContainsKey(zdoName))
             {
-                OdinsKin = PortalN.Portals[PortalName].Admin_only_Access;
-                Free_Passage = PortalN.Portals[PortalName].Free_Passage;
-                var Portal_Crystal_Cost = CrystalForPortal;
-                var Portal_Key = PortalN.Portals[PortalName].PortalZDOs[ZDOName].Color;
-                string BiomeForceColor = PortalN.Portals[PortalName].PortalZDOs[ZDOName].BiomeColor;
+               // RMP.LogInfo($"After WritetoYML: ContainsKey(portalName) with zdoName: {PortalN.Portals.ContainsKey(portalName)} " + zdoName);
 
-                if (OdinsKin && MagicPortalFluid.AdminColor.Value != "none")
+                WritetoYML(portalName, instance.m_nview.m_zdo.ToString(), true);
+            }
+
+            var portalData = PortalN.Portals[portalName];
+            var zdoData = portalData.PortalZDOs[zdoName];
+
+            // Check if the portal is under special conditions like admin access or free passage
+            if (portalName != "" && portalName != "Empty tag")
+            {
+                // Check for admin-only access
+                if (portalData.Admin_only_Access && MagicPortalFluid.AdminColor.Value != "none")
                 {
-                    //RMP.LogInfo("Logic 1");
                     currentColor = MagicPortalFluid.AdminColor.Value;
-                    currentColorHex = PortalColors[MagicPortalFluid.AdminColor.Value].HexName;
-                    nextcolor = PortalColors[MagicPortalFluid.AdminColor.Value].NextColor;
-                    return PortalColors[currentColor].Pos;
-                }
-
-                if (Free_Passage && MagicPortalFluid.FreePassageColor.Value != "none" && BiomeC != "" && BiomeCol != "")
-                {
-                    //RMP.LogInfo("Logic 2");
-                    currentColor = MagicPortalFluid.FreePassageColor.Value;
-                    currentColorHex = PortalColors[MagicPortalFluid.FreePassageColor.Value].HexName;
-                    nextcolor = PortalColors[MagicPortalFluid.FreePassageColor.Value].NextColor;
-                    return PortalColors[MagicPortalFluid.FreePassageColor.Value].Pos;
-                }
-
-                if (PortalN.Portals[PortalName].TeleportAnything && MagicPortalFluid.TelePortAnythingColor.Value != "none")
-                {
-                    //RMP.LogInfo("Logic 3");
-                    currentColor = MagicPortalFluid.TelePortAnythingColor.Value;
-                    currentColorHex = PortalColors[MagicPortalFluid.TelePortAnythingColor.Value].HexName;
-                    nextcolor = PortalColors[MagicPortalFluid.TelePortAnythingColor.Value].NextColor;
-                    return PortalColors[MagicPortalFluid.TelePortAnythingColor.Value].Pos;
-                }
-            }
-            //RMP.LogInfo("here 3");
-            if ((BiomeC != "" || BiomeCol != "") && MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
-            {
-                if (__instance == null)
-                {
-                    //RMP.LogInfo("BiomeC info is " + BiomeC);
-                    BiomeC = BiomeC.Remove(0, 1);
-                    int intS = Int32.Parse(BiomeC);
-                    PortalColor pcol = (PortalColor)intS;
-                    currentColor = pcol.ToString();
                     currentColorHex = PortalColors[currentColor].HexName;
-                    nextcolor = PortalColors[currentColor].NextColor;
+                    nextColor = PortalColors[currentColor].NextColor;
                     return PortalColors[currentColor].Pos;
                 }
-                else
-                {
-                    MagicPortalFluid._teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData);
-                    if (teleportWorldData.BiomeColor != "skip")
-                    {
-                        //RMP.LogInfo("BiomeC info is " + BiomeC);
-                        if (BiomeC != "")
-                        {
-                            BiomeC = BiomeC.Remove(0, 1);
-                            int intS = Int32.Parse(BiomeC);
-                            PortalColor pcol = (PortalColor)intS;
-                            currentColor = pcol.ToString();
-                        }
-                        else
-                            currentColor = BiomeCol;
 
-                        currentColorHex = PortalColors[currentColor].HexName;
-                        nextcolor = PortalColors[currentColor].NextColor;
-                        return PortalColors[currentColor].Pos;
-                    }
+                // Check for free passage
+                if (portalData.Free_Passage && MagicPortalFluid.FreePassageColor.Value != "none")
+                {
+                    currentColor = MagicPortalFluid.FreePassageColor.Value;
+                    currentColorHex = PortalColors[currentColor].HexName;
+                    nextColor = PortalColors[currentColor].NextColor;
+                    return PortalColors[currentColor].Pos;
+                }
+
+                // Check if the portal can teleport anything
+                if (portalData.TeleportAnything && MagicPortalFluid.TelePortAnythingColor.Value != "none")
+                {
+                    currentColor = MagicPortalFluid.TelePortAnythingColor.Value;
+                    currentColorHex = PortalColors[currentColor].HexName;
+                    nextColor = PortalColors[currentColor].NextColor;
+                    return PortalColors[currentColor].Pos;
                 }
             }
-            //RMP.LogInfo("here 4");
-            if (PortalName == "")
+
+            // Check for biome-specific colors
+            if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && (biomeColor != ""))
+            {
+                currentColor = biomeColor;
+                currentColorHex = PortalColors[currentColor].HexName;
+                nextColor = PortalColors[currentColor].NextColor;
+                return PortalColors[currentColor].Pos;
+            }
+
+            // Fallback to default or free passage color if the portal name is empty
+            if (portalName == "")
             {
                 if (MagicPortalFluid.DefaultColor.Value == "None" || MagicPortalFluid.DefaultColor.Value == "none")
                 {
                     currentColor = MagicPortalFluid.FreePassageColor.Value;
-                    currentColorHex = PortalColors[MagicPortalFluid.FreePassageColor.Value].HexName;
-                    nextcolor = PortalColors[MagicPortalFluid.FreePassageColor.Value].NextColor;
-                    return PortalColors[MagicPortalFluid.FreePassageColor.Value].Pos;
+                    currentColorHex = PortalColors[currentColor].HexName;
+                    nextColor = PortalColors[currentColor].NextColor;
+                    return PortalColors[currentColor].Pos;
                 }
+
                 currentColor = MagicPortalFluid.DefaultColor.Value;
-                currentColorHex = PortalColors[MagicPortalFluid.DefaultColor.Value].HexName;
-                nextcolor = PortalColors[MagicPortalFluid.DefaultColor.Value].NextColor;
-                return PortalColors[MagicPortalFluid.DefaultColor.Value].Pos;
-            }
-            //RMP.LogInfo("here 5");
-            foreach (var pc in PortalColors)
-            {
-                var name = pc.Key;
-                if (pc.Value.Enabled)
-                {
-                    if (MagicPortalFluid.ConfigEnableGoldAsMaster.Value == MagicPortalFluid.Toggle.On && pc.Key == "Gold")
-                        continue;
-                    try
-                    {
-                            name = PortalN.Portals[PortalName].PortalZDOs[ZDOName].Color;
-                            currentColor = name;
-                            currentColorHex = PortalColors[currentColor].HexName;
-                            nextcolor = pc.Value.NextColor; //PortalColor.Red.ToString();
-                            return pc.Value.Pos;
-                        
-                    }
-                    catch
-                    {
-                        //
-                        //WritetoYML(PortalName, "Tan");
-                    }// not in file so maybe add?
-                }
-            }
-            if (MagicPortalFluid.ConfigEnableGoldAsMaster.Value == MagicPortalFluid.Toggle.On && PortalN.Portals[PortalName].PortalZDOs[ZDOName].Color == "Gold") // Gold Check
-            {
-                currentColor = "Gold";
                 currentColorHex = PortalColors[currentColor].HexName;
-                nextcolor = PortalColors[currentColor].NextColor; //PortalColor.Red.ToString();
+                nextColor = PortalColors[currentColor].NextColor;
                 return PortalColors[currentColor].Pos;
             }
 
-            //RMP.LogInfo(" Logic going to default yellow");
+            // Check the portal color from the ZDO data
+            if (PortalColors.TryGetValue(zdoData.Color, out var portalColorData))
+            {
+                if (portalColorData.Enabled)
+                {
+                    currentColor = zdoData.Color;
+                    currentColorHex = portalColorData.HexName;
+                    nextColor = portalColorData.NextColor;
+                    return portalColorData.Pos;
+                }
+            }
+
+            // Default fallback to Yellow
             currentColor = "Yellow";
             currentColorHex = PortalColors["Yellow"].HexName;
-            nextcolor = "Red";
-            return 0;
+            nextColor = "Red";
+            return PortalColors["Yellow"].Pos;
         }
 
         internal static void updateYmltoColorChange(string PortalName, int colorint, string zdoID, string BiomeCol = null)
@@ -979,80 +935,96 @@ namespace RareMagicPortal
             ClientORServerYMLUpdate(wacky, PortalName, colorint, zdoID);
         }
 
-        internal static void ClientORServerYMLUpdate(Portal wacky, string PortNam, int colorint, string ZDOID)
+        internal static void ClientORServerYMLUpdate(Portal portal, string portalName, int colorInt, string zdoId)
         {
-            var serializer = new SerializerBuilder()
-                .Build();
+            var serializer = new SerializerBuilder().Build();
+            var serializedPortal = portalName + MagicPortalFluid.StringSeparator + serializer.Serialize(PortalN.Portals[portalName]);
 
-            var somName = PortNam + MagicPortalFluid.StringSeparator;
-            var ymlsmall = somName + serializer.Serialize(PortalN.Portals[PortNam]);
-            //MagicPortalFluid.RareMagicPortal.LogInfo(ymlsmall);
+            // Construct full YAML
+            string fullYml = MagicPortalFluid.WelcomeString + Environment.NewLine + serializer.Serialize(PortalN);
 
-            if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated())// only for server
+            if (ZNet.instance.IsServer())
             {
-                // MagicPortalFluid.RareMagicPortal.LogInfo("You are a dedicated Server");
-
-                string yamlfull = null;
-                //if (!MagicPortalFluid.UseSmallUpdates.Value)
-                yamlfull = MagicPortalFluid.WelcomeString + Environment.NewLine + serializer.Serialize(PortalN); // build everytime
-
-                if (MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.Off)
+                // Handling for dedicated server
+                if (ZNet.instance.IsDedicated())
                 {
-                    MagicPortalFluid.JustWrote = 1;
-                    File.WriteAllText(MagicPortalFluid.YMLCurrentFile, yamlfull); //overwrite
-                    string lines = "";
-                    foreach (string line in System.IO.File.ReadLines(MagicPortalFluid.YMLCurrentFile)) // rethrough lines manually and add spaces, stupid
-                    {
-                        lines += line + Environment.NewLine;
-                        if (line.Contains("Admin_only_Access")) // three spaces for non main objects
-                        { lines += Environment.NewLine; }
-                    }
-                    File.WriteAllText(MagicPortalFluid.YMLCurrentFile, lines); //overwrite with extra goodies
-
-                    MagicPortalFluid.JustWrote = 2;
-                }
-                if (MagicPortalFluid.UseSmallUpdates.Value == MagicPortalFluid.Toggle.On)
-                    MagicPortalFluid.YMLPortalSmallData.Value = ymlsmall;
-                else
-                    MagicPortalFluid.YMLPortalData.Value = yamlfull; // send out to clients from server only
-            }
-            else
-            {
-                if (!ZNet.instance.IsServer())
-                {
-                    // MagicPortalFluid.RareMagicPortal.LogInfo("You are connect to a Server");
-                    functions.ServerZDOymlUpdate(colorint, PortNam, ZDOID);// send to server to update and push yml
-                }
-                else // single client only or Server but not dedicated
-                {
-                    MagicPortalFluid.RareMagicPortal.LogInfo("Single client only or Server but not dedicated");
-                    var yamlfull = MagicPortalFluid.WelcomeString + Environment.NewLine + serializer.Serialize(PortalN); // build everytime
-
                     if (MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.Off)
                     {
-                        MagicPortalFluid.JustWrote = 1;
-                        File.WriteAllText(MagicPortalFluid.YMLCurrentFile, yamlfull); //overwrite
-                        string lines = "";
-                        foreach (string line in System.IO.File.ReadLines(MagicPortalFluid.YMLCurrentFile)) // rethrough lines manually and add spaces, stupid
-                        {
-                            lines += line + Environment.NewLine;
-                            if (line.Contains("Admin_only_Access")) // three spaces for non main objects
-                            { lines += Environment.NewLine; }
-                        }
-                        File.WriteAllText(MagicPortalFluid.YMLCurrentFile, lines); //overwrite with extra goodies
+                        WriteYmlToFile(fullYml);
+                    }
 
-                        MagicPortalFluid.JustWrote = 2;
+                    // Update the appropriate YML data for clients
+                    if (MagicPortalFluid.UseSmallUpdates.Value == MagicPortalFluid.Toggle.On)
+                    {
+                        MagicPortalFluid.YMLPortalSmallData.Value = serializedPortal;
+                    }
+                    else
+                    {
+                        MagicPortalFluid.YMLPortalData.Value = fullYml;
+                    }
+                }
+                else // Handling for local server (not dedicated)
+                {
+                    if (MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.Off)
+                    {
+                        WriteYmlToFile(fullYml);
                     }
 
                     if (MagicPortalFluid.ConfigEnableYMLLogs.Value == MagicPortalFluid.Toggle.On)
-                        MagicPortalFluid.RareMagicPortal.LogInfo(yamlfull);
+                    {
+                        MagicPortalFluid.RareMagicPortal.LogInfo(fullYml);
+                    }
 
-                    if (ZNet.instance.IsServer()) // not just dedicated COOP
-                        MagicPortalFluid.YMLPortalData.Value = yamlfull;
+                    MagicPortalFluid.YMLPortalData.Value = fullYml;
                 }
             }
+            else
+            {
+                // Handling for client connected to a server
+                functions.ServerZDOymlUpdate(colorInt, portalName, zdoId);
+            }
         }
+      private static void WriteYmlToFile(string ymlContent)
+      {
+          MagicPortalFluid.JustWrote = 1;
 
+          // Adding extra newlines for readability directly to the content
+          string[] lines = ymlContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+          var formattedContent = new StringBuilder();
+
+          foreach (string line in lines)
+          {
+              formattedContent.AppendLine(line);
+              if (line.Contains("EndPart"))
+              {
+                  formattedContent.AppendLine(); // Add an extra newline
+              }
+          }
+
+          File.WriteAllText(MagicPortalFluid.YMLCurrentFile, formattedContent.ToString());
+          MagicPortalFluid.JustWrote = 2;
+      }
+      /*
+        private static void WriteYmlToFile(string ymlContent)
+        {
+            MagicPortalFluid.JustWrote = 1;
+            File.WriteAllText(MagicPortalFluid.YMLCurrentFile, ymlContent);
+
+            // Adding extra newlines for readability
+            string formattedContent = "";
+            foreach (string line in File.ReadLines(MagicPortalFluid.YMLCurrentFile))
+            {
+                formattedContent += line + Environment.NewLine;
+                if (line.Contains("EndPart"))
+                {
+                    formattedContent += Environment.NewLine;
+                }
+            }
+
+            File.WriteAllText(MagicPortalFluid.YMLCurrentFile, formattedContent);
+            MagicPortalFluid.JustWrote = 2;
+        }
+*/
 
         internal static bool CrystalandKeyLogic(string PortalName,string zdoID, string BiomeColor = "")
         {
