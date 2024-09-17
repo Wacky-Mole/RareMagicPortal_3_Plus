@@ -321,6 +321,7 @@ namespace RareMagicPortal
         internal static readonly int _portalCreatorHashCode = "PortalCreatorRMP".GetStableHashCode();
         internal static readonly int _portalBiomeHashCode = "PortalBiomeRMP".GetStableHashCode();
         internal static readonly int _portalBiomeColorHashCode = "PortalBiomeColorRMP".GetHashCode();
+        internal static readonly int _portalLastName = "PortalLastNamed".GetHashCode();
         internal static string PortalFluidname;
         internal static bool TargetPortalLoaded = false;
 

@@ -21,6 +21,7 @@ namespace RareMagicPortal
     {
         public Dictionary<string, Portal> Portals { get; set; }
 
+        
         public class ZDOP
         {
 
@@ -29,11 +30,30 @@ namespace RareMagicPortal
             public bool CrystalActive { get; set; } = false;
             public int SpecialMode { get; set; } = 0;
             public string BiomeColor { get; set; }
+            public string Biome { get; set; }
             public bool Active { get; set; } = true;
             public string Password { get; set; } = "";
             public string Coords { get; set; } = "";
             public bool HideName { get; set; } = false;
             public string Creator { get; set; } = "";
+
+            public ZDOP Clone()
+            {
+                return new ZDOP
+                {
+                    OverridePortal = this.OverridePortal,
+                    Color = this.Color,
+                    CrystalActive = this.CrystalActive,
+                    SpecialMode = this.SpecialMode,
+                    BiomeColor = this.BiomeColor,
+                    Biome = this.Biome,
+                    Active = this.Active,
+                    Password = this.Password,
+                    Coords = this.Coords,
+                    HideName = this.HideName,
+                    Creator = this.Creator
+                };
+            }
         }
         public class Portal
         {

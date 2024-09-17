@@ -420,25 +420,17 @@ namespace RareMagicPortal
                         {
                             MagicPortalFluid.Globaliscreator = sameperson; // set this for yml permissions
 
-                            int colorint = CrystalandKeyLogicColor(out string currentcolorskip, out Color colorskip, out string nextcolorskip, PortalName,"", __instance);
+                            int colorint = CrystalandKeyLogicColor(out string currentcolorskip, out Color colorskip, out string nextcolorskip, PortalName, "", __instance);
                             colorint = PortalColors[nextcolorskip].Pos; // inc 1 color// should loop around for last one
                             Color setcolor = PortalColors[nextcolorskip].HexName; // inc for hexname
 
-                            if (MagicPortalFluid._teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData))
-                            {
-                                teleportWorldData.TargetColor = setcolor;
-                                RMP.LogInfo("setting color " + currentcolorskip);
-                                teleportWorldData.BiomeColor = "skip";
-                                teleportWorldData.LinkColor = setcolor;
-                                SetTeleportWorldColors(teleportWorldData, true);
-                            }
-                            __instance.m_nview.m_zdo.Set(MagicPortalFluid._teleportWorldColorHashCode, Utils.ColorToVec3(setcolor));
+                            //__instance.m_nview.m_zdo.Set(MagicPortalFluid._teleportWorldColorHashCode, Utils.ColorToVec3(setcolor));
                             //__instance.m_nview.m_zdo.Set(_teleportWorldColorAlphaHashCode, color);
-                            __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastColoredByHashCode, Player.m_localPlayer?.GetPlayerID() ?? 0L);
-                            __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeColorHashCode, "skip");
+                            //__instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastColoredByHashCode, Player.m_localPlayer?.GetPlayerID() ?? 0L);
+                            //__instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeColorHashCode, "skip");
 
-                            updateYmltoColorChange(PortalName, colorint, __instance.m_nview.m_zdo.ToString(), teleportWorldData.BiomeColor); // update yaml
-                            colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName,"", __instance);// Do this again now that it has been updated.
+                            updateYmltoColorChange(PortalName, colorint, __instance.m_nview.m_zdo.ToString()); // update yaml
+                            colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance);// Do this again now that it has been updated.
 
                             return false; // stop interaction on changing name
                         }
@@ -461,10 +453,27 @@ namespace RareMagicPortal
                     return;
                 if (__instance.m_nview.IsValid())
                 {
-                    if (BiomeStringTempHolder != "")
+                    var name = __instance.m_nview.m_zdo.GetString("tag");
+                    var check = __instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalLastName);
+                    var zdoname = __instance.m_nview.m_zdo.ToString();
+
+                    if (name != check)
                     {
-                        __instance.SetText(BiomeStringTempHolder);
-                        RMP.LogDebug("BiomeHolder CopiedBack name");
+                        __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastName, __instance.m_nview.m_zdo.GetString("tag"));
+
+                        // Maybe have a config check to copy over info when change name
+
+                        if (!PortalN.Portals.ContainsKey(name))
+                        {
+                            WritetoYML(name, zdoname);
+                        }
+                        var lookup = PortalN.Portals[name];
+                        if (!lookup.PortalZDOs.ContainsKey(zdoname))
+                        {
+                            WritetoYML(name, zdoname, true);
+                        }
+                        
+                        PortalN.Portals[name].PortalZDOs[zdoname] = PortalN.Portals[check].PortalZDOs[zdoname].Clone(); // copy PortalZDOs to new one // doesn't work need to test
                     }
                 }
             }
