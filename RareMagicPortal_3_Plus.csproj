@@ -163,9 +163,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="assets\portalcrystal" />
-    <None Include="assets\portalmagicfluid" />
-    <None Include="assets\wackyportals" />
+    <EmbeddedResource Include="assets\portalcrystal" />
+    <EmbeddedResource Include="assets\portalmagicfluid" />
+    <EmbeddedResource Include="assets\wackyportals" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />

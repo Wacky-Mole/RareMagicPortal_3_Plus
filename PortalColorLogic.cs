@@ -45,8 +45,8 @@ namespace RareMagicPortal
 
         private static int rainbowWait = 0;
         private static string currentRainbow = "Yellow";
-        public static char NameIdentifier = '\u25B2';
-        private static string BiomeStringTempHolder = "";
+       // public static char NameIdentifier = '\u25B2';
+        //private static string BiomeStringTempHolder = "";
         internal static bool reloaded = false;
         internal static Transform CheatswordColor;
         internal static bool inventoryRemove = false;
@@ -86,7 +86,6 @@ namespace RareMagicPortal
 
         internal static Dictionary<string, int> CrystalCount = new Dictionary<string, int>();
         internal static Dictionary<string, int> KeyCount = new Dictionary<string, int>();
-
 
 
         public static void reloadcolors()
@@ -172,7 +171,7 @@ namespace RareMagicPortal
         private class TeleportWorldPatchRMP
         {
             //static readonly KeyboardShortcut _changeColorActionShortcut = new(KeyCode.E, KeyCode.LeftShift);
-
+            /*
             [HarmonyPostfix]
             [HarmonyPatch(nameof(TeleportWorld.Awake))]
             private static void TeleportWorldAwakepRfixRMP(ref TeleportWorld __instance)
@@ -201,22 +200,16 @@ namespace RareMagicPortal
                 }
                 //RareMagicPortal.LogInfo("Adding Portal Awake for all Portals");
 
-            }
+            }*/ // for getting effectfade seems like a bad idea
 
             [HarmonyPostfix]
             [HarmonyPriority(Priority.Low)]
             [HarmonyPatch(nameof(TeleportWorld.UpdatePortal))]
             private static void TeleportWorldUpdatePortalPostfixRMP(ref TeleportWorld __instance)
             {
-                if (//!ConfigEnableCrystalsNKeys.Value
-                      !__instance
-                    || !__instance.m_nview
-                    || __instance.m_nview.m_zdo == null)
-                //|| !__instance.m_nview.m_zdo.m_vec3.ContainsKey(_teleportWorldColorHashCode)) // going to ask for it below, so no reason to get a null
-                //|| !_teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData)) // I don't think this will break anything
-                {
-                    return;
-                }
+                if (!__instance|| !__instance.m_nview|| __instance.m_nview.m_zdo == null)
+                     return;
+                                  
                 try
                 {
                     //if (!__instance.m_nview.m_zdo.m_vec3.ContainsKey(_teleportWorldColorHashCode))
@@ -370,9 +363,10 @@ namespace RareMagicPortal
                             //__instance.m_nview.m_zdo.Set(_teleportWorldColorAlphaHashCode, color);
                             //__instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastColoredByHashCode, Player.m_localPlayer?.GetPlayerID() ?? 0L);
                             //__instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeColorHashCode, "skip");
+                            RMP.LogInfo("New color int " + colorint);
 
                             updateYmltoColorChange(PortalName, colorint, __instance.m_nview.m_zdo.ToString()); // update yaml
-                            colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance);// Do this again now that it has been updated.
+                            //colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance);// Do this again now that it has been updated. // why do this again?
 
                             return false; // stop interaction on changing name
                         }
@@ -388,11 +382,13 @@ namespace RareMagicPortal
                 }
                 return true;
             }
+        }
 
-            internal static void Postfix(TeleportWorld __instance, Humanoid human, bool hold)
+        [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.RPC_SetTag))]
+        public static class PortalCheckRename
+        {
+            internal static void Postfix(TeleportWorld __instance)
             {
-                if (hold)
-                    return;
                 if (__instance.m_nview.IsValid())
                 {
                     var name = __instance.m_nview.m_zdo.GetString("tag");
@@ -401,21 +397,34 @@ namespace RareMagicPortal
 
                     if (name != check)
                     {
-                        __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastName, __instance.m_nview.m_zdo.GetString("tag"));
+                        __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastName, name);
+                        __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalZdo, zdoname);
+                        // RMP.LogWarning("name " + name + " old name " + check);
 
-                        // Maybe have a config check to copy over info when change name
+                        if (check != "")
+                        {
+                            if (!PortalN.Portals.ContainsKey(name))
+                            {
+                                WritetoYML(name, zdoname, check);
+                            }
 
-                        if (!PortalN.Portals.ContainsKey(name))
-                        {
-                            WritetoYML(name, zdoname);
+                            if (!PortalN.Portals[name].PortalZDOs.ContainsKey(zdoname))
+                            {
+                                WritetoYML(name, zdoname, check, true);
+                            }
                         }
-                        var lookup = PortalN.Portals[name];
-                        if (!lookup.PortalZDOs.ContainsKey(zdoname))
+                        else
                         {
-                            WritetoYML(name, zdoname, true);
+                            if (!PortalN.Portals.ContainsKey(name))
+                            {
+                                WritetoYML(name, zdoname);
+                            }
+
+                            if (!PortalN.Portals[name].PortalZDOs.ContainsKey(zdoname))
+                            {
+                                WritetoYML(name, zdoname, "", true);
+                            }
                         }
-                        
-                        PortalN.Portals[name].PortalZDOs[zdoname] = PortalN.Portals[check].PortalZDOs[zdoname].Clone(); // copy PortalZDOs to new one // doesn't work need to test
                     }
                 }
             }
@@ -473,7 +482,7 @@ namespace RareMagicPortal
                 string portalName = __instance.m_nview.m_zdo.GetString("tag");
                 string zdoName = __instance.m_nview.m_zdo.ToString();
 
-                RMP.LogInfo("ZDO name " + zdoName);
+               // RMP.LogInfo("ZDO name " + zdoName);
 
 
 
@@ -669,12 +678,7 @@ namespace RareMagicPortal
             currentColorHex = Gold;
             nextcolor = "White";
             Pos = 0;
-            if (PortalName.Contains(NameIdentifier))
-            {
-                BiomeC = PortalName.Substring(PortalName.IndexOf(NameIdentifier));//
-                var index = PortalName.IndexOf(NameIdentifier);
-                PortalName = PortalName.Substring(0, index);
-            }
+
             if (BiomeC != "" && MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && !skip)
             {
                 // RMP.LogInfo("BiomeC info is " + BiomeC);
@@ -728,7 +732,7 @@ namespace RareMagicPortal
             {
                // RMP.LogInfo($"After WritetoYML: ContainsKey(portalName) with zdoName: {PortalN.Portals.ContainsKey(portalName)} " + zdoName);
 
-                WritetoYML(portalName, instance.m_nview.m_zdo.ToString(), true);
+                WritetoYML(portalName, instance.m_nview.m_zdo.ToString(), "", true);
             }
 
             var portalData = PortalN.Portals[portalName];
@@ -790,7 +794,6 @@ namespace RareMagicPortal
                 nextColor = PortalColors[currentColor].NextColor;
                 return PortalColors[currentColor].Pos;
             }
-
             // Check the portal color from the ZDO data
             if (PortalColors.TryGetValue(zdoData.Color, out var portalColorData))
             {
@@ -802,7 +805,7 @@ namespace RareMagicPortal
                     return portalColorData.Pos;
                 }
             }
-
+            RMP.LogInfo("default yELLOW");
             // Default fallback to Yellow
             currentColor = "Yellow";
             currentColorHex = PortalColors["Yellow"].HexName;
@@ -828,13 +831,8 @@ namespace RareMagicPortal
             PortalN.Portals[PortalName].Admin_only_Access = false;
             PortalN.Portals[PortalName].Free_Passage = false;
 
-            foreach (var col in PortalColors) // reset all to 0 and false
-            {
-             //   PortalN.Portals[PortalName].Portal_Crystal_Cost[col.Key] = 0;
-                //PortalN.Portals[PortalName].Portal_Key[col.Key] = false;
-            }
-           // PortalN.Portals[PortalName].Portal_Crystal_Cost[ColorName] = MagicPortalFluid.ConfigCrystalsConsumable.Value; // set to default consume for int
-           // PortalN.Portals[PortalName].Portal_Key[ColorName] = true; // set to true
+            PortalN.Portals[PortalName].Color = ColorName;
+            PortalN.Portals[PortalName].PortalZDOs[zdoID].Color = ColorName;
 
             if (MagicPortalFluid.FreePassageColor.Value == ColorName) // for starting Portal Yellow
             {
@@ -1378,12 +1376,14 @@ namespace RareMagicPortal
             }
         }*/
 
-        internal static void WritetoYML(string PortalName, string ZDOID = null, bool writeZdoOnly = false) // this only happens if portal is not in yml file at all
+        internal static void WritetoYML(string PortalName, string ZDOID = null, string oldname = "", bool writeZdoOnly = false) // this only happens if portal is not in yml file at all
         {
             RMP.LogInfo("Writing New YML");
             int colorint = 1; // freepassage yellow = 1
                               //if (PortalName == "")
                               // return;
+
+
             PortalName.Portal paulgo;
             if (writeZdoOnly)
             {
@@ -1400,6 +1400,10 @@ namespace RareMagicPortal
             PortalName.ZDOP zdoid = new PortalName.ZDOP { };
             PortalN.Portals[PortalName].PortalZDOs.Add(ZDOID, zdoid);
 
+            if (oldname != "")
+            {
+                PortalN.Portals[PortalName].PortalZDOs[ZDOID] = PortalN.Portals[oldname].PortalZDOs[ZDOID].Clone(); // copy from another if just changed portal name // maybe config?
+            }
             //PortalN.Portals[PortalName].Portal_Crystal_Cost[] = 0;
             //PortalN.Portals[PortalName].Portal_Key[] = false;
             PortalN.Portals[PortalName].Free_Passage = false;

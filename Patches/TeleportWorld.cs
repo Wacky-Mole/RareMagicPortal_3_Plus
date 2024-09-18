@@ -65,8 +65,8 @@ namespace RareMagicPortal_3_Plus.Patches
                 MagicPortalFluid.m_hadTarget = __instance.m_teleportWorld.m_hadTarget;
 
                 // If TargetPortal mod is loaded, handle with its logic
-                bool targetPortalLoaded = Chainloader.PluginInfos.ContainsKey(targetPortalPluginKey);
-                if (targetPortalLoaded)
+                MagicPortalFluid.TargetPortalLoaded = Chainloader.PluginInfos.ContainsKey(targetPortalPluginKey);
+                if (MagicPortalFluid.TargetPortalLoaded)
                 {
                     MagicPortalFluid.Teleporting = true;
                     return true; // Skip further checks, let TargetPortal handle it
@@ -86,7 +86,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 else
                 {
                     MagicPortalFluid.Teleporting = false;
-                    if (targetPortalLoaded)
+                    if (MagicPortalFluid.TargetPortalLoaded)
                     {
                         throw new SkipPortalException();
                     }
