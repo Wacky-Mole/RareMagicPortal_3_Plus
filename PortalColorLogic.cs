@@ -1,6 +1,7 @@
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
+using RareMagicPortal_3_Plus.PortalMode;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -90,88 +91,84 @@ namespace RareMagicPortal
 
         public static void reloadcolors()
         {
-            
-            CrystalCount.Clear();
-            KeyCount.Clear();
-      
-            foreach (var temp3 in PortalColors.Keys.ToList()) // enabled from config
+
+            // Initialize CrystalCount and KeyCount for all PortalColors
+            foreach (var color in PortalColors)
             {
-                var temp2 = PortalColors[temp3]; 
-                temp2.Enabled = false;
-                PortalColors[temp3] = temp2;
-            }
-
-            // done reset
-
-            List<string> coloren = MagicPortalFluid.EnabledColors.Value.Split(',').ToList();
-
-            foreach (var temp in coloren) // enabled from config
-            {
-                if (PortalColors.ContainsKey(temp))
+                if (!CrystalCount.ContainsKey(color.Key))
                 {
-                    var temp2 = PortalColors[temp];
-                    temp2.Enabled = true;
-                    PortalColors[temp] = temp2;
+                    CrystalCount[color.Key] = 0;
+                }
+                if (!KeyCount.ContainsKey(color.Key))
+                {
+                    KeyCount[color.Key] = 0;
                 }
             }
-            foreach (var cols in PortalColors) // setup for all that don't have a count or crystal/key
+
+            // Reset all PortalColors to disabled
+            foreach (var key in PortalColors.Keys.ToList())
             {
-                CrystalCount.Add(cols.Key, 0);
-                KeyCount.Add(cols.Key, 0);
+                var portalColor = PortalColors[key];
+                portalColor.Enabled = false;
+                PortalColors[key] = portalColor;
             }
-            foreach (var cols in PortalColors.ToList()) // compute NextColorOrder name fuck this by the way. FUCK this
+
+            // Enable colors from configuration
+            List<string> enabledColors = MagicPortalFluid.EnabledColors.Value.Split(',').Select(color => color.Trim()).ToList();
+            foreach (var colorName in enabledColors)
             {
-                if (cols.Value.Enabled)
+                if (PortalColors.ContainsKey(colorName))
                 {
-                    string vl = cols.Key;
-                    var copy = cols.Value;
-                    PortalColor something = (PortalColor)Enum.Parse(typeof(PortalColor), vl); // this will certainly throw an error if incorrect
-                    string nextcheck = something.Next().ToString();
-                    // RMP.LogInfo("nextcheck" + nextcheck);
-                    bool found = false;
-                    int loop = 0;
-                    while (!found)
+                    var portalColor = PortalColors[colorName];
+                    portalColor.Enabled = true;
+                    PortalColors[colorName] = portalColor;
+                }
+            }
+
+            // Set the NextColor property for enabled PortalColors
+            foreach (var colorKey in PortalColors.Keys.ToList())
+            {
+                var color = PortalColors[colorKey];
+                if (color.Enabled)
+                {
+                    string currentColorName = colorKey;
+                    PortalColor currentColorEnum = (PortalColor)Enum.Parse(typeof(PortalColor), currentColorName);
+
+                    bool foundNext = false;
+                    int loopCount = 0;
+
+                    while (!foundNext && loopCount <= 30)
                     {
-                        foreach (var cols3 in PortalColors)
+                        string nextColorName = currentColorEnum.Next().ToString();
+                        if (PortalColors.TryGetValue(nextColorName, out var nextColor) && nextColor.Enabled)
                         {
-                            //RMP.LogInfo("Keycheck" + cols3.Key);
-                            if (cols3.Key == nextcheck)
-                            {
-                                if (cols3.Value.Enabled)
-                                {
-                                    found = true;
-                                    copy.NextColor = nextcheck;
-                                    break;
-                                }
-                                else // found but not enabled so copy current found color and recalc
-                                {
-                                    vl = cols3.Key;
-                                    something = (PortalColor)Enum.Parse(typeof(PortalColor), vl);
-                                    nextcheck = something.Next().ToString();
-                                    break;
-                                }
-                            }// end match check
+                            color.NextColor = nextColorName;
+                            foundNext = true;
                         }
-                        loop++;
-                        if (loop > 30)
+                        else
                         {
-                            RMP.LogWarning("NextColor not found");
-                            break;
+                            currentColorEnum = (PortalColor)Enum.Parse(typeof(PortalColor), nextColorName);
                         }
+
+                        loopCount++;
                     }
-                    // RMP.LogInfo("Key Setting");
-                    PortalColors[cols.Key] = copy;
+
+                    if (!foundNext)
+                    {
+                        RMP.LogWarning($"NextColor for {currentColorName} not found within 30 iterations");
+                    }
+
+                    PortalColors[colorKey] = color;
                 }
             }
         }
+
 
         #region Patches
 
         [HarmonyPatch(typeof(TeleportWorld))] 
         private class TeleportWorldPatchRMP
-        {
-            //static readonly KeyboardShortcut _changeColorActionShortcut = new(KeyCode.E, KeyCode.LeftShift);
-            
+        {   
             [HarmonyPostfix]
             [HarmonyPatch(nameof(TeleportWorld.Awake))]
             private static void TeleportWorldAwakepRfixRMP(ref TeleportWorld __instance)
@@ -180,9 +177,10 @@ namespace RareMagicPortal
                 {
                     return;
                 }
-                bool isthistrue = MagicPortalFluid._teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData);
-                if (!isthistrue)
-                    MagicPortalFluid._teleportWorldDataCache.Add(__instance, new TeleportWorldDataRMP(__instance));
+                if (!MagicPortalFluid._teleportWorldDataCache.ContainsKey(__instance))
+                {
+                    MagicPortalFluid._teleportWorldDataCache[__instance] = new TeleportWorldDataRMP(__instance);
+                }
                 /*
                 // Stone 'portal' prefab does not set this property.
                 if (!__instance.m_proximityRoot)
@@ -219,79 +217,9 @@ namespace RareMagicPortal
                     bool isthistrue = MagicPortalFluid._teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData);
                     if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
                     {
-                        // override color for teleportanything color
-                        if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow")
-                        {
-                            Color newCol = Color.yellow;// default
-                            Random rnd = new Random();
-                            PortalColor currentC = (PortalColor)Enum.Parse(typeof(PortalColor), currentRainbow);
-                            int pickcolor = rnd.Next(1, 12);
-                            var colorna = currentC.Next();
-                            for (int i = 1; i < pickcolor; i++)
-                            {
-                                colorna.Next();
-                            }
-                            currentRainbow = colorna.ToString();
-                            //RMP.LogInfo("rainbow currently is " + colorna.ToString());
-                            newCol = PortalColors[colorna.ToString()].HexName;
-                            rainbowWait = 0;
-
-                            if (newCol != teleportWorldData.OldColor)
-                            {  // don't waste resources
-                                teleportWorldData.TargetColor = newCol;
-                                SetTeleportWorldColors(teleportWorldData, true);
-                            }
-                        }
-                        else if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow2") // Trying to copy Rainbow effect from cheatsword to portals, almost worked. ran out of time
-                        {
-                            if (CheatSwordColor == null)
-                            {
-                                RMP.LogInfo("Set cheatsword");
-                                var itemCS = ObjectDB.instance.GetItemPrefab("SwordCheat");// not used just for init
-                                CheatSwordColor = itemCS.GetComponentInChildren<ParticleSystem>(true);
-                                // Transform CheatswordColor = ObjectDB.instance.GetItemPrefab("WackyBox").transform.Find("wackyflames");//ObjectDB.instance.GetItemPrefab("SwordCheat").transform.Find("attach/equiped/Particle System");
-                            }
-                            if (CheatSwordColor == null)
-                                RMP.LogInfo("Cheatsword is null");
-
-                            ParticleSystem.MinMaxGradient holdColor = CheatSwordColor.main.startColor;
-                            //ParticleSystem.MainModule main = CheatswordColor.GetComponent<ParticleSystem.MainModule>();
-                            //main.startColor = holdColor;
-                            //holdColor = main.startColor;
-                            //foreach (ParticleSystem system in CheatSwordColor)
-                            //{
-                               // ParticleSystem.MainModule main = system.main;
-                               // holdColor = main.startColor;
-
-                            //}
-
-                            RMP.LogInfo("Set holdColor");
-
-                            ParticleSystem system = teleportWorldData.BlueFlames[0];
-                            {
-                                //system.GetComponent<Transform>().gameObject.SetActive(false);
-
-                                var main2 = system.GetComponent<ParticleSystem.MainModule>();
-                                var colover = system.GetComponent<ParticleSystem.ColorOverLifetimeModule>();
-                                //system = CheatswordColor.GetComponent<ParticleSystem>();
-                                //system.GetComponent<color>
-                               // main2.startColor = holdColor;
-                                colover.color = holdColor;
-                                //ParticleSystem.ColorOverLifetimeModule colorOverLifetime = system.colorOverLifetime;
-                                //colorOverLifetime.color = holdColor;
-                                //ParticleSystem.MainModule main2 = system.main;
-                                //main2.startColor = holdColor;
-
-                                system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
-                                //RMP.LogInfo("flame set");
-                            }
-                        }
-                        else
-                        {
-                            teleportWorldData.TargetColor = PortalColors[MagicPortalFluid.PortalDrinkColor.Value].HexName; // color update for yippe
-                            SetTeleportWorldColors(teleportWorldData, false, false);
-                        }
-                    }
+                        HandleYippe(teleportWorldData,ref __instance);
+                        return;
+                    } // end of yippe
                     else
                     {
                         //RMP.LogInfo("Hello you jerk");
@@ -350,6 +278,93 @@ namespace RareMagicPortal
                         if (portal.m_creator == closestPlayer.GetPlayerID())
                             sameperson = true;
 
+                        if (Input.GetKey(MagicPortalFluid.portalRMPMODEKEY.Value.MainKey) && MagicPortalFluid.portalRMPMODEKEY.Value.Modifiers.All(Input.GetKey) && (MagicPortalFluid.isAdmin || sameperson && !MagicPortalFluid.ConfigEnableCrystalsNKeys.Value))
+                        {
+                            //if (MagicPortalFluid.portalRMPMODEKEY.Value.IsPressed())
+                            // Trigger the password popup for configuring PortalModes
+
+                            /*
+                               PortalModeClass portalModeClass = new PortalModeClass();
+                PortalModeClass.PortalMode currentMode = portalModeClass.GetPortalMode(portalName);
+
+                PassPopup popup = closestPlayer.GetComponent<PassPopup>() ?? closestPlayer.gameObject.AddComponent<PassPopup>();
+
+                switch (currentMode)
+                {
+                    case PortalModeClass.PortalMode.PasswordLock:
+                        popup.ShowPasswordPopup(input => {
+                            if (portalModeClass.CheckPassword(portalName, input))
+                            {
+                                portalModeClass.Teleport(closestPlayer);
+                            }
+                            else
+                            {
+                                closestPlayer.Message(MessageHud.MessageType.Center, "$msg_incorrectpassword");
+                            }
+                        });
+                        return false;
+
+                    case PortalModeClass.PortalMode.OneWay:
+                        popup.ShowOneWayPopup(destination => {
+                            portalModeClass.SetOneWayDestination(portalName, destination);
+                            portalModeClass.Teleport(closestPlayer);
+                        });
+                        return false;
+
+                    case PortalModeClass.PortalMode.AllowedUsersOnly:
+                        popup.ShowAllowedUsersPopup(userId => {
+                            portalModeClass.AddAllowedUser(portalName, userId);
+                        });
+                        return false;
+
+                    case PortalModeClass.PortalMode.CordsPortal:
+                        popup.ShowCoordinatesPopup(input => {
+                            if (portalModeClass.TryParseCoordinates(input, out Vector3 coords))
+                            {
+                                portalModeClass.SetCoordinates(portalName, coords);
+                                portalModeClass.Teleport(closestPlayer);
+                            }
+                            else
+                            {
+                                closestPlayer.Message(MessageHud.MessageType.Center, "$msg_invalidcoordinates");
+                            }
+                        });
+                        return false;
+
+                    case PortalModeClass.PortalMode.TransportNetwork:
+                        popup.ShowTransportNetworkPopup(destination => {
+                            portalModeClass.SetTransportNetworkDestination(portalName, destination);
+                            portalModeClass.Teleport(closestPlayer);
+                        });
+                        return false;
+
+                    default:
+                        portalModeClass.Teleport(closestPlayer);
+                        return true;
+                                            }
+                                        }
+                                    }
+
+                                    return true;
+                                } 
+                            BasePopup popup = closestPlayer.GetComponent<BasePopup>() ?? closestPlayer.gameObject.AddComponent<BasePopup>();
+                            popup.ShowPopup((input) =>
+                            {
+                                // Handle different portal modes based on user input
+                                if (Enum.TryParse(input, out PortalModeClass.PortalMode selectedMode))
+                                {
+                                    PortalModeClass.ChangePortalMode(__instance, selectedMode);
+                                }
+                                else
+                                {
+                                    closestPlayer.Message(MessageHud.MessageType.Center, "$msg_invalidmode");
+                                }
+                            });
+*/
+                            return false; // Prevent the default interaction
+
+                        }
+                            
                         if (Input.GetKey(MagicPortalFluid.portalRMPKEY.Value.MainKey) && MagicPortalFluid.portalRMPKEY.Value.Modifiers.All(Input.GetKey) && (MagicPortalFluid.isAdmin || sameperson && !MagicPortalFluid.ConfigEnableCrystalsNKeys.Value)) // creator can change it if enable crystals is off
                         {
                             MagicPortalFluid.Globaliscreator = sameperson; // set this for yml permissions
@@ -472,8 +487,7 @@ namespace RareMagicPortal
         } */ // bad times
 
 
-        // AI Gen
-        [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.GetHoverText))]
+                            [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.GetHoverText))]
         public static class TeleportWorldGetHoverTextPostfixRMP
         {
             private static void Postfix(ref TeleportWorld __instance, ref string __result)
@@ -492,18 +506,9 @@ namespace RareMagicPortal
 
                // RMP.LogInfo("ZDO name " + zdoName);
 
-
-
-                // Get portal color and next color
                 int colorIndex = PortalColorLogic.CrystalandKeyLogicColor(
                     out string currentColor, out Color currentColorHex, out string nextColor, portalName, zdoName, __instance);
 
-                // Check for progression and update color if necessary
-                if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
-                {
-                    colorIndex = PortalColorLogic.CrystalandKeyLogicColorPPM(
-                        out currentColor, out currentColorHex, out nextColor, portalName, __instance);
-                }
 
                 // Handle colors and progression
                 if (currentColor == MagicPortalFluid.FreePassageColor.Value &&
@@ -543,24 +548,26 @@ namespace RareMagicPortal
                     if (MagicPortalFluid.UsePortalProgression.Value != MagicPortalFluid.Toggle.On &&
                         MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
                     {
-                        string biomeColors = MagicPortalFluid.BiomeRepColors.Value;
-                        string[] biomeColorsArray = biomeColors.Split(',');
-                        var results = Array.FindAll(biomeColorsArray, s => s.Contains(biome));
-                        List<string> single = results[0].Split(':').ToList(); // should only be 1
+                        var biomecolor = functions.GetBiomeColor(biome);
 
-                        foreach (var col in PortalColorLogic.PortalColors)
+                        if (!string.IsNullOrEmpty(biomecolor) && PortalColorLogic.PortalColors.ContainsKey(biomecolor))
                         {
-                            if (col.Key == single[1])
-                            {
-                                color = col.Value.HexName;
-                            }
+                            color = PortalColorLogic.PortalColors[biomecolor].HexName;
+                        }
+                        else
+                        {
+                            color = PortalColorLogic.PortalColors["Black"].HexName; 
                         }
                     }
 
-                   // __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastColoredByHashCode, Player.m_localPlayer?.GetPlayerID() ?? 0L);
+
+                    // __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastColoredByHashCode, Player.m_localPlayer?.GetPlayerID() ?? 0L);
 
                     __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeHashCode, biome);
                     PortalN.Portals[portalName].PortalZDOs[__instance.m_nview.m_zdo.ToString()].Biome = biome;
+
+                    if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.Off)
+                        PortalN.Portals[portalName].PortalZDOs[__instance.m_nview.m_zdo.ToString()].BiomeColor = "skip";
 
                     PortalColorLogic.RMP.LogInfo("Setting ZDO Biome Data For First Time");
 
@@ -704,50 +711,33 @@ namespace RareMagicPortal
 
 
         }
-        internal static int CrystalandKeyLogicColorPPM(out string currentColor, out Color currentColorHex, out string nextcolor,  string PortalName="", TeleportWorld __instance = null, int overrideInt = 0)
-        {
-            string BiomeC = "";
-            currentColor = MagicPortalFluid.DefaultColor.Value;
-            if (MagicPortalFluid.DefaultColor.Value == "None" || MagicPortalFluid.DefaultColor.Value == "none")
-                currentColor = "Yellow";
-            currentColorHex = PortalColors[currentColor].HexName;
-            nextcolor = "Red";
-
-            return 0; // idk
-
-        }
 
         internal static int CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextColor, string portalName, string zdoName = "", TeleportWorld instance = null, int overrideInt = 0)
         {
             string biomeColor = "";
-
-            if (instance != null && instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode) != "skip")
-            {
-                biomeColor = instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode);
-            }
-
             int crystalCost = MagicPortalFluid.ConfigCrystalsConsumable.Value;
 
             if (zdoName == "")
                 zdoName = instance.m_nview.m_zdo.ToString();
 
-            // Ensure the portal and ZDO exist in the PortalN dictionary
             if (!PortalN.Portals.ContainsKey(portalName))
             {
-                //RMP.LogInfo($"Portal '{portalName}' not found. Writing to YML.");
                 WritetoYML(portalName, zdoName);
             }
 
             if (!PortalN.Portals[portalName].PortalZDOs.ContainsKey(zdoName))
             {
-               // RMP.LogInfo($"After WritetoYML: ContainsKey(portalName) with zdoName: {PortalN.Portals.ContainsKey(portalName)} " + zdoName);
-
                 WritetoYML(portalName, instance.m_nview.m_zdo.ToString(), "", true);
             }
 
             var portalData = PortalN.Portals[portalName];
             var zdoData = portalData.PortalZDOs[zdoName];
 
+
+            if (instance != null && zdoData.BiomeColor != "skip")
+            {
+                biomeColor = functions.GetBiomeColor(zdoData.Biome);
+            }
             // Check if the portal is under special conditions like admin access or free passage
             if (portalName != "" && portalName != "Empty tag")
             {
@@ -804,17 +794,36 @@ namespace RareMagicPortal
                 nextColor = PortalColors[currentColor].NextColor;
                 return PortalColors[currentColor].Pos;
             }
-            // Check the portal color from the ZDO data
-            if (PortalColors.TryGetValue(zdoData.Color, out var portalColorData))
+            
+
+            if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.Off)
             {
-                if (portalColorData.Enabled)
+                if (PortalColors.TryGetValue(portalData.Color, out var portalColorData))// Check the portal color from the ZDO data // normal entry
                 {
-                    currentColor = zdoData.Color;
-                    currentColorHex = portalColorData.HexName;
-                    nextColor = portalColorData.NextColor;
-                    return portalColorData.Pos;
+                    if (portalColorData.Enabled)
+                    {
+                        currentColor = portalData.Color;
+                        currentColorHex = portalColorData.HexName;
+                        nextColor = portalColorData.NextColor;
+                        return portalColorData.Pos;
+                    }
                 }
             }
+            else
+            {
+                if (PortalColors.TryGetValue(zdoData.Color, out var portalColorData))// Check the portal color from the ZDO data //  entry when no BiomeColors
+                {
+                    if (portalColorData.Enabled)
+                    {
+                        currentColor = zdoData.Color;
+                        currentColorHex = portalColorData.HexName;
+                        nextColor = portalColorData.NextColor;
+                        return portalColorData.Pos;
+                    }
+                }
+            }
+            
+
             RMP.LogInfo("default yELLOW");
             // Default fallback to Yellow
             currentColor = "Yellow";
@@ -880,10 +889,10 @@ namespace RareMagicPortal
             }
 
             var wacky = PortalN.Portals[PortalName];
-            ClientORServerYMLUpdate(wacky, PortalName, colorint, zdoID);
+            ClientORServerYMLUpdate(wacky, PortalName, zdoID, colorint);
         }
 
-        internal static void ClientORServerYMLUpdate(Portal portal, string portalName, int colorInt, string zdoId)
+        internal static void ClientORServerYMLUpdate(Portal portal, string portalName, string zdoId ="", int colorInt = 0, bool zdoUpdate = false )
         {
             var serializer = new SerializerBuilder().Build();
             var serializedPortal = portalName + MagicPortalFluid.StringSeparator + serializer.Serialize(PortalN.Portals[portalName]);
@@ -923,13 +932,27 @@ namespace RareMagicPortal
                         MagicPortalFluid.RareMagicPortal.LogInfo(fullYml);
                     }
 
-                    MagicPortalFluid.YMLPortalData.Value = fullYml;
+                    if (MagicPortalFluid.UseSmallUpdates.Value == MagicPortalFluid.Toggle.On)
+                    {
+                        MagicPortalFluid.YMLPortalSmallData.Value = serializedPortal;
+                    }
+                    else
+                    {
+                        MagicPortalFluid.YMLPortalData.Value = fullYml;
+                    }
                 }
             }
             else
             {
-                // Handling for client connected to a server
-                functions.ServerZDOymlUpdate(colorInt, portalName, zdoId);
+                if (zdoUpdate)
+                {
+                    functions.ServerZDOymlUpdate(portalName, zdoId, 0, serializedPortal);
+                }
+                else
+                {
+                    // Handling for client connected to a server
+                    functions.ServerZDOymlUpdate(portalName, zdoId, colorInt);
+                }
             }
         }
       private static void WriteYmlToFile(string ymlContent)
@@ -1453,8 +1476,86 @@ namespace RareMagicPortal
 
 
             var wacky = PortalN.Portals[PortalName];
-            ClientORServerYMLUpdate(wacky, PortalName, colorint, ZDOID);
+            ClientORServerYMLUpdate(wacky, PortalName, ZDOID, colorint );
         }
+
+
+        private static void HandleYippe(TeleportWorldDataRMP teleportWorldData, ref TeleportWorld __instance)
+        {
+            // override color for teleportanything color
+            if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow")
+            {
+                Color newCol = Color.yellow;// default
+                Random rnd = new Random();
+                PortalColor currentC = (PortalColor)Enum.Parse(typeof(PortalColor), currentRainbow);
+                int pickcolor = rnd.Next(1, 12);
+                var colorna = currentC.Next();
+                for (int i = 1; i < pickcolor; i++)
+                {
+                    colorna.Next();
+                }
+                currentRainbow = colorna.ToString();
+                //RMP.LogInfo("rainbow currently is " + colorna.ToString());
+                newCol = PortalColors[colorna.ToString()].HexName;
+                rainbowWait = 0;
+
+                if (newCol != teleportWorldData.OldColor)
+                {  // don't waste resources
+                    teleportWorldData.TargetColor = newCol;
+                    SetTeleportWorldColors(teleportWorldData, true);
+                }
+            }
+            else if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow2") // Trying to copy Rainbow effect from cheatsword to portals, almost worked. ran out of time
+            {
+                if (CheatSwordColor == null)
+                {
+                    RMP.LogInfo("Set cheatsword");
+                    var itemCS = ObjectDB.instance.GetItemPrefab("SwordCheat");// not used just for init
+                    CheatSwordColor = itemCS.GetComponentInChildren<ParticleSystem>(true);
+                    // Transform CheatswordColor = ObjectDB.instance.GetItemPrefab("WackyBox").transform.Find("wackyflames");//ObjectDB.instance.GetItemPrefab("SwordCheat").transform.Find("attach/equiped/Particle System");
+                }
+                if (CheatSwordColor == null)
+                    RMP.LogInfo("Cheatsword is null");
+
+                ParticleSystem.MinMaxGradient holdColor = CheatSwordColor.main.startColor;
+                //ParticleSystem.MainModule main = CheatswordColor.GetComponent<ParticleSystem.MainModule>();
+                //main.startColor = holdColor;
+                //holdColor = main.startColor;
+                //foreach (ParticleSystem system in CheatSwordColor)
+                //{
+                // ParticleSystem.MainModule main = system.main;
+                // holdColor = main.startColor;
+
+                //}
+
+                RMP.LogInfo("Set holdColor");
+
+                ParticleSystem system = teleportWorldData.BlueFlames[0];
+                {
+                    //system.GetComponent<Transform>().gameObject.SetActive(false);
+
+                    var main2 = system.GetComponent<ParticleSystem.MainModule>();
+                    var colover = system.GetComponent<ParticleSystem.ColorOverLifetimeModule>();
+                    //system = CheatswordColor.GetComponent<ParticleSystem>();
+                    //system.GetComponent<color>
+                    // main2.startColor = holdColor;
+                    colover.color = holdColor;
+                    //ParticleSystem.ColorOverLifetimeModule colorOverLifetime = system.colorOverLifetime;
+                    //colorOverLifetime.color = holdColor;
+                    //ParticleSystem.MainModule main2 = system.main;
+                    //main2.startColor = holdColor;
+
+                    system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
+                    //RMP.LogInfo("flame set");
+                }
+            }
+            else
+            {
+                teleportWorldData.TargetColor = PortalColors[MagicPortalFluid.PortalDrinkColor.Value].HexName; // color update for yippe
+                SetTeleportWorldColors(teleportWorldData, false, false);
+            }
+        }
+
 
         private static void SetTeleportWorldColors(TeleportWorldDataRMP teleportWorldData, bool SetcolorTarget = false, bool SetMaterial = false)
         {

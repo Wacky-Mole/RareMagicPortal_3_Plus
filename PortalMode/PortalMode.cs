@@ -1,15 +1,11 @@
 ﻿using RareMagicPortal;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using YamlDotNet.Serialization;
 
 namespace RareMagicPortal_3_Plus.PortalMode
 {
-
     public class PortalModeClass
     {
         public enum PortalMode
@@ -30,20 +26,11 @@ namespace RareMagicPortal_3_Plus.PortalMode
         private PortalMode currentMode = PortalMode.Normal;
         private string password;
         private Vector3 targetCoordinates;
-        private InputPopup inputPopup;
+        private BasePopup inputPopup;
         private Dictionary<string, Vector3> transportLocations;
 
         private void Awake()
-        {/*
-            m_nview = GetComponent<ZNetView>();
-            if (m_nview.GetZDO() == null)
-            {
-                enabled = false;
-                return;
-            }
-            */
-
-            RegisterRPCMethods();
+        {
             allowedUsers = new List<string>();
             transportLocations = new Dictionary<string, Vector3>
             {
@@ -58,25 +45,12 @@ namespace RareMagicPortal_3_Plus.PortalMode
             targetCoordinates = m_nview.GetZDO().GetVec3("PortalCoordinates", Vector3.zero);
         }
 
-        private void RegisterRPCMethods()
-        {
-            m_nview.Register<int>("RPC_SetMode", RPC_SetMode);
-            m_nview.Register<string>("RPC_SetPassword", RPC_SetPassword);
-            m_nview.Register<Vector3>("RPC_SetCoordinates", RPC_SetCoordinates);
-        }
-
         public void SetMode(PortalMode mode)
         {
             if (!IsAdmin()) return;
 
             currentMode = mode;
-            m_nview.GetZDO().Set("PortalMode", (int)mode);
-            m_nview.InvokeRPC(ZNetView.Everybody, "RPC_SetMode", (int)mode);
-        }
-
-        private void RPC_SetMode(long sender, int mode)
-        {
-            currentMode = (PortalMode)mode;
+            UpdatePortalYML();
             ApplyModeSettings();
         }
 
@@ -94,7 +68,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     }
                     else
                     {
-                        //Load Normal behavior if not installed
+                        // Load Normal behavior if not installed
                     }
                     break;
                 case PortalMode.Rainbow:
@@ -123,7 +97,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
         private bool IsAdmin()
         {
-            return MagicPortalFluid.isAdmin; 
+            return MagicPortalFluid.isAdmin;
         }
 
         public void SetPassword(string pwd)
@@ -131,13 +105,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             if (!IsAdmin()) return;
 
             password = pwd;
-            m_nview.GetZDO().Set("PortalPassword", pwd);
-            m_nview.InvokeRPC(ZNetView.Everybody, "RPC_SetPassword", pwd);
-        }
-
-        private void RPC_SetPassword(long sender, string pwd)
-        {
-            password = pwd;
+            UpdatePortalYML();
         }
 
         public void SetCoordinates(Vector3 coords)
@@ -145,13 +113,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             if (!IsAdmin()) return;
 
             targetCoordinates = coords;
-            m_nview.GetZDO().Set("PortalCoordinates", coords);
-            m_nview.InvokeRPC(ZNetView.Everybody, "RPC_SetCoordinates", coords);
-        }
-
-        private void RPC_SetCoordinates(long sender, Vector3 coords)
-        {
-            targetCoordinates = coords;
+            UpdatePortalYML();
         }
 
         public void AddAllowedUser(string userId)
@@ -161,25 +123,44 @@ namespace RareMagicPortal_3_Plus.PortalMode
             if (!allowedUsers.Contains(userId))
             {
                 allowedUsers.Add(userId);
-                // Sync allowedUsers list across the network if needed
+                UpdatePortalYML();
             }
         }
 
-        public bool IsUserAllowed(string userId)
+        private void UpdatePortalYML()
         {
-            return allowedUsers.Contains(userId);
-        }
+            // Serialize the current state of the portal to YML
+            string portalName = m_nview.GetZDO().GetString("tag");
+            string zdoId = m_nview.GetZDO().ToString();
 
-        private void OnTriggerEnter(Collider collider)
+            if (PortalColorLogic.PortalN.Portals.ContainsKey(portalName))
+            {
+                var portal = PortalColorLogic.PortalN.Portals[portalName];
+
+                if (portal.PortalZDOs.ContainsKey(zdoId))
+                {
+                    var zdo = portal.PortalZDOs[zdoId];
+                    zdo.SpecialMode = (int)currentMode;
+                    zdo.Password = password;
+                    zdo.Coords = targetCoordinates.ToString();
+                    // Serialize the YML
+                    var serializer = new SerializerBuilder().Build();
+                    var yml = serializer.Serialize(PortalColorLogic.PortalN);
+
+                    PortalColorLogic.ClientORServerYMLUpdate(portal, portalName, "", 0 , true );
+                }
+            }
+        }
+            
+        public void CheckModes(Player player)
         {
-            Player player = collider.GetComponent<Player>();
             if (player == null || Player.m_localPlayer != player) return;
 
             switch (currentMode)
             {
                 case PortalMode.PasswordLock:
                 case PortalMode.OneWayPasswordLock:
-                    inputPopup.ShowInputPopup("Enter Password:", (input) =>
+                    inputPopup.ShowPopup("Enter Password:", (input) =>
                     {
                         if (!CheckPassword(input))
                         {
@@ -190,17 +171,22 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     });
                     break;
                 case PortalMode.AllowedUsersOnly:
-                    if (!IsUserAllowed(player.GetPlayerName()))
+                    // Check if the player's name is in the allowed users list
+                    if (!allowedUsers.Contains(player.GetPlayerName()))
                     {
+                        // Notify the player that they are not allowed to use the portal
                         player.Message(MessageHud.MessageType.Center, "$msg_notallowed");
                         return;
                     }
+
+                    // Teleport the player if they are allowed
                     Teleport(player);
                     break;
+
                 case PortalMode.CordsPortal:
                     if (IsAdmin())
                     {
-                        inputPopup.ShowInputPopup("Enter Coordinates (x,y,z):", (input) =>
+                        inputPopup.ShowPopup("Enter Coordinates (x,y,z):", (input) =>
                         {
                             if (TryParseCoordinates(input, out Vector3 coords))
                             {
@@ -216,47 +202,11 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     break;
                 case PortalMode.TransportNetwork:
                     // Listen for chat messages
-                   // Chat.instance.m_onNewChatMessage += OnNewChatMessage;
                     break;
                 default:
                     Teleport(player);
                     break;
             }
-        }
-
-        private void OnTriggerExit(Collider collider)
-        {
-            Player player = collider.GetComponent<Player>();
-            if (player == null || Player.m_localPlayer != player) return;
-
-            if (currentMode == PortalMode.TransportNetwork)
-            {
-                // Stop listening for chat messages
-                //Chat.instance.m_onNewChatMessage -= OnNewChatMessage;
-            }
-        }
-
-        private void OnNewChatMessage(Talker.Type type, string user, string message)
-        {
-            if (type != Talker.Type.Normal || Player.m_localPlayer == null) return;
-
-            // Check if the player is standing on the portal
-           // if (Vector3.Distance(Player.m_localPlayer.transform.position, transform.position) > 1.0f) return;
-
-            // Check if the message matches a location name
-            if (transportLocations.TryGetValue(message, out Vector3 targetLocation))
-            {
-                TeleportToLocation(Player.m_localPlayer, targetLocation);
-            }
-            else
-            {
-                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_invalidlocation");
-            }
-        }
-
-        private void TeleportToLocation(Player player, Vector3 location)
-        {
-            player.TeleportTo(location, Quaternion.identity, true);
         }
 
         private bool CheckPassword(string inputPassword)
@@ -313,5 +263,4 @@ namespace RareMagicPortal_3_Plus.PortalMode
             // Additional logic to lock the portal to one-way mode if needed
         }
     }
-
 }
