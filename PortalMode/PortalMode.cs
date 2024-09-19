@@ -292,4 +292,4 @@ namespace RareMagicPortal_3_Plus.PortalMode
         }
     }
 }
-}
+

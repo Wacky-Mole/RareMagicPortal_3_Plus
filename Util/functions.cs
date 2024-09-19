@@ -178,7 +178,7 @@ namespace RareMagicPortal
             }
         }
 
-        public static void RequestServerAnnouncementRMPZDOFULL(long sender, ZPackage pkg) // MESSAGE RECIEVER
+        public static void RPC_RequestServerAnnouncementRMPZDOFULL(long sender, ZPackage pkg) // MESSAGE RECIEVER
         {
             if (ZNet.instance.IsServer()) //&& ZNet.instance.IsDedicated() ) If any server than prepare to recieved message
             {
