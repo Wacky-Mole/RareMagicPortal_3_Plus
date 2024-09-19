@@ -280,88 +280,13 @@ namespace RareMagicPortal
 
                         if (Input.GetKey(MagicPortalFluid.portalRMPMODEKEY.Value.MainKey) && MagicPortalFluid.portalRMPMODEKEY.Value.Modifiers.All(Input.GetKey) && (MagicPortalFluid.isAdmin || sameperson && !MagicPortalFluid.ConfigEnableCrystalsNKeys.Value))
                         {
-                            //if (MagicPortalFluid.portalRMPMODEKEY.Value.IsPressed())
-                            // Trigger the password popup for configuring PortalModes
-
-                            /*
-                               PortalModeClass portalModeClass = new PortalModeClass();
-                PortalModeClass.PortalMode currentMode = portalModeClass.GetPortalMode(portalName);
-
-                PassPopup popup = closestPlayer.GetComponent<PassPopup>() ?? closestPlayer.gameObject.AddComponent<PassPopup>();
-
-                switch (currentMode)
-                {
-                    case PortalModeClass.PortalMode.PasswordLock:
-                        popup.ShowPasswordPopup(input => {
-                            if (portalModeClass.CheckPassword(portalName, input))
+                            ModeSelectionPopup popup = closestPlayer.GetComponent<ModeSelectionPopup>() ?? closestPlayer.gameObject.AddComponent<ModeSelectionPopup>();
+                            popup.ShowModeSelectionPopup((selectedMode, extraInput) =>
                             {
-                                portalModeClass.Teleport(closestPlayer);
-                            }
-                            else
-                            {
-                                closestPlayer.Message(MessageHud.MessageType.Center, "$msg_incorrectpassword");
-                            }
-                        });
-                        return false;
-
-                    case PortalModeClass.PortalMode.OneWay:
-                        popup.ShowOneWayPopup(destination => {
-                            portalModeClass.SetOneWayDestination(portalName, destination);
-                            portalModeClass.Teleport(closestPlayer);
-                        });
-                        return false;
-
-                    case PortalModeClass.PortalMode.AllowedUsersOnly:
-                        popup.ShowAllowedUsersPopup(userId => {
-                            portalModeClass.AddAllowedUser(portalName, userId);
-                        });
-                        return false;
-
-                    case PortalModeClass.PortalMode.CordsPortal:
-                        popup.ShowCoordinatesPopup(input => {
-                            if (portalModeClass.TryParseCoordinates(input, out Vector3 coords))
-                            {
-                                portalModeClass.SetCoordinates(portalName, coords);
-                                portalModeClass.Teleport(closestPlayer);
-                            }
-                            else
-                            {
-                                closestPlayer.Message(MessageHud.MessageType.Center, "$msg_invalidcoordinates");
-                            }
-                        });
-                        return false;
-
-                    case PortalModeClass.PortalMode.TransportNetwork:
-                        popup.ShowTransportNetworkPopup(destination => {
-                            portalModeClass.SetTransportNetworkDestination(portalName, destination);
-                            portalModeClass.Teleport(closestPlayer);
-                        });
-                        return false;
-
-                    default:
-                        portalModeClass.Teleport(closestPlayer);
-                        return true;
-                                            }
-                                        }
-                                    }
-
-                                    return true;
-                                } 
-                            BasePopup popup = closestPlayer.GetComponent<BasePopup>() ?? closestPlayer.gameObject.AddComponent<BasePopup>();
-                            popup.ShowPopup((input) =>
-                            {
-                                // Handle different portal modes based on user input
-                                if (Enum.TryParse(input, out PortalModeClass.PortalMode selectedMode))
-                                {
-                                    PortalModeClass.ChangePortalMode(__instance, selectedMode);
-                                }
-                                else
-                                {
-                                    closestPlayer.Message(MessageHud.MessageType.Center, "$msg_invalidmode");
-                                }
+                                PortalModeClass.HandlePortalModeSelection(__instance, closestPlayer, selectedMode, extraInput);
                             });
-*/
-                            return false; // Prevent the default interaction
+
+                             return false; // Prevent the default interaction
 
                         }
                             

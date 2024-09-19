@@ -152,84 +152,13 @@ namespace RareMagicPortal_3_Plus.PortalMode
             }
         }
             
-        public void CheckModes(Player player)
-        {
-            if (player == null || Player.m_localPlayer != player) return;
-
-            switch (currentMode)
-            {
-                case PortalMode.PasswordLock:
-                case PortalMode.OneWayPasswordLock:
-                    inputPopup.ShowPopup("Enter Password:", (input) =>
-                    {
-                        if (!CheckPassword(input))
-                        {
-                            player.Message(MessageHud.MessageType.Center, "$msg_incorrectpassword");
-                            return;
-                        }
-                        Teleport(player);
-                    });
-                    break;
-                case PortalMode.AllowedUsersOnly:
-                    // Check if the player's name is in the allowed users list
-                    if (!allowedUsers.Contains(player.GetPlayerName()))
-                    {
-                        // Notify the player that they are not allowed to use the portal
-                        player.Message(MessageHud.MessageType.Center, "$msg_notallowed");
-                        return;
-                    }
-
-                    // Teleport the player if they are allowed
-                    Teleport(player);
-                    break;
-
-                case PortalMode.CordsPortal:
-                    if (IsAdmin())
-                    {
-                        inputPopup.ShowPopup("Enter Coordinates (x,y,z):", (input) =>
-                        {
-                            if (TryParseCoordinates(input, out Vector3 coords))
-                            {
-                                SetCoordinates(coords);
-                                Teleport(player);
-                            }
-                            else
-                            {
-                                player.Message(MessageHud.MessageType.Center, "$msg_invalidcoordinates");
-                            }
-                        });
-                    }
-                    break;
-                case PortalMode.TransportNetwork:
-                    // Listen for chat messages
-                    break;
-                default:
-                    Teleport(player);
-                    break;
-            }
-        }
+       
 
         private bool CheckPassword(string inputPassword)
         {
             return inputPassword == password;
         }
 
-        private bool TryParseCoordinates(string input, out Vector3 coords)
-        {
-            coords = Vector3.zero;
-            string[] parts = input.Split(',');
-            if (parts.Length != 3) return false;
-
-            if (float.TryParse(parts[0], out float x) &&
-                float.TryParse(parts[1], out float y) &&
-                float.TryParse(parts[2], out float z))
-            {
-                coords = new Vector3(x, y, z);
-                return true;
-            }
-
-            return false;
-        }
 
         private void Teleport(Player player)
         {
@@ -262,5 +191,105 @@ namespace RareMagicPortal_3_Plus.PortalMode
             SetMode(PortalMode.OneWay);
             // Additional logic to lock the portal to one-way mode if needed
         }
+
+
+
+        public static void HandlePortalModeSelection(TeleportWorld portalInstance, Player player, PortalModeClass.PortalMode selectedMode, string extraInput)
+        {
+            switch (selectedMode)
+            {
+                case PortalModeClass.PortalMode.PasswordLock:
+                    SetPasswordLockMode(portalInstance, extraInput);
+                    break;
+                case PortalModeClass.PortalMode.AllowedUsersOnly:
+                    AddAllowedUser(portalInstance, player.GetPlayerName());
+                    break;
+                case PortalModeClass.PortalMode.CordsPortal:
+                    if (TryParseCoordinates(extraInput, out Vector3 coordinates))
+                    {
+                        SetCoordinates(portalInstance, coordinates);
+                    }
+                    else
+                    {
+                        player.Message(MessageHud.MessageType.Center, "Invalid coordinates format. Please enter in x,y,z format.");
+                    }
+                    break;
+                // Add other portal modes logic as needed
+                default:
+                    SetPortalMode(portalInstance, selectedMode);
+                    break;
+            }
+        }
+
+        private static void SetPasswordLockMode(TeleportWorld portalInstance, string password)
+        {
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Password cannot be empty.");
+                return;
+            }
+
+            // Assuming the portalInstance has a reference to its PortalModeClass instance
+            PortalModeClass portalModeClass = portalInstance.GetComponent<PortalModeClass>();
+            if (portalModeClass != null)
+            {
+                portalModeClass.SetPassword(password);
+                portalModeClass.SetMode(PortalModeClass.PortalMode.PasswordLock);
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now locked with a password.");
+            }
+        }
+
+        private static void AddAllowedUser(TeleportWorld portalInstance, string userName)
+        {
+            // Assuming the portalInstance has a reference to its PortalModeClass instance
+            PortalModeClass portalModeClass = portalInstance.GetComponent<PortalModeClass>();
+            if (portalModeClass != null)
+            {
+                portalModeClass.AddAllowedUser(userName);
+                portalModeClass.SetMode(PortalModeClass.PortalMode.AllowedUsersOnly);
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"User {userName} added to the allowed users list.");
+            }
+        }
+
+        private static void SetCoordinates(TeleportWorld portalInstance, Vector3 coordinates)
+        {
+            // Assuming the portalInstance has a reference to its PortalModeClass instance
+            PortalModeClass portalModeClass = portalInstance.GetComponent<PortalModeClass>();
+            if (portalModeClass != null)
+            {
+                portalModeClass.SetCoordinates(coordinates);
+                portalModeClass.SetMode(PortalModeClass.PortalMode.CordsPortal);
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"Portal coordinates set to {coordinates}.");
+            }
+        }
+
+        private static bool TryParseCoordinates(string input, out Vector3 coords)
+        {
+            coords = Vector3.zero;
+            string[] parts = input.Split(',');
+            if (parts.Length != 3) return false;
+
+            if (float.TryParse(parts[0], out float x) &&
+                float.TryParse(parts[1], out float y) &&
+                float.TryParse(parts[2], out float z))
+            {
+                coords = new Vector3(x, y, z);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static void SetPortalMode(TeleportWorld portalInstance, PortalModeClass.PortalMode mode)
+        {
+            // Assuming the portalInstance has a reference to its PortalModeClass instance
+            PortalModeClass portalModeClass = portalInstance.GetComponent<PortalModeClass>();
+            if (portalModeClass != null)
+            {
+                portalModeClass.SetMode(mode);
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"Portal mode set to {mode}.");
+            }
+        }
     }
+}
 }
