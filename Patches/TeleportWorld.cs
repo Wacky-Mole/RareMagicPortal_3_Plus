@@ -1,7 +1,9 @@
 ﻿using BepInEx.Bootstrap;
 using HarmonyLib;
+using JetBrains.Annotations;
 using RareMagicPortal;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -43,6 +45,58 @@ namespace RareMagicPortal_3_Plus.Patches
         }
 
 
+        [HarmonyPatch(typeof(ZDOMan), nameof(ZDOMan.AddPeer))]
+        public static class SendKnownPortalsOnConnectPeers
+        {
+            [UsedImplicitly]
+            private static void Postfix(ZDOMan __instance, ZNetPeer netPeer)
+            {
+                if (ZNet.instance.IsServer())
+                {
+                    foreach (ZDO zdo in MagicPortalFluid.PortalsKnown.Values)
+                    {
+                        __instance.ForceSendZDO(netPeer.m_uid, zdo.m_uid);
+                    }
+                }
+            }
+        }
+
+        private static IEnumerator GetandFetPortals()
+        {
+            while (true)
+            {
+                List<ZDO> portalList = ZDOMan.instance.GetPortals();
+                var found = portalList.ToDictionary(zdo => zdo.ToString(), zdo => zdo);
+
+                if (ZNet.instance.IsServer())
+                {
+                    var newPortals = found.Keys.Except(MagicPortalFluid.PortalsKnown.Select(zdo => zdo.ToString()));
+
+                    foreach (string portalKey in newPortals)
+                    {
+                        if (found.TryGetValue(portalKey, out ZDO zdo))
+                        {
+                            ZDOMan.instance.ForceSendZDO(zdo.m_uid);
+                        }
+                    }
+                }
+
+                MagicPortalFluid.PortalsKnown = found;
+                yield return new WaitForSeconds(10f);
+            }
+        }
+
+        [HarmonyPatch(typeof(Game), nameof(Game.Start))]
+        public class StartPortalGettingRMP
+        {
+            private static void Postfix()
+            {
+                MagicPortalFluid.PortalsKnown.Clear();
+                Game.instance.StartCoroutine(GetandFetPortals());
+            }
+        }
+
+
         [HarmonyPatch(typeof(TeleportWorldTrigger), nameof(TeleportWorldTrigger.OnTriggerEnter))]
         internal class TeleportWorld_Teleport_CheckforCrystal
         {
@@ -59,6 +113,15 @@ namespace RareMagicPortal_3_Plus.Patches
                 {
                     throw new SkipPortalException();
                 }
+
+                //List<ZDO> portalList = ZDOMan.instance.GetPortals();
+                //portalList[1].ToString();
+                // new HashSet<ZDO>;
+                // ZDOMan.instance.ForceSendZDO
+                //ZDOMan.instance.GetZDO("kjkjdd".);
+                //ZDOID.TryParse()
+                //__instance.m_teleportWorld.m_nview.m_zdo.
+               // ZDO.GetHashZDOID
 
                 MagicPortalFluid.TeleportingforWeight = 1;
                 string portalName = __instance.m_teleportWorld.GetText();

@@ -166,6 +166,7 @@
     <EmbeddedResource Include="assets\portalcrystal" />
     <EmbeddedResource Include="assets\portalmagicfluid" />
     <EmbeddedResource Include="assets\wackyportals" />
+    <EmbeddedResource Include="assets\rmpui" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />

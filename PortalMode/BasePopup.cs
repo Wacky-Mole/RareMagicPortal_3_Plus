@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RareMagicPortal;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,29 +10,26 @@ namespace RareMagicPortal_3_Plus.PortalMode
     {
         public GameObject popupPrefab;
 
+        internal GameObject Panel;
+        internal GameObject Lists;
         protected GameObject popupInstance;
         protected Dropdown modeDropdown;
         protected Button submitButton;
         protected Text promptText;
 
+
         // Update method signature to match the extended use case
         public void ShowPopup(Action<PortalModeClass.PortalMode, string> onSubmit)
         {
-            if (popupInstance != null) return;
-
-            if (popupPrefab == null)
-            {
-                Debug.LogError("Popup prefab is not assigned.");
-                return;
-            }
-
-            // Instantiate the popup
-            popupInstance = Instantiate(popupPrefab, transform);
+            popupInstance = Instantiate(MagicPortalFluid.uiasset.LoadAsset<GameObject>("RMPUIpop"));
 
             // Find the Dropdown and Button components
-            modeDropdown = popupInstance.transform.Find("ModeDropdown")?.GetComponent<Dropdown>();
-            submitButton = popupInstance.transform.Find("SubmitButton")?.GetComponent<Button>();
-            promptText = popupInstance.transform.Find("PromptText")?.GetComponent<Text>();
+            Panel = popupInstance.transform.Find("Canvas/MainPanel/Panel").gameObject;
+            Lists = Panel.transform.Find("Lists").gameObject;
+            modeDropdown = Lists.transform.Find("PortalMode").GetComponent<Dropdown>();
+
+            submitButton = Panel.transform.Find("SubmitButton").GetComponent<Button>();
+            promptText = Panel.transform.Find("ModeDescriptionText")?.GetComponent<Text>();
 
             if (modeDropdown == null || submitButton == null)
             {
@@ -42,7 +40,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             // Set the prompt text if applicable
             if (promptText != null)
             {
-                promptText.text = "Select Portal Mode:";
+                promptText.text = "Select Portal Mode: or else";
             }
 
             // Populate the dropdown with portal modes
@@ -78,18 +76,18 @@ namespace RareMagicPortal_3_Plus.PortalMode
     {
         private InputField passwordInputField;
         private InputField coordinatesInputField;
-        private Text modeDescriptionText;
+        private InputField transportNetInputField;
 
         public void ShowModeSelectionPopup(Action<PortalModeClass.PortalMode, string> onSubmit)
         {
             ShowPopup(onSubmit); // Call the base ShowPopup method with the correct signature
 
             // Find the UI components specific to ModeSelectionPopup
-            passwordInputField = popupInstance.transform.Find("PasswordInputField")?.GetComponent<InputField>();
-            coordinatesInputField = popupInstance.transform.Find("CoordinatesInputField")?.GetComponent<InputField>();
-            modeDescriptionText = popupInstance.transform.Find("ModeDescriptionText")?.GetComponent<Text>();
+            passwordInputField = Lists.transform.Find("PasswordInputField")?.GetComponent<InputField>();
+            coordinatesInputField = Lists.transform.Find("CoordinatesInputField")?.GetComponent<InputField>();
+            transportNetInputField = Lists.transform.Find("TransportNet")?.GetComponent<InputField>();
 
-            if (passwordInputField == null || coordinatesInputField == null || modeDescriptionText == null)
+            if (passwordInputField == null || coordinatesInputField == null || transportNetInputField == null)
             {
                 Debug.LogError("Popup components not found. Please ensure the prefab has all necessary components.");
                 return;
@@ -122,7 +120,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
         {
             // Update the description text based on the selected mode
             PortalModeClass.PortalMode selectedMode = (PortalModeClass.PortalMode)modeDropdown.value;
-            modeDescriptionText.text = GetModeDescription(selectedMode);
+            //modeDescriptionText.text = GetModeDescription(selectedMode);
         }
 
         private void UpdateUIForMode(PortalModeClass.PortalMode selectedMode)

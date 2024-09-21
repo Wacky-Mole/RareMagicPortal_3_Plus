@@ -412,7 +412,7 @@ namespace RareMagicPortal
         } */ // bad times
 
 
-                            [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.GetHoverText))]
+       [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.GetHoverText))]
         public static class TeleportWorldGetHoverTextPostfixRMP
         {
             private static void Postfix(ref TeleportWorld __instance, ref string __result)

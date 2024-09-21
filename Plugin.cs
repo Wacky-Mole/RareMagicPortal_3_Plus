@@ -65,6 +65,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.AccessControl;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 using YamlDotNet.Serialization;
 using static Interpolate;
@@ -142,6 +143,7 @@ namespace RareMagicPortal
         public static string Worldname = "demo_world";
         public static bool LoggingOntoServerFirst = true;
         internal static Dictionary<string, Material> originalMaterials;
+        public static Dictionary<string, ZDO> PortalsKnown = new();
 
         public static bool piecehaslvl = false;
         public static string DefaultTable = "$piece_workbench";
@@ -325,6 +327,7 @@ namespace RareMagicPortal
         internal static readonly int _portalZdo = "PortalLastZDO".GetHashCode();
         internal static string PortalFluidname;
         internal static bool TargetPortalLoaded = false;
+        public static AssetBundle uiasset;
 
         internal static readonly Dictionary<TeleportWorld, TeleportWorldDataRMP> _teleportWorldDataCache = new();
 
@@ -395,6 +398,7 @@ namespace RareMagicPortal
             YMLPortalSmallData.ValueChanged += CustomSyncSmallEvent;
 
             IconColors();
+            uiasset = GetAssetBundle("rmpui");
 
             RareMagicPortal.LogInfo($"MagicPortalFluid loaded start assets");
         }
@@ -1257,6 +1261,18 @@ namespace RareMagicPortal
             PortalColorLogic.reloadcolors();
         }
 
+        public static AssetBundle GetAssetBundle(string filename)
+        {
+            var execAssembly = Assembly.GetExecutingAssembly();
+
+            string resourceName = execAssembly.GetManifestResourceNames()
+                .Single(str => str.EndsWith(filename));
+
+            using (var stream = execAssembly.GetManifestResourceStream(resourceName))
+            {
+                return AssetBundle.LoadFromStream(stream);
+            }
+        }
         /* maybe keep?
                 internal static void HandleTeleport(Minimap Instancpass) // this is just for testing
                 {
