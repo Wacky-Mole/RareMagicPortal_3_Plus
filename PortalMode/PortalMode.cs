@@ -12,13 +12,17 @@ namespace RareMagicPortal_3_Plus.PortalMode
         {
             Normal = 0,
             TargetPortal = 1,
-            Rainbow = 2,
+            CrystalKeyMode = 2,
             PasswordLock = 3,
             OneWay = 4,
             OneWayPasswordLock = 5,
             AllowedUsersOnly = 6,
             TransportNetwork = 7,
-            CordsPortal = 8
+            CordsPortal = 8, 
+            Rainbow = 9,
+            RandomTeleport = 10,
+            AdminOnly = 11,
+
         }
 
         private ZNetView m_nview;
@@ -34,8 +38,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             allowedUsers = new List<string>();
             transportLocations = new Dictionary<string, Vector3>
             {
-                { "Home", new Vector3(100, 0, 100) },
-                { "Market", new Vector3(200, 0, 200) },
+                { "Start", new Vector3(100, 0, 100) },
                 // Add more predefined locations here
             };
 

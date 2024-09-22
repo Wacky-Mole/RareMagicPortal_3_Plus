@@ -7,7 +7,7 @@ namespace RareMagicPortal
 
     // special modes only show up for admins
     // 0 - Normal, 1 - Targetportal, 2 - Rainbow, 3 - Password lock,
-    // 4 - One Way Portal, 5 One Way Password Locked,  6 - Allowed Users Only, 7 - Transport Network, 8 - Cords Portal
+    // 4 - One Way Portal, 5 One Way Password Locked,  6 - Allowed Users Only, 7 - Transport Network, 8 - Cords Portal, 9 CrystalKey, 10- Random Teleport, 11 - adminOnly
     // 0 - Normal, works like a normal portal in game
     // 1 - If Targetportal is installed default because 1, can be switched. If not on this mode, becomes invisible, switches to private for TargetPortal
     // 2 - Normal portal, but rainbow, rapid color changing
@@ -18,6 +18,8 @@ namespace RareMagicPortal
     // 7 Transport Network, - Mostly meant for the on ground portals, always deactivated, speak the magic words and you go to a new location. This Portal doesn't give out information.
     // Maybe has one light powered to indicate that it's name has been set. But Players can't see it's name.
     // 8 Cordinates Portal, Transports the users to any cordinates set by admin.
+    // 9 CrystalKey - moved to 3 or something
+    // 10 RandomTeleport
     {
         public Dictionary<string, Portal> Portals { get; set; }
 
@@ -28,9 +30,11 @@ namespace RareMagicPortal
             public bool OverridePortal { get; set; } = false;
             public string Color { get; set; } = "";
             public bool CrystalActive { get; set; } = false;
+            public bool FastTeleport { get; set; } = false;
+            public bool RandomTeleport { get; set; } = false;
             public int SpecialMode { get; set; } = 0;
-            public string BiomeColor { get; set; }
-            public string Biome { get; set; }
+            public string BiomeColor { get; set; } // Not used
+            public string Biome { get; set; } // Used
             public bool Active { get; set; } = true;
             public string Password { get; set; } = "";
             public string Coords { get; set; } = "";
@@ -45,6 +49,8 @@ namespace RareMagicPortal
                     Color = this.Color,
                     CrystalActive = this.CrystalActive,
                     SpecialMode = this.SpecialMode,
+                    FastTeleport = this.FastTeleport,
+                    RandomTeleport = this.RandomTeleport,
                     BiomeColor = this.BiomeColor,
                     Biome = this.Biome,
                     Active = this.Active,
@@ -59,6 +65,7 @@ namespace RareMagicPortal
         {
        
             public string Color { get; set; } = "Yellow";
+            public bool TransportNetwork { get; set; } = false;
             public int SpecialMode { get; set; } = 0;
             public bool Gold_Allow { get; set; } = true;
             public bool Free_Passage { get; set; } = false;
@@ -70,7 +77,7 @@ namespace RareMagicPortal
 
             public List<string> AdditionalAllowItems { get; set; } = new List<string>();// { "Blackmetal", "Iron" };
 
-            public List<string> AllowedUsers { get; set; } = new List<string>();// { "SteamID1", "SteamID2" };
+            public List<string> AllowedUsers { get; set; } = new List<string>();// { "name", "name2" };// Maybe names instead of steamid
              
             public Dictionary<string, ZDOP> PortalZDOs = new();
             public bool EndPart { get; set; } = true;

@@ -16,20 +16,39 @@ namespace RareMagicPortal_3_Plus.PortalMode
         protected Dropdown modeDropdown;
         protected Button submitButton;
         protected Text promptText;
+        protected Button closeButton;
+        public static GameObject _popupInstance = null;
 
 
         // Update method signature to match the extended use case
-        public void ShowPopup(Action<PortalModeClass.PortalMode, string> onSubmit)
+        public void ShowPopup(Action<PortalModeClass.PortalMode, string> onSubmit, Color color)
         {
             popupInstance = Instantiate(MagicPortalFluid.uiasset.LoadAsset<GameObject>("RMPUIpop"));
 
-            // Find the Dropdown and Button components
-            Panel = popupInstance.transform.Find("Canvas/MainPanel/Panel").gameObject;
-            Lists = Panel.transform.Find("Lists").gameObject;
-            modeDropdown = Lists.transform.Find("PortalMode").GetComponent<Dropdown>();
+            _popupInstance = popupInstance;
 
-            submitButton = Panel.transform.Find("SubmitButton").GetComponent<Button>();
-            promptText = Panel.transform.Find("ModeDescriptionText")?.GetComponent<Text>();
+            Panel = popupInstance.transform.Find("Canvas/MainPanel/Panel").gameObject;
+            closeButton = popupInstance.transform.Find("Canvas/MainPanel/Close").GetComponent<Button>();
+            Lists = Panel.transform.Find("Lists").gameObject;
+            modeDropdown = Lists.transform.Find("PortalMode/Dropdown").GetComponent<Dropdown>();
+            
+
+            if (modeDropdown == null )
+            {
+                Debug.LogError("Popup components not found. Please ensure the prefab has modeDropdown.");
+                return;
+            }
+
+            Player player = Player.m_localPlayer;
+
+            if (player != null && !InventoryGui.IsVisible())
+            {
+                // Force the player's inventory to open
+                InventoryGui.instance.Show(null);
+            }
+
+            submitButton = Panel.transform.Find("SubmitButton/Button").GetComponent<Button>();
+            promptText = Panel.transform.Find("ModeDescriptionText/Text")?.GetComponent<Text>();
 
             if (modeDropdown == null || submitButton == null)
             {
@@ -46,8 +65,10 @@ namespace RareMagicPortal_3_Plus.PortalMode
             // Populate the dropdown with portal modes
             PopulateDropdown();
 
+            closeButton.onClick.AddListener(CloseUI);
+
             // Add listener to the submit button
-            submitButton.onClick.AddListener(() => OnSubmit(onSubmit));
+            submitButton.onClick.AddListener(() => OnSubmit(onSubmit, color));
         }
 
         private void PopulateDropdown()
@@ -58,7 +79,13 @@ namespace RareMagicPortal_3_Plus.PortalMode
             modeDropdown.AddOptions(modeNames);
         }
 
-        protected virtual void OnSubmit(Action<PortalModeClass.PortalMode, string> onSubmit)
+        private void CloseUI()
+        {
+            Destroy(popupInstance);
+            popupInstance = null;
+        }
+
+        protected virtual void OnSubmit(Action<PortalModeClass.PortalMode, string> onSubmit, Color color)
         {
             // Get the selected portal mode from the dropdown
             int selectedIndex = modeDropdown.value;
@@ -77,15 +104,35 @@ namespace RareMagicPortal_3_Plus.PortalMode
         private InputField passwordInputField;
         private InputField coordinatesInputField;
         private InputField transportNetInputField;
+        private InputField addBlockField;
+        private InputField addAllowField;
+        private InputField weightField;
 
-        public void ShowModeSelectionPopup(Action<PortalModeClass.PortalMode, string> onSubmit)
+        private Toggle allowEverythingBox;
+        private Toggle hoverNameBox;
+        private Toggle crystalsKeysBox;
+        private Toggle fastTeleportBox;
+        public Image crystalsKeysBackgroundImage;
+
+
+        public void ShowModeSelectionPopup(Action<PortalModeClass.PortalMode, string> onSubmit, Color color)
         {
-            ShowPopup(onSubmit); // Call the base ShowPopup method with the correct signature
+            ShowPopup(onSubmit, color); // Call the base ShowPopup method with the correct signature
 
             // Find the UI components specific to ModeSelectionPopup
-            passwordInputField = Lists.transform.Find("PasswordInputField")?.GetComponent<InputField>();
-            coordinatesInputField = Lists.transform.Find("CoordinatesInputField")?.GetComponent<InputField>();
-            transportNetInputField = Lists.transform.Find("TransportNet")?.GetComponent<InputField>();
+            passwordInputField = Lists.transform.Find("PasswordInputField/InputField")?.GetComponent<InputField>();
+            coordinatesInputField = Lists.transform.Find("CoordinatesInputField/InputField")?.GetComponent<InputField>();
+            transportNetInputField = Lists.transform.Find("TransportNet/InputField")?.GetComponent<InputField>();
+            addBlockField = Lists.transform.Find("AddRestrict/InputField")?.GetComponent<InputField>();
+            addAllowField = Lists.transform.Find("AddAllow/InputField")?.GetComponent<InputField>();
+            weightField = Lists.transform.Find("Weight/InputField")?.GetComponent<InputField>();
+
+            allowEverythingBox = Lists.transform.Find("AllowEverything/Toggle")?.GetComponent<Toggle>();
+            hoverNameBox = Lists.transform.Find("DisplayPortalName/Toggle")?.GetComponent<Toggle>();
+            crystalsKeysBox = Lists.transform.Find("CrystalKeyMode/Toggle")?.GetComponent<Toggle>();
+            fastTeleportBox = Lists.transform.Find("FastTeleport/Toggle")?.GetComponent<Toggle>();
+            crystalsKeysBackgroundImage = Lists.transform.Find("CrystalKeyMode/Toggle/Background")?.GetComponent<Image>();
+            crystalsKeysBackgroundImage.color = color;
 
             if (passwordInputField == null || coordinatesInputField == null || transportNetInputField == null)
             {
@@ -95,17 +142,19 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
             // Add listener to the dropdown to update UI based on selection
             modeDropdown.onValueChanged.AddListener(delegate { OnModeChanged(); });
+            crystalsKeysBox.onValueChanged.AddListener(delegate { OnCrystalKeyChange(); });
 
             // Initially hide extra input fields
             passwordInputField.gameObject.SetActive(false);
             coordinatesInputField.gameObject.SetActive(false);
+            transportNetInputField.gameObject.SetActive(false);
 
             // Update description for the default selection
             UpdateModeDescription();
 
             // Override the submit button listener to handle the extended callback
             submitButton.onClick.RemoveAllListeners();
-            submitButton.onClick.AddListener(() => OnSubmit(onSubmit));
+            submitButton.onClick.AddListener(() => OnSubmit(onSubmit, color));
         }
 
         private void OnModeChanged()
@@ -114,6 +163,10 @@ namespace RareMagicPortal_3_Plus.PortalMode
             PortalModeClass.PortalMode selectedMode = (PortalModeClass.PortalMode)modeDropdown.value;
             UpdateModeDescription();
             UpdateUIForMode(selectedMode);
+        }
+        private void OnCrystalKeyChange()
+        {
+            UpdateModeDescription();
         }
 
         private void UpdateModeDescription()
@@ -145,7 +198,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             };
         }
 
-        protected override void OnSubmit(Action<PortalModeClass.PortalMode, string> onSubmit)
+        protected override void OnSubmit(Action<PortalModeClass.PortalMode, string> onSubmit, Color color)
         {
             // Get the selected portal mode from the dropdown
             PortalModeClass.PortalMode selectedMode = (PortalModeClass.PortalMode)modeDropdown.value;
