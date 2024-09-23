@@ -20,6 +20,7 @@ namespace RareMagicPortal
     // 8 Cordinates Portal, Transports the users to any cordinates set by admin.
     // 9 CrystalKey - moved to 3 or something
     // 10 RandomTeleport
+    // 11 Admin Only Mode
     {
         public Dictionary<string, Portal> Portals { get; set; }
 
@@ -32,13 +33,13 @@ namespace RareMagicPortal
             public bool CrystalActive { get; set; } = false;
             public bool FastTeleport { get; set; } = false;
             public bool RandomTeleport { get; set; } = false;
-            public int SpecialMode { get; set; } = 0;
+            public int SpecialMode { get; set; } = 99;
             public string BiomeColor { get; set; } // Not used
             public string Biome { get; set; } // Used
             public bool Active { get; set; } = true;
             public string Password { get; set; } = "";
             public string Coords { get; set; } = "";
-            public bool HideName { get; set; } = false;
+            public bool ShowName { get; set; } = false;
             public string Creator { get; set; } = "";
 
             public ZDOP Clone()
@@ -56,7 +57,7 @@ namespace RareMagicPortal
                     Active = this.Active,
                     Password = this.Password,
                     Coords = this.Coords,
-                    HideName = this.HideName,
+                    ShowName = this.ShowName,
                     Creator = this.Creator
                 };
             }

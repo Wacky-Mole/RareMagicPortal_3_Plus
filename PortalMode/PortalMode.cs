@@ -52,9 +52,44 @@ namespace RareMagicPortal_3_Plus.PortalMode
         {
             if (!IsAdmin()) return;
 
+
+
             currentMode = mode;
             UpdatePortalYML();
             ApplyModeSettings();
+        }
+
+        public static void SetMode(PortalMode mode, string PortalName, string zdo)
+        {
+            if (!MagicPortalFluid.isAdmin) return;
+
+            var checkmode = mode;
+            var parentMode = mode;
+
+            switch (mode)
+            {
+                case PortalMode.TargetPortal:
+                    if (MagicPortalFluid.TargetPortalLoaded)
+                    {}
+                    else
+                        checkmode = PortalMode.Normal;                    
+                    break;
+            }
+
+            PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdo].SpecialMode = (int)checkmode;
+            PortalColorLogic.PortalN.Portals[PortalName].SpecialMode= (int)parentMode;
+
+
+        }
+
+        public static PortalMode GetCurrentMode(string PortalName, string zdo)
+        {
+           if ( PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdo].SpecialMode == 99)
+            {
+                return (PortalModeClass.PortalMode)PortalColorLogic.PortalN.Portals[PortalName].SpecialMode;
+            }
+
+            return (PortalModeClass.PortalMode)PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdo].SpecialMode;
         }
 
         private void ApplyModeSettings()
@@ -266,7 +301,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             }
         }
 
-        private static bool TryParseCoordinates(string input, out Vector3 coords)
+        public static bool TryParseCoordinates(string input, out Vector3 coords)
         {
             coords = Vector3.zero;
             string[] parts = input.Split(',');

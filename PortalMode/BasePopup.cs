@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Windows;
 using static RareMagicPortal.PortalColorLogic;
+using static RareMagicPortal.PortalName;
 
 namespace RareMagicPortal_3_Plus.PortalMode
 {
@@ -22,7 +24,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
 
         // Update method signature to match the extended use case
-        public void ShowPopup(Action<PortalModeClass.PortalMode, string> onSubmit, string color)
+        public void ShowPopup(Action<PortalModeClass.PortalMode, string> onSubmit, string color, string PortalName, string zdo)
         {
             popupInstance = Instantiate(MagicPortalFluid.uiasset.LoadAsset<GameObject>("RMPUIpop"));
 
@@ -69,7 +71,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             closeButton.onClick.AddListener(CloseUI);
 
             // Add listener to the submit button
-            submitButton.onClick.AddListener(() => OnSubmit(onSubmit, color));
+            submitButton.onClick.AddListener(() => OnSubmit(onSubmit, color, PortalName, zdo));
         }
 
         private void PopulateDropdown()
@@ -86,7 +88,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             popupInstance = null;
         }
 
-        protected virtual void OnSubmit(Action<PortalModeClass.PortalMode, string> onSubmit, string color)
+        protected virtual void OnSubmit(Action<PortalModeClass.PortalMode, string> onSubmit, string color, string PortalName, string zdo)
         {
             // Get the selected portal mode from the dropdown
             int selectedIndex = modeDropdown.value;
@@ -124,11 +126,14 @@ namespace RareMagicPortal_3_Plus.PortalMode
         private Color currentcolor;
         private string colorName;
         private string colorNameLower;
+        private PortalModeClass.PortalMode selectedMode;
+        private string portalName;
+        private string zdo;
 
 
-        public void ShowModeSelectionPopup(Action<PortalModeClass.PortalMode, string> onSubmit, string color)
+        public void ShowModeSelectionPopup(Action<PortalModeClass.PortalMode, string> onSubmit, string color, string PortalName, string Zdo)
         {
-            ShowPopup(onSubmit, color); // Call the base ShowPopup method with the correct signature
+            ShowPopup(onSubmit, color, PortalName, zdo); // Call the base ShowPopup method with the correct signature
 
             // Find the UI components specific to ModeSelectionPopup
             password = Lists.transform.Find("PasswordInputField").gameObject;
@@ -174,20 +179,71 @@ namespace RareMagicPortal_3_Plus.PortalMode
             colorName = color;
             colorNameLower = color.ToLower();
 
+            portalName = PortalName;
+            zdo = Zdo;
 
+
+            selectedMode = PortalModeClass.GetCurrentMode(PortalName, zdo);
 
             // Update description for the default selection
             UpdateModeDescription();
+            PopulateSelected();
 
             // Override the submit button listener to handle the extended callback
             submitButton.onClick.RemoveAllListeners();
-            submitButton.onClick.AddListener(() => OnSubmit(onSubmit, color));
+            submitButton.onClick.AddListener(() => OnSubmit(onSubmit, color, PortalName, zdo));
         }
 
+        private void PopulateSelected()
+        {
+
+            switch (selectedMode)
+            {
+                case PortalModeClass.PortalMode.PasswordLock:
+                    passwordInputField.text = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].Password;
+                    crystalsKeysBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].CrystalActive;
+                    break;
+                case PortalModeClass.PortalMode.OneWayPasswordLock:
+                    passwordInputField.text = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].Password;
+                    crystalsKeysBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].CrystalActive;
+                    break;
+                case PortalModeClass.PortalMode.CordsPortal:
+                    //PortalModeClass.TryParseCoordinates(PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].Coords, out Vector3 coords);
+                    coordinatesInputField.text = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].Coords;
+                    crystalsKeysBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].CrystalActive;
+                    break;
+                case PortalModeClass.PortalMode.TransportNetwork:
+                    transportNetInputField.text = portalName;
+                    transportNetInputField.readOnly = true;
+                    break;                
+                case PortalModeClass.PortalMode.AllowedUsersOnly:
+                    allowedUsersInputField.text = PortalColorLogic.PortalN.Portals[portalName].AllowedUsers.ToString();
+                    crystalsKeysBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].CrystalActive;
+                    break;
+                // Now for the Box checking
+                case PortalModeClass.PortalMode.CrystalKeyMode:
+                    crystalsKeysBox.isOn = true;
+                    break;                
+                case PortalModeClass.PortalMode.RandomTeleport:
+                    crystalsKeysBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].CrystalActive;
+                    break;                
+                case PortalModeClass.PortalMode.OneWay:
+                    crystalsKeysBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].CrystalActive;
+                    break;
+            }
+            allowEverythingBox.isOn = PortalColorLogic.PortalN.Portals[portalName].TeleportAnything;
+            fastTeleportBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].FastTeleport;
+            hoverNameBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].ShowName;
+            addBlockField.text = string.Join(",", PortalColorLogic.PortalN.Portals[portalName].AdditionalProhibitItems); 
+            addAllowField.text = string.Join(",", PortalColorLogic.PortalN.Portals[portalName].AdditionalAllowItems);
+            weightField.text = PortalColorLogic.PortalN.Portals[portalName].MaxWeight.ToString();
+
+            // Always check for blocked items, allowed items, weights, hover Portal Name, Fast Teleport, Allow Everything
+        }
         private void OnModeChanged()
         {
             // Update the UI based on the selected mode
-            PortalModeClass.PortalMode selectedMode = (PortalModeClass.PortalMode)modeDropdown.value;
+            selectedMode = (PortalModeClass.PortalMode)modeDropdown.value;
             UpdateModeDescription();
             OnCrystalKeyChange();
             UpdateUIForMode(selectedMode);
@@ -195,7 +251,6 @@ namespace RareMagicPortal_3_Plus.PortalMode
         }
         private void OnCrystalKeyChange()
         {
-            PortalModeClass.PortalMode selectedMode = (PortalModeClass.PortalMode)modeDropdown.value;
             if (selectedMode == PortalModeClass.PortalMode.CrystalKeyMode)
                 crystalsKeysBox.isOn = true;
 
@@ -210,7 +265,6 @@ namespace RareMagicPortal_3_Plus.PortalMode
         private void UpdateModeDescription()
         {
             // Update the description text based on the selected mode
-            PortalModeClass.PortalMode selectedMode = (PortalModeClass.PortalMode)modeDropdown.value;
             promptText.text = GetModeDescription(selectedMode);
         }
 
@@ -225,6 +279,8 @@ namespace RareMagicPortal_3_Plus.PortalMode
                 || selectedMode == PortalModeClass.PortalMode.OneWayPasswordLock || selectedMode == PortalModeClass.PortalMode.OneWay
                 || selectedMode == PortalModeClass.PortalMode.CordsPortal || selectedMode == PortalModeClass.PortalMode.CrystalKeyMode
                 || selectedMode == PortalModeClass.PortalMode.RandomTeleport );
+
+
         }
 
         private string GetModeDescription(PortalModeClass.PortalMode mode)
@@ -248,7 +304,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             };
         }
 
-        protected override void OnSubmit(Action<PortalModeClass.PortalMode, string> onSubmit, string color)
+        protected override void OnSubmit(Action<PortalModeClass.PortalMode, string> onSubmit, string color, string PortalName, string zdo)
         {
             // Get the selected portal mode from the dropdown
             PortalModeClass.PortalMode selectedMode = (PortalModeClass.PortalMode)modeDropdown.value;

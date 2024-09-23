@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
@@ -290,7 +291,7 @@ namespace RareMagicPortal
                             popup.ShowModeSelectionPopup((selectedMode, extraInput) =>
                             {
                                 PortalModeClass.HandlePortalModeSelection(__instance, closestPlayer, selectedMode, extraInput);
-                            }, currentcolor);
+                            }, currentcolor, PortalName, __instance.m_nview.m_zdo.ToString());
 
                              return false; // Prevent the default interaction
 
