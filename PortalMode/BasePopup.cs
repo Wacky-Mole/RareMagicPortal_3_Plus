@@ -1,6 +1,7 @@
 ﻿using RareMagicPortal;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Windows;
@@ -20,15 +21,13 @@ namespace RareMagicPortal_3_Plus.PortalMode
         protected Button submitButton;
         protected Text promptText;
         protected Button closeButton;
-        public static GameObject _popupInstance = null;
-
+        
+       // public BasePopup _popInstance = null;;
 
         // Update method signature to match the extended use case
-        public void ShowPopup(Action<PortalModeClass.PortalMode, string> onSubmit, string color, string PortalName, string zdo)
+        public void ShowPopup(Action<PortalModeClass.PortalMode, ModeSelectionPopup> onSubmit, string color, string PortalName, string zdo)
         {
             popupInstance = Instantiate(MagicPortalFluid.uiasset.LoadAsset<GameObject>("RMPUIpop"));
-
-            _popupInstance = popupInstance;
 
             Panel = popupInstance.transform.Find("Canvas/MainPanel/Panel").gameObject;
             closeButton = popupInstance.transform.Find("Canvas/MainPanel/Close").GetComponent<Button>();
@@ -84,18 +83,29 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
         private void CloseUI()
         {
-            Destroy(popupInstance);
-            popupInstance = null;
+            if (popupInstance != null)
+            {
+                // Remove listeners to prevent lingering callbacks
+                closeButton.onClick.RemoveAllListeners();
+                submitButton.onClick.RemoveAllListeners();
+
+                // Destroy the popup instance safely
+                Destroy(popupInstance);
+                popupInstance = null;
+            }
+
+            // Also reset the static _popupInstance reference to null
+            ModeSelectionPopup._popupInstance = null;
         }
 
-        protected virtual void OnSubmit(Action<PortalModeClass.PortalMode, string> onSubmit, string color, string PortalName, string zdo)
+        protected virtual void OnSubmit(Action<PortalModeClass.PortalMode, ModeSelectionPopup> onSubmit, string color, string PortalName, string zdo)
         {
             // Get the selected portal mode from the dropdown
             int selectedIndex = modeDropdown.value;
             PortalModeClass.PortalMode selectedMode = (PortalModeClass.PortalMode)selectedIndex;
 
             // Invoke the callback with the selected mode and an empty string for extra input
-            onSubmit?.Invoke(selectedMode, string.Empty);
+            onSubmit?.Invoke(selectedMode, ModeSelectionPopup._popupInstance);
 
             // Destroy the popup after submission
             Destroy(popupInstance);
@@ -104,37 +114,45 @@ namespace RareMagicPortal_3_Plus.PortalMode
     }
     public class ModeSelectionPopup : BasePopup
     {
-        private GameObject password;
-        private InputField passwordInputField;
-        private GameObject coordinates;
-        private InputField coordinatesInputField;
-        private GameObject transportNet;
-        private InputField transportNetInputField;
-        private GameObject allowedUsers;
-        private InputField allowedUsersInputField;
-        private InputField addBlockField;
-        private InputField addAllowField;
-        private InputField weightField;
+        public static ModeSelectionPopup _popupInstance = null;
+        public GameObject password;
+        public InputField passwordInputField;
+        public GameObject coordinates;
+        public InputField coordinatesInputField;
+        public GameObject transportNet;
+        public InputField transportNetInputField;
+        public GameObject allowedUsers;
+        public InputField allowedUsersInputField;
+        public InputField addBlockField;
+        public InputField addAllowField;
+        public InputField weightField;
 
-        private Toggle allowEverythingBox;
-        private Toggle hoverNameBox;
-        private Toggle crystalsKeysBox;
-        private GameObject crystalsKeysGameobject;
-        private Toggle fastTeleportBox;
+        public Toggle allowEverythingBox;
+        public Toggle hoverNameBox;
+        public Toggle crystalsKeysBox;
+        public GameObject crystalsKeysGameobject;
+        public Toggle fastTeleportBox;
         public Image crystalsKeysBackgroundImage;
 
         private Color currentcolor;
         private string colorName;
         private string colorNameLower;
-        private PortalModeClass.PortalMode selectedMode;
-        private string portalName;
-        private string zdo;
+        public PortalModeClass.PortalMode selectedMode;
+        public string portalName;
+        public string zdo;
 
-
-        public void ShowModeSelectionPopup(Action<PortalModeClass.PortalMode, string> onSubmit, string color, string PortalName, string Zdo)
+        public void DestorySelf()
+        {
+            _popupInstance = null;
+            Destroy(popupInstance);
+            popupInstance = null;
+            
+        }
+        public void ShowModeSelectionPopup(Action<PortalModeClass.PortalMode, ModeSelectionPopup> onSubmit, string color, string PortalName, string Zdo)
         {
             ShowPopup(onSubmit, color, PortalName, zdo); // Call the base ShowPopup method with the correct signature
 
+            _popupInstance = this;
             // Find the UI components specific to ModeSelectionPopup
             password = Lists.transform.Find("PasswordInputField").gameObject;
             passwordInputField = Lists.transform.Find("PasswordInputField/InputField")?.GetComponent<InputField>();
@@ -184,7 +202,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
 
             selectedMode = PortalModeClass.GetCurrentMode(PortalName, zdo);
-
+            RMP.LogMessage("Selected Mode is " + selectedMode);
             // Update description for the default selection
             UpdateModeDescription();
             PopulateSelected();
@@ -209,7 +227,9 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     break;
                 case PortalModeClass.PortalMode.CordsPortal:
                     //PortalModeClass.TryParseCoordinates(PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].Coords, out Vector3 coords);
-                    coordinatesInputField.text = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].Coords;
+                    var vector = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].Coords;
+                    //string vectorString = $"{vector.x},{vector.y},{vector.z}";
+                    coordinatesInputField.text = vector;
                     crystalsKeysBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].CrystalActive;
                     break;
                 case PortalModeClass.PortalMode.TransportNetwork:
@@ -304,30 +324,20 @@ namespace RareMagicPortal_3_Plus.PortalMode
             };
         }
 
-        protected override void OnSubmit(Action<PortalModeClass.PortalMode, string> onSubmit, string color, string PortalName, string zdo)
+        protected override void OnSubmit(Action<PortalModeClass.PortalMode, ModeSelectionPopup> onSubmit, string color, string PortalName, string zdo)
         {
             // Get the selected portal mode from the dropdown
             PortalModeClass.PortalMode selectedMode = (PortalModeClass.PortalMode)modeDropdown.value;
-            string extraInput = "";
 
-            // Collect additional input if needed
-            if (selectedMode == PortalModeClass.PortalMode.PasswordLock)
-            {
-                extraInput = passwordInputField.text;
-            }
-            else if (selectedMode == PortalModeClass.PortalMode.CordsPortal)
-            {
-                extraInput = coordinatesInputField.text;
-            }
 
             // Invoke the callback with the selected mode and any extra input
-            onSubmit?.Invoke(selectedMode, extraInput);
+            onSubmit?.Invoke(selectedMode, _popupInstance);
 
             // Destroy the popup after submission
-            Destroy(popupInstance);
-            popupInstance = null;
+            //Destroy(popupInstance);
+            //popupInstance = null;
         }
-    }
+    }   
 
 
     /*

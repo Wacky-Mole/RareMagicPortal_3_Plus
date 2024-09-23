@@ -281,18 +281,17 @@ namespace RareMagicPortal
 
                         if (Input.GetKey(MagicPortalFluid.portalRMPMODEKEY.Value.MainKey) && MagicPortalFluid.portalRMPMODEKEY.Value.Modifiers.All(Input.GetKey) && (MagicPortalFluid.isAdmin || sameperson && !MagicPortalFluid.ConfigEnableCrystalsNKeys.Value))
                         {
-                            if (BasePopup._popupInstance != null)
+                            if (ModeSelectionPopup._popupInstance != null)
                             {
                                 return false; // Prevent the default interaction
                             }
                             int colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolorskip, PortalName, "", __instance);
-                            
-                            ModeSelectionPopup popup = closestPlayer.GetComponent<ModeSelectionPopup>() ?? closestPlayer.gameObject.AddComponent<ModeSelectionPopup>();
-                            popup.ShowModeSelectionPopup((selectedMode, extraInput) =>
-                            {
-                                PortalModeClass.HandlePortalModeSelection(__instance, closestPlayer, selectedMode, extraInput);
-                            }, currentcolor, PortalName, __instance.m_nview.m_zdo.ToString());
 
+                            ModeSelectionPopup popup = closestPlayer.GetComponent<ModeSelectionPopup>() ?? closestPlayer.gameObject.AddComponent<ModeSelectionPopup>();
+                            popup.ShowModeSelectionPopup((selectedMode, PopInstance) =>
+                            {
+                                PortalModeClass.HandlePortalModeSelection(__instance, closestPlayer, selectedMode,  PopInstance);
+                            }, currentcolor, PortalName, __instance.m_nview.m_zdo.ToString());
                              return false; // Prevent the default interaction
 
                         }
