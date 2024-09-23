@@ -70,7 +70,7 @@ namespace RareMagicPortal
             Gold = 22,
         }
 
-        internal static Dictionary<string, (Color HexName, int Pos, bool Enabled, string NextColor, string MessageText)> PortalColors = new Dictionary<string, (Color, int, bool, string, string)>()
+        public static Dictionary<string, (Color HexName, int Pos, bool Enabled, string NextColor, string MessageText)> PortalColors = new Dictionary<string, (Color, int, bool, string, string)>()
         {
             {nameof(PortalColor.Yellow),(Yellow2,(int)PortalColor.Yellow,         false, nameof(PortalColor.Red),   "Red Crystal Portal"  )},
             {nameof(PortalColor.Red), (Color.red,(int)PortalColor.Red,            false, nameof(PortalColor.Green), "Red Crystal Portal"  )},
@@ -285,12 +285,12 @@ namespace RareMagicPortal
                                 return false; // Prevent the default interaction
                             }
                             int colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolorskip, PortalName, "", __instance);
-
+                            
                             ModeSelectionPopup popup = closestPlayer.GetComponent<ModeSelectionPopup>() ?? closestPlayer.gameObject.AddComponent<ModeSelectionPopup>();
                             popup.ShowModeSelectionPopup((selectedMode, extraInput) =>
                             {
                                 PortalModeClass.HandlePortalModeSelection(__instance, closestPlayer, selectedMode, extraInput);
-                            },color);
+                            }, currentcolor);
 
                              return false; // Prevent the default interaction
 
