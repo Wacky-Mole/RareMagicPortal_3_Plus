@@ -175,7 +175,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             PortalColorLogic.PortalN.Portals[PopInstance.portalName].AdditionalProhibitItems = blockedItems.Count > 0 ? blockedItems : null;
 
             // Allowed users
-            string allowedUsersInput = PopInstance.allowedUsersInputField.text.ToUpper();
+            string allowedUsersInput = PopInstance.allowedUsersInputField.text;
             List<string> allowedUsers = allowedUsersInput.Trim().Split(',')
                 .Select(user => user.Trim())
                 .Where(user => !string.IsNullOrEmpty(user))
@@ -195,8 +195,6 @@ namespace RareMagicPortal_3_Plus.PortalMode
         {
             return MagicPortalFluid.isAdmin;
         }
-
-        // New Mode Handling Functions for each PortalMode
 
         private static void SetNormalMode(ModeSelectionPopup PopInstance)
         {
@@ -293,7 +291,9 @@ namespace RareMagicPortal_3_Plus.PortalMode
         private static void AddAllowedUser(ModeSelectionPopup PopInstance)
         {
             SetMode(PortalMode.AllowedUsersOnly, PopInstance.portalName, PopInstance.zdo);
-            MagicPortalFluid.RareMagicPortal.LogMessage("Users added to allow list: ");
+
+            MagicPortalFluid.RareMagicPortal.LogMessage("Allowed Users Mode");
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "All Portals with this name are now in Allowed Users Only mode.");
         }
 
         private static void SetTransportNetworkMode(ModeSelectionPopup PopInstance)

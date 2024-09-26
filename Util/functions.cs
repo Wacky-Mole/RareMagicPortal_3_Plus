@@ -276,5 +276,21 @@ namespace RareMagicPortal
             return MagicPortalFluid.checkiftagisPortal;
         }
 
+        public static (double x, double y) GenerateRandomPoint(double maxRadius = 10000)
+        {
+            System.Random rand = new System.Random();
+            // Generate a random angle between 0 and 2π
+            double theta = rand.NextDouble() * 2 * Math.PI;
+
+            // Generate a random radius with uniform distribution
+            double r = maxRadius * Math.Sqrt(rand.NextDouble());
+
+            // Convert polar coordinates to Cartesian coordinates
+            double x = r * Math.Cos(theta);
+            double y = r * Math.Sin(theta);
+
+            return (x, y);
+        }
+
     }
 }

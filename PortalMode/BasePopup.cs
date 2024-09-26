@@ -306,7 +306,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             password.SetActive(selectedMode == PortalModeClass.PortalMode.PasswordLock || selectedMode == PortalModeClass.PortalMode.OneWayPasswordLock);
             coordinates.SetActive(selectedMode == PortalModeClass.PortalMode.CordsPortal);
             transportNet.SetActive(selectedMode == PortalModeClass.PortalMode.TransportNetwork);
-            allowedUsers.SetActive(selectedMode == PortalModeClass.PortalMode.AllowedUsersOnly);
+            allowedUsers.SetActive(selectedMode == PortalModeClass.PortalMode.AllowedUsersOnly || selectedMode ==  PortalModeClass.PortalMode.PasswordLock || selectedMode == PortalModeClass.PortalMode.OneWayPasswordLock);
             crystalsKeysGameobject.SetActive(selectedMode == PortalModeClass.PortalMode.TargetPortal || selectedMode == PortalModeClass.PortalMode.PasswordLock 
                 || selectedMode == PortalModeClass.PortalMode.OneWayPasswordLock || selectedMode == PortalModeClass.PortalMode.OneWay
                 || selectedMode == PortalModeClass.PortalMode.CordsPortal || selectedMode == PortalModeClass.PortalMode.CrystalKeyMode
@@ -372,7 +372,6 @@ namespace RareMagicPortal_3_Plus.PortalMode
         {
             if (_popupInstance != null) return; // Prevent showing multiple popups
 
-            // Instantiate the popup
             popupPrefab = Instantiate(MagicPortalFluid.uiasset.LoadAsset<GameObject>("RMPassPopup"));
             if (popupPrefab == null)
             {
@@ -380,18 +379,23 @@ namespace RareMagicPortal_3_Plus.PortalMode
                 return;
             }
 
-            // Find the InputField and Button components in the popup
+            Player player = Player.m_localPlayer;
+
+            if (player != null && !InventoryGui.IsVisible())
+            {
+                // Force the player's inventory to open
+                InventoryGui.instance.Show(null);
+            }
+
             _passwordInputField = popupPrefab.transform.Find("Canvas/MainPanel/Panel/PasswordInputField").GetComponentInChildren<InputField>();
             _submitButton = popupPrefab.transform.Find("Canvas/MainPanel/Panel/SubmitButton").GetComponentInChildren<Button>();
             _closeButton = popupPrefab.transform.Find("Canvas/MainPanel/Close").GetComponentInChildren<Button>();
 
-            // Add listener to the submit button
             _submitButton.onClick.AddListener(() => OnSubmit(onSubmit));
             _closeButton.onClick.AddListener(() => CloseUI());
             _popupInstance = popupPrefab;
         }
 
-        // Handle the submission of the password
         private void OnSubmit(Action<string> onSubmit)
         {
             string password = _passwordInputField.text; // Get the entered password

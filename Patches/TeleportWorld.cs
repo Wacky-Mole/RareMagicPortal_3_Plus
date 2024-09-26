@@ -13,6 +13,9 @@ using UnityEngine;
 using static RareMagicPortal.PortalName;
 using RareMagicPortal_3_Plus.PortalMode;
 using System.Diagnostics;
+using ServerSync;
+using Random = UnityEngine.Random;
+using static UnityEngine.InputSystem.InputRemoting;
 
 
 namespace RareMagicPortal_3_Plus.Patches
@@ -23,10 +26,43 @@ namespace RareMagicPortal_3_Plus.Patches
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.TargetFound))]
         public static class DisabldHaveTarget
         {
-            internal static bool Prefix(ref bool __result)
+            internal static bool Prefix(TeleportWorld __instance, ref bool __result)
             {
                 if (Player.m_localPlayer == null)
                     return true;
+
+                string PortalName = __instance.m_nview.m_zdo.GetString("tag");
+                var zdoname = __instance.m_nview.m_zdo.ToString();
+                try
+                {
+                    var portal = PortalColorLogic.PortalN.Portals[PortalName];
+                    var portalZDO = portal.PortalZDOs[zdoname];
+
+                    if (!portalZDO.Active)
+                    {
+                        __result = false;
+                        return false;
+                    }
+
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.AllowedUsersOnly && (portal.AllowedUsers == null || !portal.AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName())))// allowed users
+                    {
+                        __result = false;
+                        return false;
+                    }
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.AdminOnly && !MagicPortalFluid.isAdmin)// allowed users
+                    {
+                        __result = false;
+                        return false;
+                    }
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.CordsPortal ||  // Override color showing
+                        portal.SpecialMode == PortalModeClass.PortalMode.TransportNetwork)
+                    {
+                        __result = true;
+                        return false;
+                    }
+                    
+                }
+                catch { } // catch any that haven't been entered yet
 
                 if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
                 {
@@ -96,6 +132,8 @@ namespace RareMagicPortal_3_Plus.Patches
             {
                 MagicPortalFluid.PortalsKnown.Clear();
                 Game.instance.StartCoroutine(GetandFetPortals());
+                if (ZNet.instance.IsServer())
+                    MagicPortalFluid.isAdmin = true;
             }
         }
 
@@ -108,70 +146,177 @@ namespace RareMagicPortal_3_Plus.Patches
             [HarmonyPriority(Priority.HigherThanNormal)]
             internal static bool Prefix(TeleportWorldTrigger __instance, Collider colliderIn)
             {
-                // Early return if the collider is not the local player
                 if (colliderIn.GetComponent<Player>() != Player.m_localPlayer)
                 {
                     throw new SkipPortalException();
                 }
+                
                 string PortalName = __instance.m_teleportWorld.m_nview.m_zdo.GetString("tag");
-                var zdoname = __instance.m_teleportWorld.m_nview.m_zdo.ToString();
-                if ((PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdoname].SpecialMode == PortalModeClass.PortalMode.PasswordLock ||
-                    PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdoname].SpecialMode == PortalModeClass.PortalMode.OneWayPasswordLock) 
-                    && !PortalColorLogic.PortalN.Portals[PortalName].AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName()))
+                var zdoname = __instance.m_teleportWorld.m_nview.m_zdo.ToString();  
+                var portal = PortalColorLogic.PortalN.Portals[PortalName];
+                var portalZDO = portal.PortalZDOs[zdoname];
+                if (!portalZDO.Active) // skip all
                 {
-                    bool whilewait = true;
+                    throw new SkipPortalException();
+                }
+                if (portal.SpecialMode == PortalModeClass.PortalMode.AllowedUsersOnly && (portal.AllowedUsers == null || !portal.AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName())) ||
+                    portal.SpecialMode == PortalModeClass.PortalMode.AdminOnly && !MagicPortalFluid.isAdmin )// allowed users                 
+                {
+                    throw new SkipPortalException();
+                }
+
+                if ((portalZDO.SpecialMode == PortalModeClass.PortalMode.PasswordLock ||
+                     portalZDO.SpecialMode == PortalModeClass.PortalMode.OneWayPasswordLock) &&
+                    (portal.AllowedUsers == null || !portal.AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName())))
+            
+                    {
                     if (PasswordPopup._popupInstance != null)
                     {
                         return false; // Prevent the default interaction
                     }
-                    PasswordPopup popup = Player.m_localPlayer.GetComponent<PasswordPopup>() ?? Player.m_localPlayer.gameObject.AddComponent<PasswordPopup>();
+                    PasswordPopup popup = new();
                     popup.ShowPasswordPopup((password) =>
                     {
                         if (PortalModeClass.CheckPassword(password, PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdoname].Password))
                         {
                             UnityEngine.Debug.Log("Entered Correct password");
-                            PortalColorLogic.PortalN.Portals[PortalName].AllowedUsers.Add(Player.m_localPlayer.GetPlayerName());
-                            whilewait = true;
+                            if (portal.AllowedUsers == null)
+                            {
+                                portal.AllowedUsers = new List<string>(); 
+                            }
+                            portal.AllowedUsers.Add(Player.m_localPlayer.GetPlayerName());
+
+                            PortalColorLogic.ClientORServerYMLUpdate(portal, PortalName);
+                            Player.m_localPlayer.Message(MessageHud.MessageType.Center,  "Password is correct, you may proceed");
 
                         }
                         else
                         {
-                            UnityEngine.Debug.LogError("Incorrect password entered.");
+                            UnityEngine.Debug.LogWarning("Incorrect password entered.");
                             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Incorrect password.");
                         }                      
                     });
-                    if( whilewait ) 
+
                         return false;// while waiting
                 }
 
-                MagicPortalFluid.TeleportingforWeight = 1;
+                MagicPortalFluid.TeleportingforWeight = 1;// what?
                 MagicPortalFluid.m_hadTarget = __instance.m_teleportWorld.m_hadTarget;
 
-                // If TargetPortal mod is loaded, handle with its logic
-                if (MagicPortalFluid.TargetPortalLoaded)
+           /*
+                if (MagicPortalFluid.TargetPortalLoaded )
                 {
                     MagicPortalFluid.Teleporting = true;
-                    return true; // Skip further checks, let TargetPortal handle it
+                    return true; 
                 }
-
+           
                 // If there is no target or we use portal progression, proceed with custom logic
                 if (!MagicPortalFluid.m_hadTarget || MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
                 {
                     return true;
-                }
+                }*/
 
                 // Check crystal and key logic
                 if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.m_zdo.ToString(), __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
                 {
-                    return true;
+                    bool cancelTargetPortal = true;
+
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.CordsPortal && Player.m_localPlayer.IsTeleportable())
+                    {
+                        string coords = portalZDO.Coords; // Assuming Coords is a string like "12.5, 34.6, 78.9"
+                        if (!string.IsNullOrEmpty(coords))
+                        {
+                            string[] coordParts = coords.Split(',');
+
+                            if (coordParts.Length == 3)
+                            {
+                                // Try parsing each coordinate into float
+                                if (float.TryParse(coordParts[0].Trim(), out float x) &&
+                                    float.TryParse(coordParts[1].Trim(), out float y) &&
+                                    float.TryParse(coordParts[2].Trim(), out float z))
+                                {
+                                    // Successfully parsed the coordinates
+                                    Vector3 position = new Vector3(x, y, z);
+
+                                    Player.m_localPlayer.TeleportTo(position, Player.m_localPlayer.transform.rotation, true);
+                                }
+                            }
+                        }                                
+                    }
+
+                    if (portalZDO.SpecialMode == PortalModeClass.PortalMode.RandomTeleport && Player.m_localPlayer.IsTeleportable())
+                    {
+                        string funnyLine = "";
+                        switch  ((int)Random.Range(0, 11))
+                        {
+                            case 0:
+                            funnyLine = "May Odin look favorably one You"; break;
+                            case 1:
+                            funnyLine = "Good Luck"; break;
+                            case 2:
+                            funnyLine = "Suckerrr";break;
+                            case 3:
+                            funnyLine = "To Valhalla and beyond!";
+                            break;             case 4:
+                            funnyLine = "Here goes nothing—see you on the other side... hopefully alive!";
+                            break;             case 5:
+                            funnyLine = "Off to find some mythical loot. Wish me luck!";
+                            break;             case 6:
+                            funnyLine = "Hold my mead, I'm about to explore the unknown!";
+                            break;             case 7:
+                            funnyLine = "Portal jump initiated! Pray the gods are watching.";
+                            break;             case 8:
+                            funnyLine = "If I don't come back, tell my axe I loved it.";
+                            break;             case 9:
+                            funnyLine = "Embarking on a mystical journey. Send reinforcements if needed!";
+                            break;             case 10:
+                            funnyLine = "Here’s to hoping this portal leads to more loot and fewer enemies!";
+                            break;             case 11:
+                            funnyLine = "Taking the scenic route through a portal. What could possibly go wrong?";
+                            break;
+
+                            default: funnyLine = "One small step for a Viking";
+                                break;
+
+                        }
+                        Player.m_localPlayer.Message(MessageHud.MessageType.Center, funnyLine);
+                        string whatI = " did a random teleport: ";
+                        Chat.instance.SendText(Talker.Type.Shout, whatI + funnyLine);
+
+                        var points = functions.GenerateRandomPoint();
+                        ((Character)Player.m_localPlayer).TeleportTo(new Vector3((float)points.x, Random.Range(0.5f, 3f), (float)points.y), Quaternion.identity, true);
+                        ((Character)Player.m_localPlayer).m_lastGroundTouch = 0f;
+                    }
+
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.TransportNetwork && Player.m_localPlayer.IsTeleportable())
+                    {
+
+       
+                    }
+
+
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.TargetPortal) // only this one doesn't throw exception
+                        cancelTargetPortal = false;
+
+
+
+                    if (cancelTargetPortal && MagicPortalFluid.TargetPortalLoaded)
+                    {
+                        MagicPortalFluid.Teleporting = false;
+                        throw new SkipPortalException();
+                    }
+                    return true; // otherwise
+
                 }
                 else
                 {
                     MagicPortalFluid.Teleporting = false;
+
                     if (MagicPortalFluid.TargetPortalLoaded)
                     {
                         throw new SkipPortalException();
                     }
+
                     return false;
                 }
             }
@@ -243,6 +388,8 @@ namespace RareMagicPortal_3_Plus.Patches
                 }
             }
         }
+
+
 
     }
 }
