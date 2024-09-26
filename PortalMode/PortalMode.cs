@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using YamlDotNet.Serialization;
+using static RareMagicPortal.PortalName;
 
 namespace RareMagicPortal_3_Plus.PortalMode
 {
@@ -26,13 +27,31 @@ namespace RareMagicPortal_3_Plus.PortalMode
             AdminOnly = 11,
         }
 
-        private bool CheckPassword(string inputPassword, string actualPassword)
+        internal static bool CheckPassword(string inputPassword, string actualPassword)
         {
             return inputPassword == actualPassword;
         }
 
         public static void HandlePortalModeSelection(TeleportWorld portalInstance, Player player, PortalMode selectedMode,  ModeSelectionPopup PopInstance)
         {
+
+            // reset to default for special fields only like active // random teleport
+            foreach (var port in PortalColorLogic.PortalN.Portals)
+            {
+                if (port.Key == PopInstance.portalName)
+                {
+                    foreach (var zdoEntry in port.Value.PortalZDOs)
+                    {
+                        zdoEntry.Value.Active = true;
+                        zdoEntry.Value.RandomTeleport = false;                      
+                       // zdoEntry.Value.OverridePortal = false;
+                    }
+                }
+            }
+            // set PortalNames to Default for specials
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].Admin_only_Access = false;
+
+
             switch (selectedMode)
             {
                 case PortalMode.Normal:
@@ -84,17 +103,17 @@ namespace RareMagicPortal_3_Plus.PortalMode
             }
 
             //YML UPDATE
+            if (!MagicPortalFluid.isAdmin) return;
+            HandleOtherToggles(PopInstance);
             PortalColorLogic.ClientORServerYMLUpdate(PortalColorLogic.PortalN.Portals[PopInstance.portalName], PopInstance.portalName);
             PopInstance.DestorySelf(); // Done and delete popup instance
         }
 
-        public static void SetMode(PortalMode mode, string PortalName, string zdo)
-        {
-            if (!MagicPortalFluid.isAdmin) return;
-
+        public static void SetMode(PortalMode mode, string PortalName, string zdo, bool overrideport = false)
+        {       
             PortalMode checkmode = mode;
 
-            switch (mode)
+            switch (mode) // extra check
             {
                 case PortalMode.TargetPortal:
                     if (!MagicPortalFluid.TargetPortalLoaded)
@@ -103,15 +122,72 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     // Add additional case handling as needed
             }
 
-            PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdo].SpecialMode = (int)checkmode;
-            PortalColorLogic.PortalN.Portals[PortalName].SpecialMode = (int)mode;
+            PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdo].SpecialMode = checkmode;
+            PortalColorLogic.PortalN.Portals[PortalName].SpecialMode = checkmode;
+            PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdo].Active = true;
         }
 
+        public static void HandleOtherToggles(ModeSelectionPopup PopInstance)
+        {
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo].CrystalActive = PopInstance.crystalsKeysBox.isOn;
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].TeleportAnything = PopInstance.allowEverythingBox.isOn;
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo].FastTeleport = PopInstance.fastTeleportBox.isOn;
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo].ShowName = PopInstance.hoverNameBox.isOn;
+
+
+            string weightInput = PopInstance.weightField.text.Trim();
+
+            if (float.TryParse(weightInput, out float result))
+            {
+                if (result >= 0)
+                {
+                    Debug.Log("Converted to float: " + result);
+                    PortalColorLogic.PortalN.Portals[PopInstance.portalName].MaxWeight = result;
+                }
+                else
+                {
+                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Weight cannot be negative, not saved");
+                }
+            }
+            else
+            {
+                Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Failed to Convert Weight to Float, not saved");
+            }
+
+
+
+            // Allow items
+            string allowFieldInput = PopInstance.addAllowField.text;
+            List<string> allowedItems = allowFieldInput.Trim().Split(',')
+                .Select(item => item.Trim())
+                .Where(item => !string.IsNullOrEmpty(item))
+                .ToList();
+
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].AdditionalAllowItems = allowedItems.Count > 0 ? allowedItems : null;
+
+            // Block items
+            string blockFieldInput = PopInstance.addBlockField.text;
+            List<string> blockedItems = blockFieldInput.Trim().Split(',')
+                .Select(item => item.Trim())
+                .Where(item => !string.IsNullOrEmpty(item))
+                .ToList();
+
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].AdditionalProhibitItems = blockedItems.Count > 0 ? blockedItems : null;
+
+            // Allowed users
+            string allowedUsersInput = PopInstance.allowedUsersInputField.text.ToUpper();
+            List<string> allowedUsers = allowedUsersInput.Trim().Split(',')
+                .Select(user => user.Trim())
+                .Where(user => !string.IsNullOrEmpty(user))
+                .ToList();
+
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].AllowedUsers = allowedUsers.Count > 0 ? allowedUsers : null;
+
+
+        }
         public static PortalMode GetCurrentMode(string PortalName, string zdo)
         {
             var specialMode = PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdo].SpecialMode;
-            if (specialMode == 99)
-                return PortalMode.Normal; // Default to Normal mode for undefined modes
             return (PortalMode)specialMode;
         }
 
@@ -124,6 +200,16 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
         private static void SetNormalMode(ModeSelectionPopup PopInstance)
         {
+            foreach (var port in PortalColorLogic.PortalN.Portals)
+            {
+                if (port.Key == PopInstance.portalName)
+                {
+                    foreach (var zdoEntry in port.Value.PortalZDOs)
+                    {
+                        zdoEntry.Value.SpecialMode = PortalMode.Normal;
+                    }
+                }
+            }
             SetMode(PortalMode.Normal, PopInstance.portalName, PopInstance.zdo);
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now in Normal mode.");
         }
@@ -147,16 +233,37 @@ namespace RareMagicPortal_3_Plus.PortalMode
                 Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Password cannot be empty.");
                 return;
             }
-
-            PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo].Password = PopInstance.passwordInputField.text;
+            foreach (var port in PortalColorLogic.PortalN.Portals)
+            {
+                if (port.Key == PopInstance.portalName)
+                {
+                    foreach (var zdoEntry in port.Value.PortalZDOs)
+                    {
+                        zdoEntry.Value.Password = PopInstance.passwordInputField.text;
+                        zdoEntry.Value.SpecialMode = PortalMode.PasswordLock;
+                    }
+                }
+            }
+            //PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo].Password = PopInstance.passwordInputField.text;
             SetMode(PortalMode.PasswordLock, PopInstance.portalName, PopInstance.zdo);
-            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now locked with a password.");
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "All Portals with this name are now locked with a password.");
         }
 
         private static void SetOneWayMode(ModeSelectionPopup PopInstance)
         {
-            SetMode(PortalMode.OneWay, PopInstance.portalName, PopInstance.zdo);
-            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now set to One-Way mode.");
+            foreach (var port in PortalColorLogic.PortalN.Portals)
+            {
+                if (port.Key == PopInstance.portalName)
+                {
+                    foreach (var zdoEntry in port.Value.PortalZDOs)
+                    {
+                        zdoEntry.Value.SpecialMode = PortalMode.OneWay;
+                        zdoEntry.Value.Active = false;
+                    }
+                }
+            }
+            SetMode(PortalMode.OneWay, PopInstance.portalName, PopInstance.zdo, true);
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now set to One-Way mode. All other portals with name are disabled");
         }
 
         private static void SetOneWayPasswordLockMode(ModeSelectionPopup PopInstance)
@@ -166,27 +273,44 @@ namespace RareMagicPortal_3_Plus.PortalMode
                 Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Password cannot be empty.");
                 return;
             }
+            foreach (var port in PortalColorLogic.PortalN.Portals)
+            {
+                if (port.Key == PopInstance.portalName)
+                {
+                    foreach (var zdoEntry in port.Value.PortalZDOs)
+                    {
+                        zdoEntry.Value.Password = PopInstance.passwordInputField.text;
+                        zdoEntry.Value.SpecialMode = PortalMode.OneWayPasswordLock;
+                        zdoEntry.Value.Active = false;
+                    }
+                }
+            }
 
-            PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo].Password = PopInstance.passwordInputField.text;
-            SetMode(PortalMode.OneWayPasswordLock, PopInstance.portalName, PopInstance.zdo);
-            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now set to One-Way Password Locked mode.");
+            SetMode(PortalMode.OneWayPasswordLock, PopInstance.portalName, PopInstance.zdo, true);
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now set to One-Way Password Locked mode. All other portals with name are disabled");
         }
 
         private static void AddAllowedUser(ModeSelectionPopup PopInstance)
         {
-            var allow = PopInstance.allowedUsersInputField.text.ToUpper();
-            List<string> allowlist = allow.Split(',').ToList();
-
-            PortalColorLogic.PortalN.Portals[PopInstance.portalName].AllowedUsers = allowlist;
             SetMode(PortalMode.AllowedUsersOnly, PopInstance.portalName, PopInstance.zdo);
-
-            MagicPortalFluid.RareMagicPortal.LogMessage("Users added to allow list: " + allow);
+            MagicPortalFluid.RareMagicPortal.LogMessage("Users added to allow list: ");
         }
 
         private static void SetTransportNetworkMode(ModeSelectionPopup PopInstance)
         {
-            SetMode(PortalMode.TransportNetwork, PopInstance.portalName, PopInstance.zdo);
-            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now in Transport Network mode.");
+            foreach (var port in PortalColorLogic.PortalN.Portals)
+            {
+                if (port.Key == PopInstance.portalName)
+                {
+                    foreach (var zdoEntry in port.Value.PortalZDOs)
+                    {
+                        zdoEntry.Value.Active = false;
+                    }
+                }
+            }
+
+            SetMode(PortalMode.TransportNetwork, PopInstance.portalName, PopInstance.zdo, true);
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now in Transport Network mode. All other portals with this name are deactivated");
         }
 
         private static void SetCoordinates(ModeSelectionPopup PopInstance, string coordinates)
@@ -194,6 +318,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo].Coords = coordinates;
             SetMode(PortalMode.CordsPortal, PopInstance.portalName, PopInstance.zdo);
             MagicPortalFluid.RareMagicPortal.LogMessage($"Portal coordinates set to {coordinates}");
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now is now set to Coordinates "+ coordinates);
         }
 
         public static bool TryParseCoordinates(ModeSelectionPopup PopInstance, out Vector3 coords)
@@ -215,20 +340,35 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
         private static void SetRainbowMode(ModeSelectionPopup PopInstance)
         {
-            SetMode(PortalMode.Rainbow, PopInstance.portalName, PopInstance.zdo);
+
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo].SpecialMode = PortalMode.Rainbow;
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo].Active = true;
+
+            //SetMode(PortalMode.Rainbow, PopInstance.portalName, PopInstance.zdo);
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now in Rainbow mode.");
         }
 
         private static void SetRandomTeleportMode(ModeSelectionPopup PopInstance)
         {
+            foreach (var port in PortalColorLogic.PortalN.Portals)
+            {
+                if (port.Key == PopInstance.portalName)
+                {
+                    foreach (var zdoEntry in port.Value.PortalZDOs)
+                    {
+                        zdoEntry.Value.RandomTeleport = true;
+                    }
+                }
+            }
             SetMode(PortalMode.RandomTeleport, PopInstance.portalName, PopInstance.zdo);
-            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now set to Random Teleport mode.");
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portals with this name are now set to Random Teleport mode.");
         }
 
         private static void SetAdminOnlyMode(ModeSelectionPopup PopInstance)
         {
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].Admin_only_Access = true;
             SetMode(PortalMode.AdminOnly, PopInstance.portalName, PopInstance.zdo);
-            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now set to Admin-Only mode.");
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal with this name are Admin-Only mode.");
         }
 
         private static void SetDefaultMode(ModeSelectionPopup PopInstance, PortalMode pass = PortalMode.Normal)

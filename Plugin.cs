@@ -328,6 +328,7 @@ namespace RareMagicPortal
         internal static string PortalFluidname;
         internal static bool TargetPortalLoaded = false;
         public static AssetBundle uiasset;
+        private static readonly string targetPortalPluginKey = "org.bepinex.plugins.targetportal";
 
         internal static readonly Dictionary<TeleportWorld, TeleportWorldDataRMP> _teleportWorldDataCache = new();
 
@@ -380,6 +381,7 @@ namespace RareMagicPortal
         public void Awake()
         {
 
+            MagicPortalFluid.TargetPortalLoaded = Chainloader.PluginInfos.ContainsKey(targetPortalPluginKey);
             AllowTeleEverything = new CustomSE("yippeTele");
             CreateConfigValues();
             ReadAndWriteConfigValues();

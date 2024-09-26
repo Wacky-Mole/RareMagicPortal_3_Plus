@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using RareMagicPortal_3_Plus.PortalMode;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RareMagicPortal
@@ -34,7 +35,7 @@ namespace RareMagicPortal
             public bool CrystalActive { get; set; } = false;
             public bool FastTeleport { get; set; } = false;
             public bool RandomTeleport { get; set; } = false;
-            public int SpecialMode { get; set; } = 99;
+            public PortalModeClass.PortalMode SpecialMode { get; set; } = PortalModeClass.PortalMode.Normal;
             public string BiomeColor { get; set; } // Not used
             public string Biome { get; set; } // Used
             public bool Active { get; set; } = true;
@@ -68,7 +69,7 @@ namespace RareMagicPortal
        
             public string Color { get; set; } = "Yellow";
             public bool TransportNetwork { get; set; } = false;
-            public int SpecialMode { get; set; } = 0;
+            public PortalModeClass.PortalMode SpecialMode { get; set; } = PortalModeClass.PortalMode.Normal;
             public bool Gold_Allow { get; set; } = true;
             public bool Free_Passage { get; set; } = false;
             public bool TeleportAnything { get; set; } = false;

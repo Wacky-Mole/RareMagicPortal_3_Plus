@@ -1367,8 +1367,11 @@ namespace RareMagicPortal
             PortalN.Portals[PortalName].Free_Passage = false;
             PortalN.Portals[PortalName].TeleportAnything = false;
             PortalN.Portals[PortalName].Admin_only_Access = false;
+            //PortalN.Portals[PortalName].PortalZDOs[ZDOID].Creator = Player.m_localPlayer.GetPlayerName(); // not really
 
-                       
+
+
+
             if (MagicPortalFluid.DefaultColor.Value == "None" || MagicPortalFluid.DefaultColor.Value == "none")
             {
                 PortalN.Portals[PortalName].Free_Passage = false; // already false, but just to rei

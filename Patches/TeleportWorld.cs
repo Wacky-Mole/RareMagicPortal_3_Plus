@@ -10,6 +10,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static RareMagicPortal.PortalName;
+using RareMagicPortal_3_Plus.PortalMode;
+using System.Diagnostics;
 
 
 namespace RareMagicPortal_3_Plus.Patches
@@ -100,9 +103,6 @@ namespace RareMagicPortal_3_Plus.Patches
         [HarmonyPatch(typeof(TeleportWorldTrigger), nameof(TeleportWorldTrigger.OnTriggerEnter))]
         internal class TeleportWorld_Teleport_CheckforCrystal
         {
-            private static readonly string targetPortalPluginKey = "org.bepinex.plugins.targetportal";
-
-            // Throw exception only if necessary to skip patches from other mods
             internal class SkipPortalException : Exception { }
 
             [HarmonyPriority(Priority.HigherThanNormal)]
@@ -113,22 +113,41 @@ namespace RareMagicPortal_3_Plus.Patches
                 {
                     throw new SkipPortalException();
                 }
+                string PortalName = __instance.m_teleportWorld.m_nview.m_zdo.GetString("tag");
+                var zdoname = __instance.m_teleportWorld.m_nview.m_zdo.ToString();
+                if ((PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdoname].SpecialMode == PortalModeClass.PortalMode.PasswordLock ||
+                    PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdoname].SpecialMode == PortalModeClass.PortalMode.OneWayPasswordLock) 
+                    && !PortalColorLogic.PortalN.Portals[PortalName].AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName()))
+                {
+                    bool whilewait = true;
+                    if (PasswordPopup._popupInstance != null)
+                    {
+                        return false; // Prevent the default interaction
+                    }
+                    PasswordPopup popup = Player.m_localPlayer.GetComponent<PasswordPopup>() ?? Player.m_localPlayer.gameObject.AddComponent<PasswordPopup>();
+                    popup.ShowPasswordPopup((password) =>
+                    {
+                        if (PortalModeClass.CheckPassword(password, PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdoname].Password))
+                        {
+                            UnityEngine.Debug.Log("Entered Correct password");
+                            PortalColorLogic.PortalN.Portals[PortalName].AllowedUsers.Add(Player.m_localPlayer.GetPlayerName());
+                            whilewait = true;
 
-                //List<ZDO> portalList = ZDOMan.instance.GetPortals();
-                //portalList[1].ToString();
-                // new HashSet<ZDO>;
-                // ZDOMan.instance.ForceSendZDO
-                //ZDOMan.instance.GetZDO("kjkjdd".);
-                //ZDOID.TryParse()
-                //__instance.m_teleportWorld.m_nview.m_zdo.
-               // ZDO.GetHashZDOID
+                        }
+                        else
+                        {
+                            UnityEngine.Debug.LogError("Incorrect password entered.");
+                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Incorrect password.");
+                        }                      
+                    });
+                    if( whilewait ) 
+                        return false;// while waiting
+                }
 
                 MagicPortalFluid.TeleportingforWeight = 1;
-                string portalName = __instance.m_teleportWorld.GetText();
                 MagicPortalFluid.m_hadTarget = __instance.m_teleportWorld.m_hadTarget;
 
                 // If TargetPortal mod is loaded, handle with its logic
-                MagicPortalFluid.TargetPortalLoaded = Chainloader.PluginInfos.ContainsKey(targetPortalPluginKey);
                 if (MagicPortalFluid.TargetPortalLoaded)
                 {
                     MagicPortalFluid.Teleporting = true;
@@ -142,7 +161,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 }
 
                 // Check crystal and key logic
-                if (PortalColorLogic.CrystalandKeyLogic(portalName, __instance.m_teleportWorld.m_nview.m_zdo.ToString(), __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
+                if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.m_zdo.ToString(), __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
                 {
                     return true;
                 }
@@ -163,7 +182,7 @@ namespace RareMagicPortal_3_Plus.Patches
             [HarmonyPriority(Priority.Low)]
             internal static void Postfix(TeleportWorldTrigger __instance)
             {
-                if (MagicPortalFluid.Teleporting && Chainloader.PluginInfos.ContainsKey(targetPortalPluginKey))
+                if (MagicPortalFluid.Teleporting && MagicPortalFluid.TargetPortalLoaded)
                 {
                     UpdatePortalIcons();
                 }

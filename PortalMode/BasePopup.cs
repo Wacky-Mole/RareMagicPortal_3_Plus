@@ -200,11 +200,14 @@ namespace RareMagicPortal_3_Plus.PortalMode
             portalName = PortalName;
             zdo = Zdo;
 
-
+                
             selectedMode = PortalModeClass.GetCurrentMode(PortalName, zdo);
+            
             RMP.LogMessage("Selected Mode is " + selectedMode);
+            modeDropdown.value = (int)selectedMode;
             // Update description for the default selection
-            UpdateModeDescription();
+            //UpdateModeDescription();
+            OnCrystalKeyChange();
             PopulateSelected();
 
             // Override the submit button listener to handle the extended callback
@@ -237,7 +240,6 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     transportNetInputField.readOnly = true;
                     break;                
                 case PortalModeClass.PortalMode.AllowedUsersOnly:
-                    allowedUsersInputField.text = PortalColorLogic.PortalN.Portals[portalName].AllowedUsers.ToString();
                     crystalsKeysBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].CrystalActive;
                     break;
                 // Now for the Box checking
@@ -254,8 +256,18 @@ namespace RareMagicPortal_3_Plus.PortalMode
             allowEverythingBox.isOn = PortalColorLogic.PortalN.Portals[portalName].TeleportAnything;
             fastTeleportBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].FastTeleport;
             hoverNameBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].ShowName;
-            addBlockField.text = string.Join(",", PortalColorLogic.PortalN.Portals[portalName].AdditionalProhibitItems); 
-            addAllowField.text = string.Join(",", PortalColorLogic.PortalN.Portals[portalName].AdditionalAllowItems);
+            addBlockField.text = PortalColorLogic.PortalN.Portals[portalName].AdditionalProhibitItems != null
+                ? string.Join(",", PortalColorLogic.PortalN.Portals[portalName].AdditionalProhibitItems)
+                : string.Empty;
+
+            addAllowField.text = PortalColorLogic.PortalN.Portals[portalName].AdditionalAllowItems != null
+                ? string.Join(",", PortalColorLogic.PortalN.Portals[portalName].AdditionalAllowItems)
+                : string.Empty;
+
+            allowedUsersInputField.text = PortalColorLogic.PortalN.Portals[portalName].AllowedUsers != null
+                ? string.Join(",", PortalColorLogic.PortalN.Portals[portalName].AllowedUsers)
+                : string.Empty;
+
             weightField.text = PortalColorLogic.PortalN.Portals[portalName].MaxWeight.ToString();
 
             // Always check for blocked items, allowed items, weights, hover Portal Name, Fast Teleport, Allow Everything
@@ -337,7 +349,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             //Destroy(popupInstance);
             //popupInstance = null;
         }
-    }   
+    }
 
 
     /*
@@ -349,19 +361,24 @@ namespace RareMagicPortal_3_Plus.PortalMode
     */
     public class PasswordPopup : MonoBehaviour
     {
-        public GameObject popupPrefab; 
-        private static GameObject _popupInstance = null;
+        public GameObject popupPrefab;
+        public static GameObject _popupInstance = null;
         private InputField _passwordInputField;
         private Button _submitButton;
         private Button _closeButton;
 
         // Method to show the password popup and handle the submission
         public void ShowPasswordPopup(Action<string> onSubmit)
-        {        
+        {
             if (_popupInstance != null) return; // Prevent showing multiple popups
 
             // Instantiate the popup
             popupPrefab = Instantiate(MagicPortalFluid.uiasset.LoadAsset<GameObject>("RMPassPopup"));
+            if (popupPrefab == null)
+            {
+                Debug.LogError("Failed to load popup prefab.");
+                return;
+            }
 
             // Find the InputField and Button components in the popup
             _passwordInputField = popupPrefab.transform.Find("Canvas/MainPanel/Panel/PasswordInputField").GetComponentInChildren<InputField>();
@@ -381,14 +398,14 @@ namespace RareMagicPortal_3_Plus.PortalMode
             onSubmit?.Invoke(password); // Call the callback with the entered password
 
             // Destroy the popup after submission
-            Destroy(popupPrefab);
-            popupPrefab = null; // Reset the instance reference
+            CloseUI();
         }
 
         private void CloseUI()
         {
             Destroy(popupPrefab);
-            popupPrefab = null;
+            _popupInstance = null;
         }
     }
+
 }
