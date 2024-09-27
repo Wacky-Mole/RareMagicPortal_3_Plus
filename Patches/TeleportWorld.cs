@@ -27,18 +27,19 @@ namespace RareMagicPortal_3_Plus.Patches
 
 
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.HaveTarget))] 
-        [HarmonyPriority(Priority.LowerThanNormal)]
+        [HarmonyPriority(Priority.HigherThanNormal)]
         public static class SetPortalsConnectedRMP
         {
-            private static bool Prefix()
+            private static bool Prefix(TeleportWorld __instance)
             {
+
                 return true;//  OVERRIDE THIS FROM TARGET PORTAL
             }
         }
 
 
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.TargetFound))]
-        [HarmonyPriority(Priority.LowerThanNormal)]
+        [HarmonyPriority(Priority.HigherThanNormal)]
         public static class DisabldHaveTarget
         {
             internal static bool Prefix(TeleportWorld __instance, ref bool __result)
@@ -96,6 +97,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     }                
                 }
                 catch { } // catch any that haven't been entered yet
+
                 return true;
             }
         }
@@ -153,6 +155,29 @@ namespace RareMagicPortal_3_Plus.Patches
                     MagicPortalFluid.isAdmin = true;
             }
         }
+
+        [HarmonyPatch(typeof(Player), nameof (Player.TeleportTo))]
+        public static class FastTeleRMP
+        {
+            public static void Postfix(Player __instance, Vector3 pos, Quaternion rot, ref bool distantTeleport, ref bool __result)
+            {
+                distantTeleport = MagicPortalFluid.LastTeleportFast;
+                MagicPortalFluid.LastTeleportFast = false;
+
+                /* for reference
+                if (__result && distantTeleport && ZNetScene.instance.IsAreaReady(pos))
+                {
+                    Vector2i zone = ZoneSystem.instance.GetZone(((Component)__instance).transform.position);
+                    Vector2i zone2 = ZoneSystem.instance.GetZone(pos);
+                    if (Mathf.Abs(zone.x - zone2.x) <= 1 && Mathf.Abs(zone.y - zone2.y) <= 1)
+                    {
+                        __instance.m_distantTeleport = false;
+                    }
+                }
+                */
+            }
+        }
+
 
 
         [HarmonyPatch(typeof(TeleportWorldTrigger), nameof(TeleportWorldTrigger.OnTriggerEnter))]
@@ -218,7 +243,8 @@ namespace RareMagicPortal_3_Plus.Patches
                 }
 
                 MagicPortalFluid.TeleportingforWeight = 1;// what?
-                MagicPortalFluid.m_hadTarget = __instance.m_teleportWorld.m_hadTarget;
+                //MagicPortalFluid.m_hadTarget = __instance.m_teleportWorld.m_hadTarget;
+                MagicPortalFluid.LastTeleportFast = portalZDO.FastTeleport;
 
            /*
                 if (MagicPortalFluid.TargetPortalLoaded )

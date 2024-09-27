@@ -8,8 +8,8 @@
     <ProjectGuid>{D61D6C3A-8F12-4ACB-8EC9-90B9CC565AA6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RareMagicPortal_3_Plus</RootNamespace>
-    <AssemblyName>RareMagicPortal_3_Plus</AssemblyName>
+    <RootNamespace>RareMagicPortalPlus</RootNamespace>
+    <AssemblyName>RareMagicPortalPlus</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <LangVersion>10</LangVersion>

@@ -154,6 +154,7 @@ namespace RareMagicPortal
         internal static bool m_hadTarget = false;
         internal static List<Minimap.PinData> HoldPins;
         internal static bool Globaliscreator = false;
+        internal static bool LastTeleportFast = false;
 
         internal static ConfigEntry<bool>? ConfigFluid;
         internal static ConfigEntry<bool>? ConfigFluidStone;

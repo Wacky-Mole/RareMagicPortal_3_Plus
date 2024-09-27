@@ -50,22 +50,8 @@ namespace RareMagicPortal_3_Plus
                 {
                     Minimap minimap = Minimap.instance;
 
-                    // Get the TargetPortal.Map type
-                    Type tpType = Type.GetType("TargetPortal.Map, TargetPortal");
-                    if (tpType == null)
-                    {
-                        return true; // If the type cannot be found, do not interfere
-                    }
 
-                    // Get the 'activePins' property using reflection
-                    PropertyInfo activePinsProperty = tpType.GetProperty("activePins", BindingFlags.NonPublic | BindingFlags.Static);
-                    if (activePinsProperty == null)
-                    {
-                        return true; // If the property is not found, do not interfere
-                    }
-
-                    // Get the value of 'activePins'
-                    var activePins = (Dictionary<Minimap.PinData, ZDO>)activePinsProperty.GetValue(null, null);
+                    var activePins = functions.GetActivePins();
 
                     // Find the closest pin to the mouse position
                     Minimap.PinData? closestPin = minimap.GetClosestPin(minimap.ScreenToWorldPoint(Input.mousePosition), minimap.m_removeRadius * (minimap.m_largeZoom * 2f));
@@ -124,42 +110,9 @@ namespace RareMagicPortal_3_Plus
             internal static void Postfix(Minimap __instance)
             {
                 // Make a shallow copy of the pins list
-                MagicPortalFluid.HoldPins = new List<Minimap.PinData>(Minimap.instance.m_pins);
+               // MagicPortalFluid.HoldPins = new List<Minimap.PinData>(Minimap.instance.m_pins);
 
-                // RareMagicPortal.LogWarning("Here is MinimapStart");
             }
         }
-
-        /* No hack anymore
-        [HarmonyPatch(typeof(Minimap), nameof(Minimap.UpdatePins))]
-        public class AddMinimapRewriteNames
-        {
-            internal static void Postfix(Minimap __instance)
-            {
-                if (__instance == null || __instance.m_pins == null)
-                    return;
-
-                foreach (Minimap.PinData pin in __instance.m_pins)
-                {
-                    if (pin.m_name != "TargetPortalIcon")
-                        continue;
-
-                    if (pin.m_name.Length > 0 && __instance.m_mode == Minimap.MapMode.Large)
-                    {
-                        string NewName = pin.m_name;
-
-                        if (NewName.Contains(PortalColorLogic.NameIdentifier))
-                        {
-                            var index = NewName.IndexOf(PortalColorLogic.NameIdentifier);
-                            NewName = NewName.Substring(0, index);
-                        }
-
-                        pin.m_NamePinData.PinNameText.name = Localization.instance.Localize(NewName); // doesn't work for some reason
-                    }
-                }
-            }
-        } */
-
-
     }
 }
