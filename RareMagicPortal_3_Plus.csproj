@@ -194,13 +194,15 @@
     </Content>
     <Content Include="Libs\System.ValueTuple.dll" />
     <Content Include="Libs\YamlDotNet.dll" />
-    <Content Include="portal.png" />
-    <Content Include="icons\portalicon.png">
+    <EmbeddedResource Include="icons\portal.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="icons\portaliconTarget.png">
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\portalicon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\portaliconTarget.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="README.md" />
     <Content Include="Thunderstore\CHANGELOG.md" />
     <Content Include="Thunderstore\icon.png" />

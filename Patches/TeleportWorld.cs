@@ -23,7 +23,21 @@ namespace RareMagicPortal_3_Plus.Patches
     internal class TeleportWorldPatchs
     {
 
+
+
+        [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.HaveTarget))] 
+        [HarmonyPriority(Priority.LowerThanNormal)]
+        public static class SetPortalsConnectedRMP
+        {
+            private static bool Prefix()
+            {
+                return true;//  OVERRIDE THIS FROM TARGET PORTAL
+            }
+        }
+
+
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.TargetFound))]
+        [HarmonyPriority(Priority.LowerThanNormal)]
         public static class DisabldHaveTarget
         {
             internal static bool Prefix(TeleportWorld __instance, ref bool __result)
@@ -60,25 +74,26 @@ namespace RareMagicPortal_3_Plus.Patches
                         __result = true;
                         return false;
                     }
-                    
+                        
+                    if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
+                    {
+                        __result = true;
+                        return false;
+                    }
+                    if (MagicPortalFluid.TargetPortalLoaded && portal.SpecialMode == PortalModeClass.PortalMode.TargetPortal)
+                    {
+                        if (MagicPortalFluid.Toggle.Off == MagicPortalFluid.ConfigTargetPortalAnimation.Value)
+                        {
+                            __result = false;
+                            return false;
+                        }else
+                        {
+                            __result = true;
+                            return false;
+                        }
+                    }                
                 }
                 catch { } // catch any that haven't been entered yet
-
-                if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
-                {
-                    __result = true;
-                    return false;
-                }
-                if (MagicPortalFluid.TargetPortalLoaded && MagicPortalFluid.ConfigTargetPortalAnimation.Value == MagicPortalFluid.Toggle.Off)
-                {
-                    __result = false;
-                    return false;
-                }
-                if (MagicPortalFluid.TargetPortalLoaded && MagicPortalFluid.ConfigTargetPortalAnimation.Value == MagicPortalFluid.Toggle.On)
-                {
-                    __result = true;
-                    return false;
-                }
                 return true;
             }
         }
@@ -299,12 +314,13 @@ namespace RareMagicPortal_3_Plus.Patches
                         cancelTargetPortal = false;
 
 
-
                     if (cancelTargetPortal && MagicPortalFluid.TargetPortalLoaded)
                     {
                         MagicPortalFluid.Teleporting = false;
                         throw new SkipPortalException();
                     }
+
+                    MagicPortalFluid.Teleporting = true; // activates map for targetportal 
                     return true; // otherwise
 
                 }
@@ -340,25 +356,28 @@ namespace RareMagicPortal_3_Plus.Patches
                 {
                     Minimap minimap = Minimap.instance;
                     List<Minimap.PinData> pins = minimap.m_pins;
+                   // MagicPortalFluid.RareMagicPortal.LogWarning(" Made it to Update Portal Icons");
 
                     // Get TargetPortal.Map's activePins property
                     var activePins = GetActivePins();
                     if (activePins == null) return;
+                    
+                        
+                    MagicPortalFluid.RareMagicPortal.LogWarning(" Got TargetPortal Icons count " + activePins.Count());
 
-                    foreach (Minimap.PinData pin in pins)
+                    foreach (var pin in activePins)
                     {
-                        if (pin.m_icon.name == "TargetPortalIcon" && activePins.TryGetValue(pin, out ZDO portalZDO))
+                        if ( activePins.TryGetValue(pin.Key, out ZDO portalZDO))  //pin.Key.m_icon.name == "TargetPortalIcon"
                         {
                             int colorint = PortalColorLogic.CrystalandKeyLogicColor(
                                 out string currentColor,
-                                out Color currentColorHex,
+                                out Color currentColorHex,  
                                 out string nextColor,
-                                pin.m_name,
+                                pin.Key.m_name,
                                 portalZDO.ToString()
                             );
-
-                            // Update the icon based on the colorint
-                            pin.m_icon = colorint == 0 || colorint == 999 ? MagicPortalFluid.IconDefault : MagicPortalFluid.Icons[((PortalColorLogic.PortalColor)colorint).ToString()];
+                            MagicPortalFluid.RareMagicPortal.LogWarning(" colorint for this icon " + colorint);
+                            pin.Key.m_icon = colorint == 0 || colorint == 999 ? MagicPortalFluid.IconDefault : MagicPortalFluid.Icons[((PortalColorLogic.PortalColor)colorint).ToString()];
                         }
                     }
                 }
@@ -375,17 +394,37 @@ namespace RareMagicPortal_3_Plus.Patches
                 try
                 {
                     Type tpType = Type.GetType("TargetPortal.Map, TargetPortal");
-                    if (tpType == null) return null;
+                    if (tpType == null)
+                    {
+                        UnityEngine.Debug.LogError("TargetPortal.Map type could not be found.");
+                        return null;
+                    }
 
-                    PropertyInfo activePinsProperty = tpType.GetProperty("activePins", BindingFlags.NonPublic | BindingFlags.Static);
-                    if (activePinsProperty == null) return null;
+                    // Use GetField instead of GetProperty
+                    FieldInfo activePinsField = tpType.GetField("activePins", BindingFlags.NonPublic | BindingFlags.Static);
+                    if (activePinsField == null)
+                    {
+                        UnityEngine.Debug.LogError("The activePins field could not be found.");
+                        return null;
+                    }
 
-                    return (Dictionary<Minimap.PinData, ZDO>?)activePinsProperty.GetValue(null, null);
+                    // Retrieve the value of the activePins field
+                    var activePins = activePinsField.GetValue(null);
+                    if (activePins == null)
+                    {
+                        UnityEngine.Debug.LogError("The activePins field returned null.");
+                        return null;
+                    }
+
+                    // Cast the result to the correct type
+                    return (Dictionary<Minimap.PinData, ZDO>?)activePins;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    UnityEngine.Debug.LogError("An error occurred while retrieving activePins: " + ex.Message);
                     return null;
                 }
+
             }
         }
 
