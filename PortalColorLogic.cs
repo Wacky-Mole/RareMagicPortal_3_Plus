@@ -226,7 +226,8 @@ namespace RareMagicPortal
                     {
                         //RMP.LogInfo("Hello you jerk");
                         string PortalName = __instance.m_nview.m_zdo.GetString("tag");
-                        string zdoName = __instance.m_nview.m_zdo.ToString();
+                        string zdoName = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
+
                         var portalData = PortalN.Portals[PortalName];
                         var zdoData = portalData.PortalZDOs[zdoName];
 
@@ -283,6 +284,7 @@ namespace RareMagicPortal
                     Piece portal = null;
                     portal = __instance.GetComponent<Piece>();
                     string PortalName = __instance.m_nview.m_zdo.GetString("tag");
+                    string zdoName = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
 
                     if (portal != null && PortalName != "" && PortalName != "Empty tag")
                     {
@@ -303,7 +305,7 @@ namespace RareMagicPortal
                             popup.ShowModeSelectionPopup((selectedMode, PopInstance) =>
                             {
                                 PortalModeClass.HandlePortalModeSelection(__instance, closestPlayer, selectedMode,  PopInstance);
-                            }, currentcolor, PortalName, __instance.m_nview.m_zdo.ToString());
+                            }, currentcolor, PortalName, zdoName);
                              return false; // Prevent the default interaction
                         }
                             
@@ -330,7 +332,7 @@ namespace RareMagicPortal
                                 //__instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeColorHashCode, "skip");
                                 //RMP.LogInfo("New color int " + colorint);
 
-                            updateYmltoColorChange(PortalName, colorint, __instance.m_nview.m_zdo.ToString()); // update yaml
+                            updateYmltoColorChange(PortalName, colorint, zdoName); // update yaml
                             //colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance);// Do this again now that it has been updated. // why do this again?
 
                             return false; // stop interaction on changing name
@@ -366,8 +368,7 @@ namespace RareMagicPortal
                 {
                     var name = __instance.m_nview.m_zdo.GetString("tag");
                     var check = __instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalLastName);
-                    var zdoname = __instance.m_nview.m_zdo.ToString();
-
+                    var zdoname = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
                     if (name != check)
                     {
                         __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastName, name);
@@ -453,10 +454,28 @@ namespace RareMagicPortal
                 Piece portal = __instance.GetComponent<Piece>();
                 Player closestPlayer = Player.m_localPlayer;
                 bool isCreator = portal.m_creator == closestPlayer.GetPlayerID();
+                string portalName = __instance.m_nview.GetZDO().GetString("tag");
 
-                string portalName = __instance.m_nview.m_zdo.GetString("tag");
-                string zdoName = __instance.m_nview.m_zdo.ToString();
+                string zdoName = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
+                if (zdoName == "")
+                {
+                    zdoName = CreatePortalID(portalName);
+                    __instance.m_nview.GetZDO().Set(MagicPortalFluid._portalID, zdoName );
+                    string ply = Player.GetPlayer(portal.m_creator)?.m_name;
+                    if (ply == null)
+                        ply = "";
 
+                    if (!PortalN.Portals.ContainsKey(portalName))
+                    {
+                        WritetoYML(portalName, zdoName);
+                    }
+
+                    if (!PortalN.Portals[portalName].PortalZDOs.ContainsKey(zdoName))
+                    {
+                        WritetoYML(portalName, zdoName, "", true, __instance, ply);
+                    }
+                }
+                
                // RMP.LogInfo("ZDO name " + zdoName);
 
                 int colorIndex = PortalColorLogic.CrystalandKeyLogicColor(
@@ -474,13 +493,13 @@ namespace RareMagicPortal
                 {
                     PortalColorLogic.updateYmltoColorChange(portalName,
                         PortalColorLogic.PortalColors[MagicPortalFluid.FreePassageColor.Value].Pos,
-                        __instance.m_nview.m_zdo.ToString());
+                        zdoName);
                 }
 
                 if (portalName == "" && PortalColorLogic.reloaded)
                 {
                     PortalColorLogic.RMP.LogInfo("Updating Blank Portals");
-                    PortalColorLogic.updateYmltoColorChange("", colorIndex, __instance.m_nview.m_zdo.ToString());
+                    PortalColorLogic.updateYmltoColorChange("", colorIndex, zdoName);
                     PortalColorLogic.reloaded = false;
                 }
 
@@ -501,8 +520,8 @@ namespace RareMagicPortal
 
                     string biome = closestPlayer.GetCurrentBiome().ToString();
 
-                    if (MagicPortalFluid.UsePortalProgression.Value != MagicPortalFluid.Toggle.On &&
-                        MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
+ 
+                       if ( MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
                     {
                         var biomecolor = functions.GetBiomeColor(biome);
 
@@ -520,15 +539,15 @@ namespace RareMagicPortal
                     // __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastColoredByHashCode, Player.m_localPlayer?.GetPlayerID() ?? 0L);
 
                     __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeHashCode, biome);
-                    PortalN.Portals[portalName].PortalZDOs[__instance.m_nview.m_zdo.ToString()].Biome = biome;
+                    PortalN.Portals[portalName].PortalZDOs[zdoName].Biome = biome;
 
                     if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.Off)
-                        PortalN.Portals[portalName].PortalZDOs[__instance.m_nview.m_zdo.ToString()].BiomeColor = "skip";
+                        PortalN.Portals[portalName].PortalZDOs[zdoName].BiomeColor = "skip";
 
                     PortalColorLogic.RMP.LogInfo("Setting ZDO Biome Data For First Time");
 
                     if (portalName == "")
-                        PortalColorLogic.updateYmltoColorChange("", colorIndex, __instance.m_nview.m_zdo.ToString());
+                        PortalColorLogic.updateYmltoColorChange("", colorIndex, zdoName);
                 }
 
                 bool tagisset = portalZDO.ShowName; // PopUp Hover Text 
@@ -562,23 +581,8 @@ namespace RareMagicPortal
                             return;
                         }
 
-                        if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
-                        {
-                            hoverText = string.Format(
-                                "{0}\n<size={4}>[<color={5}>{2}</color>] ADMIN override color change <color={6}>Portal</color>[{1}] Color to: [<color={7}>{3}</color>] </size> \n Portal Progression requires a sacrifice of {9} \n [<color={5}>{8}</color>] to Sacrifice",
-                                hoverText,
-                                currentColor,
-                                MagicPortalFluid.portalRMPKEY.Value + " + " + "E",
-                                nextColor,
-                                15,
-                                "#" + ColorUtility.ToHtmlStringRGB(Color.yellow),
-                                "#" + ColorUtility.ToHtmlStringRGB(currentColorHex),
-                                "#" + ColorUtility.ToHtmlStringRGB(PortalColorLogic.PortalColors[nextColor].HexName),
-                                MagicPortalFluid.portalRMPsacrifceKEY.Value + " + " + "E",
-                                "NextColor requires this stuff"
-                            );
-                        }
-                        else if (MagicPortalFluid.ConfigEnableCrystalsNKeys.Value)
+
+                        if (MagicPortalFluid.ConfigEnableCrystalsNKeys.Value)
                         {
                             hoverText = string.Format(
                                 "{0}\n<size={4}>[<color={5}>{2}</color>] Change <color={7}>Portal</color>[{1}] Crystal to: [<color={8}>{3}</color>]</size>\n<size={4}>{6}</size>",
@@ -688,7 +692,7 @@ namespace RareMagicPortal
             int crystalCost = MagicPortalFluid.ConfigCrystalsConsumable.Value;
 
             if (zdoName == "")
-                zdoName = instance.m_nview.m_zdo.ToString();
+                zdoName = instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
 
             if (!PortalN.Portals.ContainsKey(portalName))
             {
@@ -697,7 +701,7 @@ namespace RareMagicPortal
 
             if (!PortalN.Portals[portalName].PortalZDOs.ContainsKey(zdoName))
             {
-                WritetoYML(portalName, instance.m_nview.m_zdo.ToString(), "", true, instance);
+                WritetoYML(portalName, zdoName, "", true, instance);
             }
 
             var portalData = PortalN.Portals[portalName];
@@ -1379,7 +1383,7 @@ namespace RareMagicPortal
             }
         }*/
 
-        internal static void WritetoYML(string PortalName, string ZDOID = null, string oldname = "", bool writeZdoOnly = false, TeleportWorld instance = null) // this only happens if portal is not in yml file at all
+        internal static void WritetoYML(string PortalName, string ZDOID = null, string oldname = "", bool writeZdoOnly = false, TeleportWorld instance = null, string creator = "") // this only happens if portal is not in yml file at all
         {
             RMP.LogInfo("Writing New YML");
             int colorint = 1;
@@ -1400,34 +1404,19 @@ namespace RareMagicPortal
             PortalName.ZDOP zdoid = new PortalName.ZDOP { };
             PortalN.Portals[PortalName].PortalZDOs.Add(ZDOID, zdoid);
             if (instance != null)
-            {
-                string valcheck = instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalZdo); // somtimes the zdo string changes, this should keep up and delete old one
-                if (ZDOID != valcheck && valcheck != "")
-                {           
-                    var port = PortalN.Portals[PortalName];
-                    bool found = false;
-                    foreach (var zdo in port.PortalZDOs)
-                    {
-                        if (zdo.Key == valcheck)
-                            found = true;
-                    }
-                    if (found)
-                    {
-                        PortalN.Portals[PortalName].PortalZDOs[ZDOID] = PortalN.Portals[PortalName].PortalZDOs[valcheck].Clone();
-                        PortalN.Portals[PortalName].PortalZDOs.Remove(valcheck); // delete old one
-                        instance.m_nview.m_zdo.Set(MagicPortalFluid._portalZdo, ZDOID);
-                        cloneoverride = true;
-                    }
-
-                }
-
-            }
+            { }
 
             if (oldname != "")
             {
                 PortalN.Portals[PortalName].PortalZDOs[ZDOID] = PortalN.Portals[oldname].PortalZDOs[ZDOID].Clone(); // copy from another if just changed portal name // maybe config?
                 cloneoverride = true;
             }
+
+            if (creator != "")
+            {
+                PortalN.Portals[PortalName].PortalZDOs[ZDOID].Creator = creator;
+            }
+
             if (!cloneoverride)
             {
                 PortalN.Portals[PortalName].Free_Passage = false;
@@ -1795,6 +1784,12 @@ namespace RareMagicPortal
 
             value = default;
             return false;
+        }
+
+        private static string CreatePortalID(string name)
+        {
+            Random random = new Random();
+            return (int)UnityEngine.Random.Range(1, 888) + "_" + (int)UnityEngine.Random.Range(1, 99999);
         }
     }
 

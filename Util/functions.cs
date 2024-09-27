@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using YamlDotNet.Serialization;
 using static Heightmap;
@@ -290,6 +291,44 @@ namespace RareMagicPortal
             double y = r * Math.Sin(theta);
 
             return (x, y);
+        }
+
+        public static Dictionary<Minimap.PinData, ZDO>? GetActivePins()
+        {
+            try
+            {
+                Type tpType = Type.GetType("TargetPortal.Map, TargetPortal");
+                if (tpType == null)
+                {
+                    UnityEngine.Debug.LogError("TargetPortal.Map type could not be found.");
+                    return null;
+                }
+
+                // Use GetField instead of GetProperty
+                FieldInfo activePinsField = tpType.GetField("activePins", BindingFlags.NonPublic | BindingFlags.Static);
+                if (activePinsField == null)
+                {
+                    UnityEngine.Debug.LogError("The activePins field could not be found.");
+                    return null;
+                }
+
+                // Retrieve the value of the activePins field
+                var activePins = activePinsField.GetValue(null);
+                if (activePins == null)
+                {
+                    UnityEngine.Debug.LogError("The activePins field returned null.");
+                    return null;
+                }
+
+                // Cast the result to the correct type
+                return (Dictionary<Minimap.PinData, ZDO>?)activePins;
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogError("An error occurred while retrieving activePins: " + ex.Message);
+                return null;
+            }
+
         }
 
     }

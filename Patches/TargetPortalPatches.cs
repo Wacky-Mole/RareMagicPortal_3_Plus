@@ -96,11 +96,6 @@ namespace RareMagicPortal_3_Plus
                         return false;
                     }
 
-                    if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
-                    {
-                        return true; // Allow TargetPortal to handle this
-                    }
-
                     if (PortalColorLogic.CrystalandKeyLogic(portalName, portalZDO.ToString()))
                     {
                         return true; // Allow TargetPortal to do its checks

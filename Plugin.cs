@@ -1,16 +1,5 @@
-﻿// MagicPortalFluid
-// a Valheim mod created by WackyMole. Do whatever with it. - WM
-// assets from https://assetstore.unity.com/packages/3d/props/interior/free-alchemy-and-magic-pack-142991
+﻿// assets from https://assetstore.unity.com/packages/3d/props/interior/free-alchemy-and-magic-pack-142991
 // crystal assets from https://assetstore.unity.com/packages/3d/environments/fantasy/translucent-crystals-106274
-//  Thank you https://github.com/redseiko/ComfyMods/tree/main/ColorfulPortals
-//
-// File:    MagicPortalFluid.cs
-// Project: MagicPortalFluid
-// create yml file for portal names, put example file in it and explain that it only does something with EnableCrystals and Consumable is true
-// load portal names After every change
-// black, yellow (normal), red, green, blue, purple, tan, gold, white
-//
-//
 /*
  * Colors for Portals:
 Black = mountain
@@ -223,7 +212,6 @@ namespace RareMagicPortal
         internal static ConfigEntry<string>? GemColorOrange;
         internal static ConfigEntry<Toggle>? RiskyYMLSave;
         internal static ConfigEntry<Toggle>? UseSmallUpdates;
-        internal static ConfigEntry<Toggle>? UsePortalProgression;
         internal static ConfigEntry<Toggle>? PreventTargetPortalFromChanging;
         internal static ConfigEntry<string>? PPRed;
         internal static ConfigEntry<string>? PPGreen;
@@ -325,6 +313,7 @@ namespace RareMagicPortal
         internal static readonly int _portalBiomeColorHashCode = "PortalBiomeColorRMP".GetHashCode();
         internal static readonly int _portalLastName = "PortalLastNamed".GetHashCode();
         internal static readonly int _portalZdo = "PortalLastZDO".GetHashCode();
+        internal static readonly int _portalID = "PortalID".GetHashCode();
         internal static string PortalFluidname;
         internal static bool TargetPortalLoaded = false;
         public static AssetBundle uiasset;
@@ -1153,8 +1142,6 @@ namespace RareMagicPortal
             ConfigAllowItems = config(portal, "AdditionalAllowItems", "", "Additional Items to be allowed by Default - 'Wood,Stone'");
 
             ConfigCreatorLock = config(portal, "Only Creator Can Change Name", false, "Only Creator can change Portal name");
-
-            UsePortalProgression = config(portal, "Portal Progression", Toggle.Off, "Actives Portal Progression Mode");
 
             ConfigTargetPortalAnimation = config(portal, "Force Portal Animation", Toggle.Off, "Forces Portal Animation for Target Portal Mod, is not synced and only applies the config if the mod is loaded", false);
 

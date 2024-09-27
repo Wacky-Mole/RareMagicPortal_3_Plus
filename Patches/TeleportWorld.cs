@@ -16,6 +16,7 @@ using System.Diagnostics;
 using ServerSync;
 using Random = UnityEngine.Random;
 using static UnityEngine.InputSystem.InputRemoting;
+using YamlDotNet.Core.Tokens;
 
 
 namespace RareMagicPortal_3_Plus.Patches
@@ -46,7 +47,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     return true;
 
                 string PortalName = __instance.m_nview.m_zdo.GetString("tag");
-                var zdoname = __instance.m_nview.m_zdo.ToString();
+                var zdoname = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
                 try
                 {
                     var portal = PortalColorLogic.PortalN.Portals[PortalName];
@@ -58,16 +59,17 @@ namespace RareMagicPortal_3_Plus.Patches
                         return false;
                     }
 
-                    if (portal.SpecialMode == PortalModeClass.PortalMode.AllowedUsersOnly && (portal.AllowedUsers == null || !portal.AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName())))// allowed users
-                    {
-                        __result = false;
-                        return false;
-                    }
                     if (portal.SpecialMode == PortalModeClass.PortalMode.AdminOnly && !MagicPortalFluid.isAdmin)// allowed users
                     {
                         __result = false;
                         return false;
                     }
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.AllowedUsersOnly && (portal.AllowedUsers == null || !portal.AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName())))// allowed users
+                    {
+                        __result = false;
+                        return false;
+                    }
+
                     if (portal.SpecialMode == PortalModeClass.PortalMode.CordsPortal ||  // Override color showing
                         portal.SpecialMode == PortalModeClass.PortalMode.TransportNetwork)
                     {
@@ -167,7 +169,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 }
                 
                 string PortalName = __instance.m_teleportWorld.m_nview.m_zdo.GetString("tag");
-                var zdoname = __instance.m_teleportWorld.m_nview.m_zdo.ToString();  
+                var zdoname = __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);  
                 var portal = PortalColorLogic.PortalN.Portals[PortalName];
                 var portalZDO = portal.PortalZDOs[zdoname];
                 if (!portalZDO.Active) // skip all
@@ -232,7 +234,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 }*/
 
                 // Check crystal and key logic
-                if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.m_zdo.ToString(), __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
+                if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID), __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
                 {
                     bool cancelTargetPortal = true;
 
@@ -336,8 +338,9 @@ namespace RareMagicPortal_3_Plus.Patches
                     return false;
                 }
             }
-
             internal static Exception? Finalizer(Exception __exception) => __exception is SkipPortalException ? null : __exception;
+
+
 
             [HarmonyPostfix]
             [HarmonyPriority(Priority.Low)]
@@ -354,79 +357,76 @@ namespace RareMagicPortal_3_Plus.Patches
             {
                 try
                 {
-                    Minimap minimap = Minimap.instance;
-                    List<Minimap.PinData> pins = minimap.m_pins;
+                    //Minimap minimap = Minimap.instance;
+                    //List<Minimap.PinData> pins = minimap.m_pins;
                    // MagicPortalFluid.RareMagicPortal.LogWarning(" Made it to Update Portal Icons");
 
                     // Get TargetPortal.Map's activePins property
-                    var activePins = GetActivePins();
+                    var activePins = functions.GetActivePins();
                     if (activePins == null) return;
-                    
-                        
-                    MagicPortalFluid.RareMagicPortal.LogWarning(" Got TargetPortal Icons count " + activePins.Count());
 
-                    foreach (var pin in activePins)
+                    MagicPortalFluid.RareMagicPortal.LogWarning("Got TargetPortal Icons count " + activePins.Count() + " Going to reduce and color");
+                    HashSet<Vector3> existingPins = new(activePins.Keys.Select(p => p.m_pos));
+
+                    foreach (var know in MagicPortalFluid.PortalsKnown) // PortalsKnown key is zdo.toString()
                     {
-                        MagicPortalFluid.RareMagicPortal.LogWarning(pin.Value.m_uid);
-                        if ( activePins.TryGetValue(pin.Key, out ZDO portalZDO))  //pin.Key.m_icon.name == "TargetPortalIcon"
-                        {
+                        string PortalName = know.Value.GetString("tag");
+                        string zdoID = know.Value.GetString(MagicPortalFluid._portalID);
+                       // MagicPortalFluid.RareMagicPortal.LogWarning("known "+ zdoID);
+                        if (zdoID != "") //  if blank or if default is target Portal maybe
+                        {             
                             int colorint = PortalColorLogic.CrystalandKeyLogicColor(
                                 out string currentColor,
-                                out Color currentColorHex,  
+                                out Color currentColorHex,
                                 out string nextColor,
-                                pin.Key.m_name,
-                                portalZDO.ToString()
-                            );
-                            MagicPortalFluid.RareMagicPortal.LogWarning(" colorint for this icon " + colorint);
-                            pin.Key.m_icon = colorint == 0 || colorint == 999 ? MagicPortalFluid.IconDefault : MagicPortalFluid.Icons[((PortalColorLogic.PortalColor)colorint).ToString()];
+                                PortalName,
+                                zdoID
+                            );                          
+                            var portal = PortalColorLogic.PortalN.Portals[PortalName];
+                            var portalZDO = portal.PortalZDOs[zdoID];
+                            if (portalZDO.SpecialMode == PortalModeClass.PortalMode.TargetPortal) {
+                               // MagicPortalFluid.RareMagicPortal.LogWarning(portalZDO + " Is in targetPortal Mode");
+                                if (existingPins.Contains(know.Value.m_position))
+                                {
+                                    existingPins.Remove(know.Value.m_position);
+                                   // MagicPortalFluid.RareMagicPortal.LogWarning("      Removed ");
+                                }
+                            }
+                            //MagicPortalFluid.RareMagicPortal.LogWarning(" colorint for this icon " + colorint);
+                            foreach (var pin in activePins.Keys)
+                            {
+                                if (pin.m_pos == know.Value.m_position)
+                                {
+                                    pin.m_icon = colorint == 0 || colorint == 999
+                                        ? MagicPortalFluid.IconDefault
+                                        : MagicPortalFluid.Icons[((PortalColorLogic.PortalColor)colorint).ToString()];
+                                }
+                            }
+                        } else
+                        {           
+                            // remove all unZdoID portals
                         }
                     }
+                    List<Minimap.PinData> remove = activePins.Keys.Where(p => existingPins.Contains(p.m_pos)).ToList();
+                    foreach (Minimap.PinData pin in remove)
+                    {
+                        Minimap.instance.RemovePin(pin);
+                        activePins.Remove(pin);
+                    }
+
+                    /*
+                    foreach (var pin in activePins) // icons left
+                    {
+                        string zdoID = pin.Value.GetString(MagicPortalFluid._portalID);
+                        MagicPortalFluid.RareMagicPortal.LogWarning("pins Left in active"+ zdoID);
+                    } */
                 }
                 catch (Exception ex)
                 {
-                    // Log the exception for debugging purposes
                     // RMP.LogInfo($"Error in UpdatePortalIcons: {ex.Message}");
                 }
             }
 
-            // Helper method to get TargetPortal.Map's activePins property using reflection
-            private static Dictionary<Minimap.PinData, ZDO>? GetActivePins()
-            {
-                try
-                {
-                    Type tpType = Type.GetType("TargetPortal.Map, TargetPortal");
-                    if (tpType == null)
-                    {
-                        UnityEngine.Debug.LogError("TargetPortal.Map type could not be found.");
-                        return null;
-                    }
-
-                    // Use GetField instead of GetProperty
-                    FieldInfo activePinsField = tpType.GetField("activePins", BindingFlags.NonPublic | BindingFlags.Static);
-                    if (activePinsField == null)
-                    {
-                        UnityEngine.Debug.LogError("The activePins field could not be found.");
-                        return null;
-                    }
-
-                    // Retrieve the value of the activePins field
-                    var activePins = activePinsField.GetValue(null);
-                    if (activePins == null)
-                    {
-                        UnityEngine.Debug.LogError("The activePins field returned null.");
-                        return null;
-                    }
-
-                    // Cast the result to the correct type
-                    return (Dictionary<Minimap.PinData, ZDO>?)activePins;
-                }
-                catch (Exception ex)
-                {
-                    UnityEngine.Debug.LogError("An error occurred while retrieving activePins: " + ex.Message);
-                    return null;
-                }
-
-            }
         }
 
 
