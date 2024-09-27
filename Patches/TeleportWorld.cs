@@ -367,6 +367,7 @@ namespace RareMagicPortal_3_Plus.Patches
 
                     foreach (var pin in activePins)
                     {
+                        MagicPortalFluid.RareMagicPortal.LogWarning(pin.Value.m_uid);
                         if ( activePins.TryGetValue(pin.Key, out ZDO portalZDO))  //pin.Key.m_icon.name == "TargetPortalIcon"
                         {
                             int colorint = PortalColorLogic.CrystalandKeyLogicColor(

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -33,15 +34,49 @@ namespace RareMagicPortal
         {
             this.ratio = ratio;
         }
+        private byte[] ReadEmbeddedFileBytes(string fileName)
+        {
+            // Get the current executing assembly
+            var assembly = Assembly.GetExecutingAssembly(); 
 
+            // List all available resource names and find the one that matches the file name
+            string resourceName = assembly.GetManifestResourceNames()
+                                          .FirstOrDefault(name => name.EndsWith(fileName, System.StringComparison.OrdinalIgnoreCase));
+
+            if (resourceName == null)
+            {
+                Debug.LogError($"Embedded resource '{fileName}' not found.");
+                return null;
+            }
+
+            // Open a stream to read the embedded file
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream == null)
+                {
+                    Debug.LogError($"Failed to open stream for embedded resource '{resourceName}'.");
+                    return null;
+                }
+
+                // Read the stream into a byte array
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    stream.CopyTo(memoryStream);
+                    return memoryStream.ToArray();
+                }
+            }
+        }
+        /*
         private byte[] ReadEmbeddedFileBytes(string name)
         {
             var myType = typeof(SpriteTools);
             var n = myType.Namespace;
             using MemoryStream stream = new();
-            Assembly.GetExecutingAssembly().GetManifestResourceStream("RareMagicPortal." + name)?.CopyTo(stream);
+            System.Reflection.Assembly a = System.Reflection.Assembly.GetExecutingAssembly();
+            string fileName = a.GetName().Name;
+            Assembly.GetExecutingAssembly().GetManifestResourceStream(fileName + "." + name).CopyTo(stream);
             return stream.ToArray();
-        }
+        }*/
 
         public Texture2D loadTexture(string name)
         {
@@ -127,6 +162,7 @@ namespace RareMagicPortal
                 BlendTexture();
             }
             MakeSprite();
+            outcome.name = "RMP_icon";
             return outcome;
         }
 

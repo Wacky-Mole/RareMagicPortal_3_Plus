@@ -409,9 +409,9 @@ namespace RareMagicPortal
         {
             context = this;
 
-            Texture2D tex = IconColor.loadTexture("icons/portal.png");
+            Texture2D tex = IconColor.loadTexture("portal.png");
             if (tex == null) Debug.LogError("Failed to load portal.png texture.");
-            Texture2D temp = IconColor.loadTexture("icons/portaliconTarget.png");
+            Texture2D temp = IconColor.loadTexture("portaliconTarget.png");
             if (temp == null) Debug.LogError("Failed to load portaliconTarget.png texture.");
 
             IconDefault = IconColor.CreateSprite(temp, false);
