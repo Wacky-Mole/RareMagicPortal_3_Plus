@@ -17,6 +17,7 @@ using ServerSync;
 using Random = UnityEngine.Random;
 using static UnityEngine.InputSystem.InputRemoting;
 using YamlDotNet.Core.Tokens;
+using System.ComponentModel;
 
 
 namespace RareMagicPortal_3_Plus.Patches
@@ -27,19 +28,30 @@ namespace RareMagicPortal_3_Plus.Patches
 
 
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.HaveTarget))] 
-        [HarmonyPriority(Priority.HigherThanNormal)]
+        [HarmonyPriority(Priority.LowerThanNormal)]
         public static class SetPortalsConnectedRMP
         {
-            private static bool Prefix(TeleportWorld __instance)
+            private static bool Prefix(TeleportWorld __instance,  ref bool __result)
             {
 
-                return true;//  OVERRIDE THIS FROM TARGET PORTAL
+                //return true;//  OVERRIDE THIS FROM TARGET PORTAL
+                if (!MagicPortalFluid.TargetPortalLoaded)
+                    return true;
+
+                if (__instance.m_nview == null || __instance.m_nview.GetZDO() == null)
+                {
+                    __result = false;
+                }
+
+                __result = __instance.m_nview.GetZDO().GetConnectionZDOID(ZDOExtraData.ConnectionType.Portal) != ZDOID.None;
+
+                return false;
             }
         }
 
 
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.TargetFound))]
-        [HarmonyPriority(Priority.HigherThanNormal)]
+        [HarmonyPriority(Priority.LowerThanNormal)]
         public static class DisabldHaveTarget
         {
             internal static bool Prefix(TeleportWorld __instance, ref bool __result)
@@ -60,7 +72,7 @@ namespace RareMagicPortal_3_Plus.Patches
                         return false;
                     }
 
-                    if (portal.SpecialMode == PortalModeClass.PortalMode.AdminOnly && !MagicPortalFluid.isAdmin)// allowed users
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.AdminOnly && !MagicPortalFluid.isAdmin || portal.SpecialMode == PortalModeClass.PortalMode.RandomTeleport)// allowed users
                     {
                         __result = false;
                         return false;
@@ -93,12 +105,36 @@ namespace RareMagicPortal_3_Plus.Patches
                         {
                             __result = true;
                             return false;
-                        }
+                        }   
                     }                
                 }
                 catch { } // catch any that haven't been entered yet
+                if (!MagicPortalFluid.TargetPortalLoaded)
+                    return true;
+                else if (!__instance.m_hadTarget && MagicPortalFluid.TargetPortalLoaded)
+                {
+                    __result = false;
+                    return false;
+                }
+                // Override Target Portal
+                if (__instance.m_nview == null || __instance.m_nview.GetZDO() == null)
+                {
+                    __result = false;
+                }
 
-                return true;
+                ZDOID connectionZDOID = __instance.m_nview.GetZDO().GetConnectionZDOID(ZDOExtraData.ConnectionType.Portal);
+                if (connectionZDOID == ZDOID.None)
+                {
+                    __result = false;
+                }
+
+                if (ZDOMan.instance.GetZDO(connectionZDOID) == null)
+                {
+                    ZDOMan.instance.RequestZDO(connectionZDOID);
+                    __result = false;
+                }
+                __result = true;
+                return false;
             }
         }
 
@@ -156,12 +192,32 @@ namespace RareMagicPortal_3_Plus.Patches
             }
         }
 
+        [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.Awake))]
+        private static class AddNewPortalToListRMP
+        {
+            private static void Postfix(TeleportWorld __instance)
+            {
+                if (__instance.TryGetComponent<WearNTear>(out var wear))
+                {
+                  // MagicPortalFluid.PortalsKnown.Add(__instance.m_nview.GetZDO().ToString(), __instance.m_nview.GetZDO());
+                    Action? onDestroy = wear.m_onDestroyed;
+                    wear.m_onDestroyed = () =>
+                    {
+                        onDestroy?.Invoke();
+                        MagicPortalFluid.PortalsKnown.Remove(__instance.m_nview.GetZDO().ToString());
+                    };
+                }
+            }
+        }
+
+
         [HarmonyPatch(typeof(Player), nameof (Player.TeleportTo))]
         public static class FastTeleRMP
         {
             public static void Postfix(Player __instance, Vector3 pos, Quaternion rot, ref bool distantTeleport, ref bool __result)
             {
-                distantTeleport = MagicPortalFluid.LastTeleportFast;
+                UnityEngine.Debug.Log("distantTeleport teleport is " + !MagicPortalFluid.LastTeleportFast);
+                distantTeleport = !MagicPortalFluid.LastTeleportFast;
                 MagicPortalFluid.LastTeleportFast = false;
 
                 /* for reference
@@ -180,7 +236,10 @@ namespace RareMagicPortal_3_Plus.Patches
 
 
 
-        [HarmonyPatch(typeof(TeleportWorldTrigger), nameof(TeleportWorldTrigger.OnTriggerEnter))]
+
+
+
+            [HarmonyPatch(typeof(TeleportWorldTrigger), nameof(TeleportWorldTrigger.OnTriggerEnter))]
         internal class TeleportWorld_Teleport_CheckforCrystal
         {
             internal class SkipPortalException : Exception { }
@@ -344,6 +403,10 @@ namespace RareMagicPortal_3_Plus.Patches
 
                     if (cancelTargetPortal && MagicPortalFluid.TargetPortalLoaded)
                     {
+
+                            ZLog.Log("Teleportation TRIGGER");
+                        __instance.m_teleportWorld.Teleport(colliderIn.GetComponent<Player>());
+
                         MagicPortalFluid.Teleporting = false;
                         throw new SkipPortalException();
                     }
@@ -454,8 +517,5 @@ namespace RareMagicPortal_3_Plus.Patches
             }
 
         }
-
-
-
     }
 }

@@ -26,6 +26,13 @@ namespace RareMagicPortal_3_Plus
             }
         }
 
+        [HarmonyPatch(typeof(Game), nameof(Game.ConnectPortals))]
+        [HarmonyPriority(Priority.HigherThanNormal)]
+        private static class SkipPortalConnectingRMPOverride
+        {
+            internal class SkipPortalException5 : Exception { }
+        }
+
 
         [HarmonyPatch(typeof(Minimap), nameof(Minimap.OnMapLeftClick))]
         internal class MapLeftClickForRareMagic

@@ -383,6 +383,12 @@ namespace RareMagicPortal
             assetPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), typeof(MagicPortalFluid).Namespace);
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), (string)null);
 
+            if (TargetPortalLoaded)
+            {
+                MethodInfo original = AccessTools.Method(typeof(Game), nameof(Game.ConnectPortals));
+                _harmony.Unpatch(original, HarmonyPatchType.All, "org.bepinex.plugins.targetportal"); //lol
+            }
+
             SetupWatcher();
             setupYMLFolderWatcher();
 
