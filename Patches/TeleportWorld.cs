@@ -18,6 +18,7 @@ using Random = UnityEngine.Random;
 using static UnityEngine.InputSystem.InputRemoting;
 using YamlDotNet.Core.Tokens;
 using System.ComponentModel;
+using BepInEx.Logging;
 
 
 namespace RareMagicPortal_3_Plus.Patches
@@ -214,11 +215,18 @@ namespace RareMagicPortal_3_Plus.Patches
         [HarmonyPatch(typeof(Player), nameof (Player.TeleportTo))]
         public static class FastTeleRMP
         {
-            public static void Postfix(Player __instance, Vector3 pos, Quaternion rot, ref bool distantTeleport, ref bool __result)
+            public static void Postfix(ref float ___m_teleportTimer, Player __instance, Vector3 pos, Quaternion rot, ref bool distantTeleport, ref bool __result)
             {
                 UnityEngine.Debug.Log("distantTeleport teleport is " + !MagicPortalFluid.LastTeleportFast);
                 distantTeleport = !MagicPortalFluid.LastTeleportFast;
+                if (MagicPortalFluid.LastTeleportFast)
+                {
+                    float timerStartTime = 8f;
+                    ___m_teleportTimer = timerStartTime;
+                }
+
                 MagicPortalFluid.LastTeleportFast = false;
+                //logger.Log((LogLevel)16, (object)("Set teleport timer to " + timerStartTime));
 
                 /* for reference
                 if (__result && distantTeleport && ZNetScene.instance.IsAreaReady(pos))
