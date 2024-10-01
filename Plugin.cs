@@ -58,6 +58,7 @@ using UnityEngine.Assertions;
 using UnityEngine.UIElements;
 using YamlDotNet.Serialization;
 using static Interpolate;
+using static RareMagicPortal.PortalColorLogic;
 
 namespace RareMagicPortal
 {
@@ -327,6 +328,8 @@ namespace RareMagicPortal
 
         private static readonly KeyboardShortcut _changePortalReq = new(KeyCode.E, KeyCode.LeftControl);
         private static readonly KeyboardShortcut _portalRMPsacrifceKEY = new(KeyCode.E, KeyCode.LeftControl);
+
+        public static Dictionary<string, string> GemColorMappings = new Dictionary<string, string>();
 
         public enum Toggle
         {
@@ -610,6 +613,23 @@ namespace RareMagicPortal
             PortalKeyBlack.Description.English("Unlock Portals Requiring The Black Key");
             PortalKeyBlack.ToggleConfigurationVisibility(Configurability.Disabled);
             //PortalKeyBlack.Snapshot();
+
+
+
+            GemColorMappings = new Dictionary<string, string>
+            {
+                [nameof(PortalColor.Gold)] = GemColorGold.Value,
+                [nameof(PortalColor.Red)] = GemColorRed.Value,
+                [nameof(PortalColor.Green)] = GemColorGreen.Value,
+                [nameof(PortalColor.Blue)] = GemColorBlue.Value,
+                [nameof(PortalColor.Purple)] = GemColorPurple.Value,
+                [nameof(PortalColor.Tan)] = GemColorTan.Value,
+                [nameof(PortalColor.Yellow)] = GemColorYellow.Value,
+                [nameof(PortalColor.White)] = GemColorWhite.Value,
+                [nameof(PortalColor.Black)] = GemColorBlack.Value,
+                [nameof(PortalColor.Cyan)] = GemColorCyan.Value,
+                [nameof(PortalColor.Orange)] = GemColorOrange.Value
+            };
         }
 
 
@@ -865,6 +885,16 @@ namespace RareMagicPortal
             }
         }
 
+
+        public static string GetGemColorByName(string colorName)
+        {
+            if (GemColorMappings.TryGetValue(colorName, out string gemItemName))
+            {
+                return gemItemName;
+            }
+            RareMagicPortal.LogError($"Invalid portal color: {colorName}. No corresponding gem found.");
+            return null;
+        }
         internal void ReadConfigValues(object sender, FileSystemEventArgs e) // Thx Azumatt
         {
             if (!File.Exists(ConfigFileFullPath)) return;

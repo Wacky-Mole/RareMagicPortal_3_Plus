@@ -334,7 +334,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 {
                     bool cancelTargetPortal = true;
 
-                    if (portal.SpecialMode == PortalModeClass.PortalMode.CordsPortal && Player.m_localPlayer.IsTeleportable())
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.CordsPortal)
                     {
                         string coords = portalZDO.Coords; // Assuming Coords is a string like "12.5, 34.6, 78.9"
                         if (!string.IsNullOrEmpty(coords))
@@ -357,7 +357,7 @@ namespace RareMagicPortal_3_Plus.Patches
                         }                                
                     }
 
-                    if (portalZDO.SpecialMode == PortalModeClass.PortalMode.RandomTeleport && Player.m_localPlayer.IsTeleportable())
+                    if (portalZDO.SpecialMode == PortalModeClass.PortalMode.RandomTeleport)
                     {
                         string funnyLine = "";
                         switch  ((int)Random.Range(0, 11))
@@ -401,7 +401,7 @@ namespace RareMagicPortal_3_Plus.Patches
                         ((Character)Player.m_localPlayer).m_lastGroundTouch = 0f;
                     }
 
-                    if (portal.SpecialMode == PortalModeClass.PortalMode.TransportNetwork && Player.m_localPlayer.IsTeleportable())
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.TransportNetwork)
                     {
                         LastPortalTrigger = __instance.m_teleportWorld.m_nview.GetZDO().GetPosition();
                         LastPortalName = PortalName;

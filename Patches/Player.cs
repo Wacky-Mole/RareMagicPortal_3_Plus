@@ -11,6 +11,9 @@ using UnityEngine;
 using static RareMagicPortal.PortalName;
 using YamlDotNet.Serialization;
 using System.IO;
+using ItemManager;
+using System.ComponentModel;
+using YamlDotNet.Core.Tokens;
 
 namespace RareMagicPortal_3_Plus.Patches
 {
@@ -76,215 +79,144 @@ namespace RareMagicPortal_3_Plus.Patches
                 return true;
             }
         }
-        /*
-        [HarmonyPatch(typeof(Inventory), "IsTeleportable")]
-        public static class istele     
+
+        [HarmonyPatch(typeof(Inventory), nameof(Inventory.IsTeleportable))]
+        public static class Is_Teleportable
         {
             [HarmonyPriority(Priority.LowerThanNormal)]
             internal static bool Prefix(ref bool __result, ref Inventory __instance)
             {
-                if (__instance == null || Player.m_localPlayer == null)
-                    return true;
-                if (MagicPortalFluid.JustWaitforInventory)
-                    return true;
-
-                bool bo2 = false;
-                bool drinkactive = false;
-                if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
+               //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 1");
+                if (__instance == null || Player.m_localPlayer == null || MagicPortalFluid.JustWaitforInventory)
                 {
-                    bo2 = true;
-                    drinkactive = true;
+                    return true;
+                }
+               // MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 2");
+
+                bool teleportAllowed = false;
+                bool drinkActive = Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode());
+
+                if (drinkActive)
+                {
+                    teleportAllowed = true;
                 }
 
-                //RareMagicPortal.LogInfo("Here 1");
-                Piece portal = null;
-                String name = null;
-                Vector3 hi = Player.m_localPlayer.transform.position;
-                List<Piece> piecesfound = new List<Piece>();
-                functions.GetAllTheDamnPiecesinRadius(hi, 5f, piecesfound);
+              //  MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 3");
+                Vector3 playerPosition = Player.m_localPlayer.transform.position;
+                List<Piece> piecesFound = new List<Piece>();
+                functions.GetAllTheDamnPiecesinRadius(playerPosition, 5f, piecesFound);
 
-                TeleportWorld portalW = null;
-                foreach (Piece piece in piecesfound)
+                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 4");
+                Piece portalPiece = piecesFound.FirstOrDefault(piece => piece.TryGetComponent<TeleportWorld>(out _));
+                if (portalPiece == null)
                 {
-                    if (piece.TryGetComponent<TeleportWorld>(out portalW))
-                    {
-                        break;
-                    }
+                    return true; // No portal nearby
                 }
-                // RareMagicPortal.LogInfo("Here 2");
 
-                if (portalW != null)
+                TeleportWorld portalW = portalPiece?.GetComponent<TeleportWorld>();
+                if (portalW == null)
                 {
-                    //portalW = portal.GetComponent<TeleportWorld>();
-                    name = portalW.GetText(); // much better
-                    //RareMagicPortal.LogInfo("Here 2.1");
-                    if (name != null)
+                    return true; // Portal component not found
+                }
+                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 5");
+                string portalName = portalW.GetText();
+                if (string.IsNullOrEmpty(portalName))
+                {
+                    return true; // Invalid portal
+                }
+
+                if (!PortalColorLogic.PortalN.Portals.TryGetValue(portalName, out var portalData))
+                {
+                    return true; // Portal not found in the dictionary
+                }
+                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 6");
+                string zdoID = portalW.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
+                if (string.IsNullOrEmpty(zdoID) || !portalData.PortalZDOs.TryGetValue(zdoID, out var portalZDO))
+                {
+                    return true; // ZDO not found or invalid
+                }
+                string currentColor = portalZDO.Color;
+
+               // MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 7");
+                if (portalData.TeleportAnything || currentColor == MagicPortalFluid.TelePortAnythingColor.Value)
+                {
+                    teleportAllowed = true;
+                }
+                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 8");
+                if (!teleportAllowed && portalData.AdditionalProhibitItems != null)
+                {
+                    if (portalData.AdditionalProhibitItems.Count > 0)
                     {
-                        var PortalName = name;
-                        bool OdinsKin = false;
-                        bool Free_Passage = false;
-                        bool TeleportAny = false;
-                        List<string> AdditionalProhibitItems;
-
-                        string BiomeC = "";
-                        string currentColor = "";
-                        var flag = false;
-                        if (PortalName.Contains(PortalColorLogic.NameIdentifier))
+                        var prohibitedItem = __instance.GetAllItems().FirstOrDefault(item =>
                         {
-                            BiomeC = PortalName.Substring(PortalName.IndexOf(PortalColorLogic.NameIdentifier));//
-                            var BiomeC1 = PortalName.Substring(PortalName.IndexOf(PortalColorLogic.NameIdentifier) + 1);
-                            var index = PortalName.IndexOf(PortalColorLogic.NameIdentifier);
-                            PortalName = PortalName.Substring(0, index);
-                            flag = true;
+                            var prefab = ObjectDB.instance.GetItemPrefab(item.m_shared.m_name);
+                            return prefab != null && portalData.AdditionalProhibitItems.Contains(prefab.name);
+                        });
 
-                            int intS = Int32.Parse(BiomeC1);
-                            PortalColorLogic.PortalColor pcol = (PortalColorLogic.PortalColor)intS;
-                            currentColor = pcol.ToString();
-                        }
-                        
-
-                        if (!PortalColorLogic.PortalN.Portals.ContainsKey(PortalName)) // if doesn't contain use defaults
+                        if (prohibitedItem != null)
                         {
-                            PortalColorLogic.WritetoYML(PortalName, portalW.m_nview.m_zdo.ToString());
-                        }
-                        //RareMagicPortal.LogInfo("Here 3");
-                        OdinsKin = PortalColorLogic.PortalN.Portals[PortalName].Admin_only_Access;
-                        Free_Passage = PortalColorLogic.PortalN.Portals[PortalName].Free_Passage;
-                        TeleportAny = PortalColorLogic.PortalN.Portals[PortalName].TeleportAnything;
-                        AdditionalProhibitItems = PortalColorLogic.PortalN.Portals[PortalName].AdditionalProhibitItems;
-                        var Playerlist = PortalColorLogic.PortalN.Portals[PortalName].AllowedUsers;
-                        if (Playerlist.Count > 0) // block any teleport for a player not on list
-                        {
-                            var found = false;
-                            foreach (var playerc in Playerlist)
-                            {
-                                if (playerc == Player.m_localPlayer.GetPlayerName())
-                                {
-                                    found = true;
-                                }
-                            }
-                            if (!found)
-                            {
-                                MagicPortalFluid.RareMagicPortal.LogInfo($"Player is not in the Allowed List for " + PortalName);
-                                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Odin Deems " + Player.m_localPlayer.GetPlayerName() + " Not Worthy!");
-                                __result = false;
-                                return false;
-                            }
-                        }
-
-                        if (TeleportAny && !flag || currentColor == MagicPortalFluid.TelePortAnythingColor.Value) // allows for teleport anything portal if EnableCrystals otherwise just white // currentcolor is often ""
-                            bo2 = true;
-
-                        //RareMagicPortal.LogInfo("Here 4");
-                        if (!bo2 && AdditionalProhibitItems.Count > 0)
-                        {
-                            var instan = ObjectDB.instance;
-                            foreach (ItemDrop.ItemData allItem in __instance.GetAllItems())
-                            {
-                                foreach (var item in AdditionalProhibitItems)
-                                {
-                                    GameObject go = instan.GetItemPrefab(item);
-                                    if (go != null)
-                                    {
-                                        ItemDrop.ItemData data = go.GetComponent<ItemDrop>().m_itemData;
-                                        if (data != null)
-                                        {
-                                            if (data.m_shared.m_name == allItem.m_shared.m_name)
-                                            {
-                                                MagicPortalFluid.RareMagicPortal.LogInfo($"Found Prohibited item {data.m_shared.m_name} Teleport Not Allowed");
-                                                Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Prohibited item " + data.m_shared.m_name);
-                                                __result = false;
-                                                return false;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }// end !bo2
-                        //RareMagicPortal.LogInfo("Here 5");
-                        if (!bo2 && MagicPortalFluid.ConfigMaxWeight.Value > 0 && (MagicPortalFluid.TeleportingforWeight > 0 || MagicPortalFluid.Teleporting))
-                        {
-                            var playerweight = __instance.GetTotalWeight();
-
-                            if (playerweight > MagicPortalFluid.ConfigMaxWeight.Value)
-                            {
-                                MagicPortalFluid.RareMagicPortal.LogInfo($"Player Weight is greater than Max Portal Weight");
-                                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You are carrying too much, max is " + MagicPortalFluid.ConfigMaxWeight.Value);
-                                MagicPortalFluid.TeleportingforWeight++;
-
-                                if (MagicPortalFluid.TeleportingforWeight > 10)
-                                    MagicPortalFluid.TeleportingforWeight = 0;
-
-                                __result = false;
-                                return false;
-                            }
-                            MagicPortalFluid.TeleportingforWeight = 0;
-                        }
-                        if (MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
-                        {
-                            List<string> allowlist = new List<string>();
-                            bool skip = false;
-                            switch (currentColor)
-                            {
-                                case "Red": allowlist = MagicPortalFluid.PPRedAllows.Value.Replace(" ", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); break;
-                                case "Green": allowlist = MagicPortalFluid.PPGreenAllows.Value.Replace(" ", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); break;
-                                case "Blue": allowlist = MagicPortalFluid.PPBlueAllows.Value.Replace(" ", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); break;
-                                case "White":
-                                    __result = true;
-                                    return false;
-
-                                default: skip = true; break;
-                            }
-
-                            if (skip)
-                                return true;
-
-                            foreach (var itemData in __instance.GetAllItems())
-                            {
-                                if (!itemData.m_shared.m_teleportable && itemData.m_dropPrefab != null && !allowlist.Contains(itemData.m_dropPrefab.name))
-                                {
-                                    __result = false;
-                                    return false;
-                                }
-                            }
-
-                            __result = true;
+                            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Prohibited item detected: " + prohibitedItem.m_shared.m_name);
+                            __result = false;
                             return false;
                         }
                     }
                 }
-
-
-                if (bo2) // if status effect is active or teleportany color
+                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 9");
+                if (!teleportAllowed && MagicPortalFluid.ConfigMaxWeight.Value > 0)
                 {
-                    if (MagicPortalFluid.PortalDrinkDenyloc.Count == 0 || !drinkactive) // might expand upon this in future
+                    float playerWeight = __instance.GetTotalWeight();
+                    if (playerWeight > MagicPortalFluid.ConfigMaxWeight.Value)
                     {
+                        Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You are carrying too much, max is " + MagicPortalFluid.ConfigMaxWeight.Value);
+                        MagicPortalFluid.TeleportingforWeight = Math.Min(MagicPortalFluid.TeleportingforWeight + 1, 10);
+                        __result = false;
+                        return false;
+                    }
+                    MagicPortalFluid.TeleportingforWeight = 0;
+                }
+                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 10");
+                if (teleportAllowed && (!drinkActive || MagicPortalFluid.PortalDrinkDenyloc.Count == 0))
+                {
+                    __result = true;
+                    return false;
+                }
+
+                if (drinkActive)
+                {
+                    var prohibitedItem = __instance.GetAllItems()
+                        .FirstOrDefault(itemb => MagicPortalFluid.PortalDrinkDenyloc.Contains(ObjectDB.instance.GetItemPrefab(itemb.m_shared.m_name)?.name));
+
+                    if (prohibitedItem != null)
+                    {
+                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Odin still doesn't allow carrying " + prohibitedItem.m_shared.m_name + " with Portal Drink");
+                        __result = false;
+                        return false;
+                    }
+                    __result = true;
+                    return false;
+                }
+
+
+                if (portalData.AdditionalAllowItems != null && portalData.AdditionalAllowItems.Count > 0)
+                {
+                    if (ZoneSystem.instance.GetGlobalKey(GlobalKeys.TeleportAll))
+                    {
+                        // If a global key allows teleport for all items, we can return true directly
                         __result = true;
                         return false;
                     }
-                    else
+
+                    foreach (ItemDrop.ItemData item in __instance.m_inventory)
                     {
-                        var instan = ObjectDB.instance;
-                        foreach (ItemDrop.ItemData allItem in __instance.GetAllItems())
+                        // If an item is normally not teleportable
+                        if (!item.m_shared.m_teleportable)
                         {
-                            foreach (var item in MagicPortalFluid.PortalDrinkDenyloc)
-                            {
-                                GameObject go = instan.GetItemPrefab(item);
-                                if (go != null)
-                                {
-                                    ItemDrop.ItemData data = go.GetComponent<ItemDrop>().m_itemData;
-                                    if (data != null)
-                                    {
-                                        if (data.m_shared.m_name == allItem.m_shared.m_name)
-                                        {
-                                            MagicPortalFluid.RareMagicPortal.LogInfo($"Odin does not allow {data.m_shared.m_name} even with Portal Drink");
-                                            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Odin still doesn't allow " + data.m_shared.m_name);
-                                            __result = false;
-                                            return false;
-                                        }
-                                    }
-                                }
-                            }
+                            if (portalData.AdditionalAllowItems.Contains(item.m_shared.m_name))
+                                continue;
+
+                            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Cannot teleport due to item: " + item.m_shared.m_name);
+                            __result = false;
+                            return false;
                         }
                     }
                     __result = true;
@@ -293,7 +225,9 @@ namespace RareMagicPortal_3_Plus.Patches
                 return true;
             }
         }
-        */
+
+
+
 
 
         [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]

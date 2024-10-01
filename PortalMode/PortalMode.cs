@@ -50,6 +50,8 @@ namespace RareMagicPortal_3_Plus.PortalMode
             }
             // set PortalNames to Default for specials
             PortalColorLogic.PortalN.Portals[PopInstance.portalName].Admin_only_Access = false;
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo].Color = PortalColorLogic.PortalN.Portals[PopInstance.portalName].Color;
+
 
 
             switch (selectedMode)
@@ -205,6 +207,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     foreach (var zdoEntry in port.Value.PortalZDOs)
                     {
                         zdoEntry.Value.SpecialMode = PortalMode.Normal;
+                        zdoEntry.Value.CrystalActive = false;
                     }
                 }
             }
@@ -327,6 +330,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             var currentPortalZDO = PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo];
 
             currentPortalZDO.Coords = $"{altcords.x},{altcords.y},{altcords.z}";
+            currentPortalZDO.CrystalActive = false;
 
             SetMode(PortalMode.TransportNetwork, PopInstance.portalName, PopInstance.zdo, true);
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now in Transport Network mode. All other portals with this name are deactivated");
