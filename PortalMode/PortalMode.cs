@@ -76,7 +76,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     AddAllowedUser(PopInstance);
                     break;
                 case PortalMode.TransportNetwork:
-                    SetTransportNetworkMode(PopInstance);
+                    SetTransportNetworkMode(PopInstance, portalInstance);
                     break;
                 case PortalMode.CordsPortal:
                     if (TryParseCoordinates(PopInstance, out Vector3 coordinates))
@@ -296,8 +296,21 @@ namespace RareMagicPortal_3_Plus.PortalMode
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "All Portals with this name are now in Allowed Users Only mode.");
         }
 
-        private static void SetTransportNetworkMode(ModeSelectionPopup PopInstance)
+        private static void SetTransportNetworkMode(ModeSelectionPopup PopInstance, TeleportWorld portalInstance)
         {
+
+            if (portalInstance == null)
+            {
+                Debug.LogError("portalInstance is null in SetTransportNetworkMode");
+                return;
+            }
+
+            if (PopInstance == null)
+            {
+                Debug.LogError("PopInstance is null in SetTransportNetworkMode");
+                return;
+            }
+
             foreach (var port in PortalColorLogic.PortalN.Portals)
             {
                 if (port.Key == PopInstance.portalName)
@@ -308,6 +321,12 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     }
                 }
             }
+
+            Vector3 altcords = portalInstance.m_nview.GetZDO().GetPosition();
+
+            var currentPortalZDO = PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo];
+
+            currentPortalZDO.Coords = $"{altcords.x},{altcords.y},{altcords.z}";
 
             SetMode(PortalMode.TransportNetwork, PopInstance.portalName, PopInstance.zdo, true);
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now in Transport Network mode. All other portals with this name are deactivated");
@@ -325,6 +344,23 @@ namespace RareMagicPortal_3_Plus.PortalMode
         {
             coords = Vector3.zero;
             string[] parts = PopInstance.coordinatesInputField.text.Split(',');
+            if (parts.Length != 3) return false;
+
+            if (float.TryParse(parts[0], out float x) &&
+                float.TryParse(parts[1], out float y) &&
+                float.TryParse(parts[2], out float z))
+            {
+                coords = new Vector3(x, y, z);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryParseCoordinates(string coord, out Vector3 coords)
+        {
+            coords = Vector3.zero;
+            string[] parts = coord.Split(',');
             if (parts.Length != 3) return false;
 
             if (float.TryParse(parts[0], out float x) &&
@@ -375,5 +411,6 @@ namespace RareMagicPortal_3_Plus.PortalMode
         {
             SetMode(pass, PopInstance.portalName, PopInstance.zdo);
         }
+
     }
 }

@@ -113,7 +113,8 @@ namespace RareMagicPortal
         internal static MagicPortalFluid? plugin;
         internal static MagicPortalFluid context;
 
-        internal AssetBundle portalmagicfluid;
+        internal static AssetBundle _portalmagicfluid;
+        public static AssetBundle uiasset;
         public static ConfigEntry<bool> modEnabled;
         public static ConfigEntry<bool> isDebug;
         public static bool firstTime = false;
@@ -133,6 +134,7 @@ namespace RareMagicPortal
         public static bool LoggingOntoServerFirst = true;
         internal static Dictionary<string, Material> originalMaterials;
         public static Dictionary<string, ZDO> PortalsKnown = new();
+        public static GameObject fxRMP = null;
 
         public static bool piecehaslvl = false;
         public static string DefaultTable = "$piece_workbench";
@@ -317,7 +319,6 @@ namespace RareMagicPortal
         internal static readonly int _portalID = "PortalID".GetHashCode();
         internal static string PortalFluidname;
         internal static bool TargetPortalLoaded = false;
-        public static AssetBundle uiasset;
         private static readonly string targetPortalPluginKey = "org.bepinex.plugins.targetportal";
 
         internal static readonly Dictionary<TeleportWorld, TeleportWorldDataRMP> _teleportWorldDataCache = new();
@@ -386,7 +387,9 @@ namespace RareMagicPortal
             if (TargetPortalLoaded)
             {
                 MethodInfo original = AccessTools.Method(typeof(Game), nameof(Game.ConnectPortals));
+                MethodInfo original2 = AccessTools.Method(typeof(TeleportWorld), nameof(TeleportWorld.HaveTarget));
                 _harmony.Unpatch(original, HarmonyPatchType.All, "org.bepinex.plugins.targetportal"); //lol
+                _harmony.Unpatch(original2, HarmonyPatchType.All, "org.bepinex.plugins.targetportal"); //lol
             }
 
             SetupWatcher();
@@ -397,8 +400,11 @@ namespace RareMagicPortal
 
             IconColors();
             uiasset = GetAssetBundle("rmpui");
+           // _portalmagicfluid = GetAssetBundle("portalmagicfluid");
 
             RareMagicPortal.LogInfo($"MagicPortalFluid loaded start assets");
+
+
         }
 
         internal void IconColors()
@@ -471,6 +477,8 @@ namespace RareMagicPortal
             portalmagicfluid.Description.English("Once a mythical essence, now made real with Odin's blessing");
             portalmagicfluid.DropsFrom.Add("gd_king", 1f, 1, 2); // Elder drop 100% 1-2 portalFluids
             portalmagicfluid.ToggleConfigurationVisibility(Configurability.Drop);
+
+            fxRMP = ItemManager.PrefabManager.RegisterPrefab("portalmagicfluid", "fx_RMP_tele", "assets"); 
 
             PortalFluidname = portalmagicfluid.Prefab.name;
 
@@ -1244,6 +1252,24 @@ namespace RareMagicPortal
             GemColorBlack = config(crystal_selector, "Use for Crystal Black", CrystalBlack, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
         }
 
+
+
+        /*
+
+        [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
+        private static class InitCustomItemsClassFXRMP
+        {
+            private static void Postfix(ZNetScene __instance)
+            {
+                var vfx = _portalmagicfluid.LoadAsset<GameObject>("fx_RMP_tele");
+                __instance.m_prefabs.Add(vfx);
+                __instance.m_namedPrefabs.Add(vfx.name.GetStableHashCode(), vfx);
+
+            }
+
+        } */
+
+        
         internal void ReadAndWriteConfigValues()
         {
             /*

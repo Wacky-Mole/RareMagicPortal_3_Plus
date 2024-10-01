@@ -279,6 +279,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             UpdateModeDescription();
             OnCrystalKeyChange();
             UpdateUIForMode(selectedMode);
+            PopulateSelected();
 
         }
         private void OnCrystalKeyChange()

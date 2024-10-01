@@ -19,6 +19,11 @@ using static UnityEngine.InputSystem.InputRemoting;
 using YamlDotNet.Core.Tokens;
 using System.ComponentModel;
 using BepInEx.Logging;
+using System.Security.Cryptography;
+using TMPro;
+using UnityEngine.Windows;
+using System.Net.NetworkInformation;
+using UnityEngine.UI;
 
 
 namespace RareMagicPortal_3_Plus.Patches
@@ -27,7 +32,7 @@ namespace RareMagicPortal_3_Plus.Patches
     {
 
 
-
+        /*
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.HaveTarget))] 
         [HarmonyPriority(Priority.LowerThanNormal)]
         public static class SetPortalsConnectedRMP
@@ -38,6 +43,8 @@ namespace RareMagicPortal_3_Plus.Patches
                 //return true;//  OVERRIDE THIS FROM TARGET PORTAL
                 if (!MagicPortalFluid.TargetPortalLoaded)
                     return true;
+
+
 
                 if (__instance.m_nview == null || __instance.m_nview.GetZDO() == null)
                 {
@@ -50,6 +57,7 @@ namespace RareMagicPortal_3_Plus.Patches
             }
         }
 
+        */
 
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.TargetFound))]
         [HarmonyPriority(Priority.LowerThanNormal)]
@@ -84,10 +92,15 @@ namespace RareMagicPortal_3_Plus.Patches
                         return false;
                     }
 
-                    if (portal.SpecialMode == PortalModeClass.PortalMode.CordsPortal ||  // Override color showing
-                        portal.SpecialMode == PortalModeClass.PortalMode.TransportNetwork)
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.CordsPortal )  // Override color showing 
                     {
                         __result = true;
+                        return false;
+                    }
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.TransportNetwork)
+                    {
+                        __instance.m_hadTarget = false;
+                        __result = false;
                         return false;
                     }
                         
@@ -98,6 +111,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     }
                     if (MagicPortalFluid.TargetPortalLoaded && portal.SpecialMode == PortalModeClass.PortalMode.TargetPortal)
                     {
+                        __instance.m_hadTarget = true;
                         if (MagicPortalFluid.Toggle.Off == MagicPortalFluid.ConfigTargetPortalAnimation.Value)
                         {
                             __result = false;
@@ -245,9 +259,10 @@ namespace RareMagicPortal_3_Plus.Patches
 
 
 
+        private static Vector3 LastPortalTrigger = new Vector3();
+        private static string LastPortalName = "";
 
-
-            [HarmonyPatch(typeof(TeleportWorldTrigger), nameof(TeleportWorldTrigger.OnTriggerEnter))]
+        [HarmonyPatch(typeof(TeleportWorldTrigger), nameof(TeleportWorldTrigger.OnTriggerEnter))]
         internal class TeleportWorld_Teleport_CheckforCrystal
         {
             internal class SkipPortalException : Exception { }
@@ -313,18 +328,6 @@ namespace RareMagicPortal_3_Plus.Patches
                 //MagicPortalFluid.m_hadTarget = __instance.m_teleportWorld.m_hadTarget;
                 MagicPortalFluid.LastTeleportFast = portalZDO.FastTeleport;
 
-           /*
-                if (MagicPortalFluid.TargetPortalLoaded )
-                {
-                    MagicPortalFluid.Teleporting = true;
-                    return true; 
-                }
-           
-                // If there is no target or we use portal progression, proceed with custom logic
-                if (!MagicPortalFluid.m_hadTarget || MagicPortalFluid.UsePortalProgression.Value == MagicPortalFluid.Toggle.On)
-                {
-                    return true;
-                }*/
 
                 // Check crystal and key logic
                 if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID), __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
@@ -400,8 +403,10 @@ namespace RareMagicPortal_3_Plus.Patches
 
                     if (portal.SpecialMode == PortalModeClass.PortalMode.TransportNetwork && Player.m_localPlayer.IsTeleportable())
                     {
-
-       
+                        LastPortalTrigger = __instance.m_teleportWorld.m_nview.GetZDO().GetPosition();
+                        LastPortalName = PortalName;
+                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Enter destination with /warp destination");
+                        
                     }
 
 
@@ -524,6 +529,109 @@ namespace RareMagicPortal_3_Plus.Patches
                 }
             }
 
+        }
+
+        private static void OnChatMessage(string message)
+        {
+            if (message.StartsWith("warp"))
+            {
+                MagicPortalFluid.RareMagicPortal.LogWarning("warp 2");
+                string destination = message.Substring(4).Trim().ToLower();
+                if (PortalColorLogic.PortalN.Portals.ContainsKey(destination))
+                {
+                    Vector3 playerPosition = Player.m_localPlayer.transform.position;
+                    Vector3 portalPosition = LastPortalTrigger;
+
+                    if (LastPortalName == destination)
+                    {
+
+                    }
+
+                    float distance = Vector3.Distance(playerPosition, portalPosition);
+                    float someThreshold = 5f;
+
+                    if (distance < someThreshold)
+                    {
+                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Player is close enough to Teleport Network");
+
+                        var target = PortalColorLogic.PortalN.Portals[destination];
+                        string cords = "";
+                        foreach (var zd in target.PortalZDOs)
+                        {
+                            if (zd.Value.Active)
+                                cords = zd.Value.Coords;
+                        }
+
+                        if (PortalModeClass.TryParseCoordinates(cords, out Vector3 targetCoords))
+                        {
+                            MagicPortalFluid.RareMagicPortal.LogInfo("Teleporting with Network");
+                            PerformTeleport(targetCoords);
+                        }
+                        else
+                        {
+                            MagicPortalFluid.RareMagicPortal.LogWarning("Invalid portal coordinates.");
+                        }
+                    }
+                    else
+                    {
+                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Player not close enough to Tele Network");
+                    }
+                }
+                else
+                {
+                    // say nothing
+                }
+            }
+            
+        }
+
+        private static void PerformTeleport(Vector3 targetCoords)
+        {
+            Player player = Player.m_localPlayer;
+
+            // Visual Effect - Flash screen white
+            // FlashScreenWhite();
+            Transform parent = player.transform.Find("Visual/Armature/Hips/LeftUpLeg/LeftLeg/LeftFoot/LeftToeBase/LeftToeBase_end");
+            Quaternion targetRotation = Quaternion.Euler(0f, 0f, 0f); 
+            parent.rotation = targetRotation;
+
+            Transform vfx = null;
+            MagicPortalFluid.RareMagicPortal.LogInfo("fx now");
+            vfx = MagicPortalFluid.Instantiate(MagicPortalFluid.fxRMP, parent).transform;       
+            vfx.localPosition = new Vector3(0f, -0.01f, 0f); 
+            vfx.localScale = new Vector3(0.01352632f, 0.01352632f, 0.01352632f);
+            //vfx.localPosition.y = -1f;
+
+            // delay
+            
+            MagicPortalFluid.context.StartCoroutine(TeleportWithDelay(player, targetCoords));
+            // Teleport player
+            // player.TeleportTo(targetCoords, player.transform.rotation, true);
+
+            // Play teleport sound
+            // PlayTeleportSound();
+
+
+        }
+
+        private static IEnumerator TeleportWithDelay(Player player, Vector3 targetCoords)
+        {
+            yield return new WaitForSeconds(4.5f);
+            player.TeleportTo(targetCoords, Quaternion.identity, true);
+        }
+
+
+        [HarmonyPatch(typeof(Terminal), nameof(Terminal.TryRunCommand))]
+        public static class Chat_TerminalMessage_Patch
+        {
+            public static void Postfix( string text )
+            {
+                // Check if the input command is a custom command
+                if (text.StartsWith("warp"))
+                {
+                    OnChatMessage(text);
+                }
+            }
         }
     }
 }
