@@ -405,7 +405,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     {
                         LastPortalTrigger = __instance.m_teleportWorld.m_nview.GetZDO().GetPosition();
                         LastPortalName = PortalName;
-                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Enter destination with /warp destination");
+                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Warp to Location with /warp destination");
                         
                     }
 
@@ -417,7 +417,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     if (cancelTargetPortal && MagicPortalFluid.TargetPortalLoaded)
                     {
 
-                            ZLog.Log("Teleportation TRIGGER");
+                            ZLog.Log("Teleportation TRIGGER from Mod");
                         __instance.m_teleportWorld.Teleport(colliderIn.GetComponent<Player>());
 
                         MagicPortalFluid.Teleporting = false;
@@ -535,7 +535,6 @@ namespace RareMagicPortal_3_Plus.Patches
         {
             if (message.StartsWith("warp"))
             {
-                MagicPortalFluid.RareMagicPortal.LogWarning("warp 2");
                 string destination = message.Substring(4).Trim().ToLower();
                 if (PortalColorLogic.PortalN.Portals.ContainsKey(destination))
                 {
@@ -546,13 +545,13 @@ namespace RareMagicPortal_3_Plus.Patches
                     {
 
                     }
-
+                    //MagicPortalFluid.RareMagicPortal.LogWarning(playerPosition + " Player Posistion vs Portal Position "+ portalPosition);
                     float distance = Vector3.Distance(playerPosition, portalPosition);
                     float someThreshold = 5f;
 
                     if (distance < someThreshold)
                     {
-                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Player is close enough to Teleport Network");
+                        MagicPortalFluid.RareMagicPortal.LogInfo("Player IS close enough to Tele Network");
 
                         var target = PortalColorLogic.PortalN.Portals[destination];
                         string cords = "";
@@ -564,7 +563,7 @@ namespace RareMagicPortal_3_Plus.Patches
 
                         if (PortalModeClass.TryParseCoordinates(cords, out Vector3 targetCoords))
                         {
-                            MagicPortalFluid.RareMagicPortal.LogInfo("Teleporting with Network");
+                            MagicPortalFluid.RareMagicPortal.LogInfo("Teleporting with Warp");
                             PerformTeleport(targetCoords);
                         }
                         else
@@ -574,7 +573,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     }
                     else
                     {
-                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Player not close enough to Tele Network");
+                        MagicPortalFluid.RareMagicPortal.LogInfo("Player is NOT close enough to Tele Network");
                     }
                 }
                 else
@@ -600,24 +599,42 @@ namespace RareMagicPortal_3_Plus.Patches
             vfx = MagicPortalFluid.Instantiate(MagicPortalFluid.fxRMP, parent).transform;       
             vfx.localPosition = new Vector3(0f, -0.01f, 0f); 
             vfx.localScale = new Vector3(0.01352632f, 0.01352632f, 0.01352632f);
-            //vfx.localPosition.y = -1f;
 
-            // delay
-            
+            MagicPortalFluid.context.StartCoroutine(FlyWithDelay(player, targetCoords));     
             MagicPortalFluid.context.StartCoroutine(TeleportWithDelay(player, targetCoords));
-            // Teleport player
-            // player.TeleportTo(targetCoords, player.transform.rotation, true);
-
-            // Play teleport sound
-            // PlayTeleportSound();
 
 
-        }
 
+        }        
+        
         private static IEnumerator TeleportWithDelay(Player player, Vector3 targetCoords)
         {
+            yield return new WaitForSeconds(5.5f);
+            player.TeleportTo(targetCoords +new Vector3(1,0,1), Quaternion.identity, true);
+        }
+
+        private static IEnumerator FlyWithDelay(Player player, Vector3 targetCoords)
+        {
             yield return new WaitForSeconds(4.5f);
-            player.TeleportTo(targetCoords, Quaternion.identity, true);
+            float ascendSpeed = 5f;
+            float ascendDuration = 1f;
+            Rigidbody playerRigidbody = player.GetComponent<Rigidbody>();
+            playerRigidbody.velocity = new Vector3(0, 5f, 0);
+            MagicPortalFluid.context.StartCoroutine(AscendCoroutine(playerRigidbody, ascendSpeed, ascendDuration));
+        }
+
+
+
+        private static IEnumerator AscendCoroutine(Rigidbody playerRigidbody, float speed, float duration)
+        {
+            float elapsedTime = 0f;
+            while (elapsedTime < duration)
+            {
+                playerRigidbody.velocity = new Vector3(0, speed, 0); // Apply constant upward velocity
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+            playerRigidbody.velocity = Vector3.zero; // Stop upward movement after the duration
         }
 
 
