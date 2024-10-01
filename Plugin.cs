@@ -44,6 +44,7 @@ using ItemManager;
 using LocalizationManager;
 using PieceManager;
 using RareMagicPortal.PortalWorld;
+using RareMagicPortal_3_Plus.PortalMode;
 using ServerSync;
 using StatusEffectManager;
 using System;
@@ -55,6 +56,7 @@ using System.Reflection;
 using System.Security.AccessControl;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using YamlDotNet.Serialization;
 using static Interpolate;
@@ -172,12 +174,13 @@ namespace RareMagicPortal
         internal static ConfigEntry<float>? ConfiglHealthStone;
         internal static ConfigEntry<bool>? ConfigCreatorLock;
         internal static ConfigEntry<int>? ConfigFluidValue;
-        internal static ConfigEntry<bool>? ConfigEnableCrystalsNKeys;
+        //internal static ConfigEntry<bool>? ConfigEnableCrystalsNKeys;
 
         // internal static ConfigEntry<bool>? ConfigEnableKeys;
         internal static ConfigEntry<int>? ConfigCrystalsConsumable;
 
         internal static ConfigEntry<string>? DefaultColor;
+        internal static ConfigEntry<PortalModeClass.PortalMode>? DefaultMode;
 
         internal static ConfigEntry<int>? PortalDrinkTimer;
         internal static ConfigEntry<string>? PortalDrinkDeny;
@@ -188,7 +191,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<string>? ConfigEnableColorEnable;
         internal static ConfigEntry<KeyboardShortcut>? portalRMPKEY = null!;
         internal static ConfigEntry<KeyboardShortcut>? portalRMPMODEKEY = null!;
-        internal static ConfigEntry<KeyboardShortcut>? portalRMPCRYSTALKEY = null!;
+        //internal static ConfigEntry<KeyboardShortcut>? portalRMPCRYSTALKEY = null!;
         internal static ConfigEntry<KeyboardShortcut>? portalRMPsacrifceKEY = null!;
         internal static ConfigEntry<Toggle>? ConfigMessageLeft;
         internal static ConfigEntry<Toggle>? ConfigTargetPortalAnimation;
@@ -199,10 +202,10 @@ namespace RareMagicPortal
         internal static ConfigEntry<string>? BiomeRepColors;
         internal static ConfigEntry<string>? EnabledColors;
         internal static ConfigEntry<string>? FreePassageColor;
-        internal static ConfigEntry<string>? AdminColor;
+       // internal static ConfigEntry<string>? AdminColor;
         internal static ConfigEntry<string>? PortalDrinkColor;
         internal static ConfigEntry<Toggle>? PreventColorChange;
-        internal static ConfigEntry<string>? TelePortAnythingColor;
+        //internal static ConfigEntry<string>? TelePortAnythingColor;
         internal static ConfigEntry<string>? GemColorGold;
         internal static ConfigEntry<string>? GemColorRed;
         internal static ConfigEntry<string>? GemColorGreen;
@@ -1134,22 +1137,73 @@ namespace RareMagicPortal
             RiskyYMLSave = config(general, "Risky Server Save", Toggle.Off, "Only save YML updates when server shuts down");
 
             UseSmallUpdates = config(general, "Use Small Server Updates", Toggle.On, "Only sends a tiny part of the YML to clients");
-
-            PreventTargetPortalFromChanging = config(general, "PrventTargetPortalChange", Toggle.On, "Prevent People (non creator/admin) from changing TargetPortal Mode. Groups/Private/Public etc");
-
+       
             portalRMPKEY = config(general, "Modifier key for Color", new KeyboardShortcut(KeyCode.CapsLock), "Modifier keY that has to be pressed while hovering over Portal + E", false);
 
             portalRMPMODEKEY = config(general, "Modifier key for PortalMode", new KeyboardShortcut(KeyCode.LeftControl), "Modifier key that has to be pressed while hovering over Portal + E", false);
 
-            portalRMPCRYSTALKEY = config(general, "ON/OFF for Crystal Requirement", new KeyboardShortcut(KeyCode.LeftAlt), "Modifier key that has to be pressed while hovering over Portal + E", false);
+            //portalRMPCRYSTALKEY = config(general, "ON/OFF for Crystal Requirement", new KeyboardShortcut(KeyCode.LeftAlt), "Modifier key that has to be pressed while hovering over Portal + E", false); // remove
 
 
 
 
-            string modes = "1.2 Portal Modes-----------";
+            string modes = "1.0 Portal Modes-----------";
+            DefaultMode = config(modes, "Default Mode for New Portals", PortalModeClass.PortalMode.Normal, "Portal Mode for all newly placed portals.");
+
+            string normalMode = "1.1 Normal Mode-----------";
+
+            string targetportal = "1.2 Target Portal-----------";
+            PreventTargetPortalFromChanging = config(targetportal, "PreventTargetPortalChange", Toggle.On, "Prevent People (non creator/admin) from changing TargetPortal Mode. Groups/Private/Public etc");
+            ConfigTargetPortalAnimation = config(targetportal, "Force Portal Animation", Toggle.Off, "Forces Portal Animation for Target Portal Mod, is not synced and only applies the config if the mod is loaded", false);
+
+            string crystalkeymode = "1.3 Crystal Key Mode-----------";
+
+            string passwordLock = "1.4 Password Lock Mode-----------";
+
+            string passwordLockOneWay = "1.5 Password Lock OneWay-----------";
+
+            string allowedUsers = "1.6 Allowed Users Mode-----------";
+
+            string transportNetwork = "1.7 TransportNetwork-----------";
+
+            string coordsportal = "1.8 Coordinates Portal-----------";
+
+            string rainbowmode = "1.9 Rainbow -----------";
+            PortalDrinkColor = config(rainbowmode, "Portal Drink Color", "Rainbow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or Rainbow (Alternates between colors every second) are the available Colors that can be selected for the Portal Drink Mode for Portals - Only 1 can be set - Default is Rainbow ");
+
+            string randomTeleport = "1.9.1 RandomTeleport ";
+
+            string adminonly = "1.9.3 Admin Only Mode ";
+            //AdminColor = config(adminonly, "Admin only Color", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available colors that can be selected for the Admin only portals - Only 1 can be set - Default is none");
 
 
-            string targetportal = "1.3 Target Portal-----------";
+            string colors = "2.Colors-----------";
+
+            EnabledColors = config(colors, "Enabled Colors for Portals", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold are available Colors that can be enabled, removing them disables the color");
+
+            DefaultColor = config(colors, "Default Color", "Yellow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold are available Colors");      
+            
+            //TelePortAnythingColor = config(colors, "TelePortAnythingColor", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available Colors that can be selected for the TeleportAnything only portals - Only 1 can be set - Default is none");
+          
+            PreventColorChange = config(colors, "Prevent Color Changing", Toggle.Off, "If true, only admins can change color. This will be overriden if CrystalActive is set for Portal");
+
+            ConfigUseBiomeColors = config(colors, "Use Biome Colors by Default", Toggle.Off, "Overrides the default color to use specific biome-related colors. If an admin/owner changes it, the selected color will persist.");
+
+            BiomeRepColors = config(colors, "Biome Colors", "Meadows:Tan,BlackForest:Blue,Swamp:Green,Mountain:Black,Plains:Orange,Mistlands:Purple,DeepNorth:Cyan,AshLands:Red,Ocean:Blue", "Biomes and their related Colors. - No spaces");
+
+           // string biome = "5.BiomeColors-----------";
+
+
+            string crystals = "3.Crystals-----------";
+            //ConfigEnableCrystalsNKeys = config(crystals, "CrystalActive", false, "Enable Portal Crystals and Keys Usage for All new ports by default" + System.Environment.NewLine + " Only Admins can change the colors on these portals");
+
+            ConfigEnableGoldAsMaster = config(crystals, "Use Gold as Portal Master", Toggle.On, "Enabled Gold Key and Crystal as Master Key to all (Red,Green,Blue,Purple,Tan,Gold)");
+
+            ConfigCrystalsConsumable = config(crystals, "Crystal Consume Per Transit", 1, "What is the number of crystals to consume for each portal transport with crystals/keys enabled?" + System.Environment.NewLine + " Gold/Master gets set to this too" + System.Environment.NewLine);
+
+            ConfigMessageLeft = config(crystals, "Use Top Left Message", Toggle.Off, "In case a mod is interfering with Center Messages for Portal tags, display on TopLeft instead.");
+
+            FreePassageColor = config(crystals, "Free Passage Color", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or 'none' are the available Colors that can be selected for the Free Passage Color - Only 1 can be set - Default is none");
 
 
             string fluid = "1.PortalFluid-----------";
@@ -1166,15 +1220,13 @@ namespace RareMagicPortal
 
 
 
-
             string portal = "2.Portal-----------";
             ConfigTableStone = config(portal, "Station Requirement Stone", DefaultTableStone,
                 "Which CraftingStation is required nearby for Stone Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_stonecutter, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstationConfigTable = config(portal, "CraftingStation Requirement", DefaultTable,
             
             ConfigTableWood = config(portal, "Station Requirement Wood", DefaultTable,"Which CraftingStation is required nearby for Wood Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_workbench, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstation
 
-            ConfigTableLvl = config(portal, "Level of CraftingStation Req", 1,
-                "What level of CraftingStation is required for placing Portal?");
+            ConfigTableLvl = config(portal, "Level of CraftingStation Req", 1, "What level of CraftingStation is required for placing Wood Portal?");
 
             ConfigCreator = config(portal, "Only Creator Can Deconstruct", true, "Only the Creator/Admin of the Portal can deconstruct it. It can still be destroyed");
 
@@ -1182,13 +1234,11 @@ namespace RareMagicPortal
 
             ConfiglHealthWood = config(portal, "Portal Health Wood", 400f, "Health of Portal Wood");
 
-            ConfigAddRestricted = config(portal, "AdditionalProhibitItems", "", "Additional Items to Restrict by Default - 'Wood,Stone'");
+            ConfigAddRestricted = config(portal, "AdditionalProhibitItems", "", "Additional items to restrict by Default on new portals - 'Wood,Stone'");
 
-            ConfigAllowItems = config(portal, "AdditionalAllowItems", "", "Additional Items to be allowed by Default - 'Wood,Stone'");
+            ConfigAllowItems = config(portal, "AdditionalAllowItems", "", "Additional items to be allowed by Default on new portals - 'Wood,Stone'");
 
-            ConfigCreatorLock = config(portal, "Only Creator Can Change Name", false, "Only Creator can change Portal name");
-
-            ConfigTargetPortalAnimation = config(portal, "Force Portal Animation", Toggle.Off, "Forces Portal Animation for Target Portal Mod, is not synced and only applies the config if the mod is loaded", false);
+            ConfigCreatorLock = config(portal, "Only Creator Can Change Name", true, "Only Creator/Admin can change Portal name");
 
             ConfigMaxWeight = config(portal, "Max Weight Allowed for new Portals", 0, "This affects all new/renamed portals - Enter the max weight that can transit through a portal at a time. Value of 0 disables the check");
 
@@ -1197,42 +1247,11 @@ namespace RareMagicPortal
             AdminOnlyMakesPortals = config(portal, "Only Admin Can Build", Toggle.Off, "Only The Admins Can Build Portals");
 
 
-            string crystals = "3.Crystals-----------";
-            ConfigEnableCrystalsNKeys = config(crystals, "CrystalActive", false, "Enable Portal Crystals and Keys Usage for All new ports by default" + System.Environment.NewLine + " Only Admins can change the colors on these portals");
-
-            ConfigEnableGoldAsMaster = config(crystals, "Use Gold as Portal Master", Toggle.On, "Enabled Gold Key and Crystal as Master Key to all (Red,Green,Blue,Purple,Tan,Gold)");
-
-            ConfigCrystalsConsumable = config(crystals, "Crystal Consume Per Transit", 1, "What is the number of crystals to consume for each Portal transport with Crystals enabled?" + System.Environment.NewLine + " Gold/Master gets set" + System.Environment.NewLine);
-
-            ConfigMessageLeft = config(crystals, "Use Top Left Message", Toggle.Off, "In case a mod is interfering with Center Messages for Portal tags, display on TopLeft instead.");
-
-
             string drink = "4.Drink-----------";
             PortalDrinkTimer = config(drink, "Portal Drink Timer", 120, "How Long Odin's Drink lasts");
 
             PortalDrinkDeny = config(drink, "Portal Drink Wont Allow", "", "Deny list even with Portal Drink, 'Bronze,BlackMetal,BlackMetalScrap,Copper,CopperOre,CopperScrap,Tin,TinOre,IronOre,Iron,IronScrap,Silver,SilverOre,DragonEgg'");
 
-
-            string biome = "5.BiomeColors-----------";
-            ConfigUseBiomeColors = config(biome, "Use Biome Colors by Default", Toggle.Off, "This will Override - Default Color and Use Specific Colors for Biomes");
-
-            BiomeRepColors = config(biome, "Biome Colors", "Meadows:Tan,BlackForest:Blue,Swamp:Green,Mountain:Black,Plains:Orange,Mistlands:Purple,DeepNorth:Cyan,AshLands:Red,Ocean:Blue", "Biomes and their related Colors. - No spaces");
-
-
-            string colors = "6.Colors-----------";
-            DefaultColor = config(colors, "Default Color", "Yellow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold are available Colors");
-
-            EnabledColors = config(colors, "Enabled Colors for Portals", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold are available Colors that can be enabled, removing them disables the color");
-
-            FreePassageColor = config(colors, "Free Passage Color", "Yellow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available Colors that can be selected for the Free Passage Color - Only 1 can be set - Default is Yellow");
-
-            AdminColor = config("7.Colors", "Admin only Color", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available Colors that can be selected for the Admin only portals - Only 1 can be set - Default is none");
-
-            TelePortAnythingColor = config(colors, "TelePortAnythingColor", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available Colors that can be selected for the TeleportAnything only portals - Only 1 can be set - Default is none");
-
-            PortalDrinkColor = config("7.Colors", "Portal Drink Color", "Rainbow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or Rainbow (Alternates between colors every second) are the available Colors that can be selected for the Portal Drink Mode for Portals - Only 1 can be set - Default is Rainbow ");
-
-            PreventColorChange = config(colors, "Prevent Color Changing", Toggle.Off, "If true, only admins can change color. This will be overriden if CrystalActive is set for Portal");
 
 
             string colors_allow = "7.Colors Allow-----------";

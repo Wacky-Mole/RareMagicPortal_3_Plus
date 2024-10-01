@@ -138,7 +138,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 string currentColor = portalZDO.Color;
 
                // MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 7");
-                if (portalData.TeleportAnything || currentColor == MagicPortalFluid.TelePortAnythingColor.Value)
+                if (portalData.TeleportAnything )
                 {
                     teleportAllowed = true;
                 }

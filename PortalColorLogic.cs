@@ -294,7 +294,7 @@ namespace RareMagicPortal
                         if (portal.m_creator == closestPlayer.GetPlayerID())
                             sameperson = true;
 
-                        if (Input.GetKey(MagicPortalFluid.portalRMPMODEKEY.Value.MainKey) && MagicPortalFluid.portalRMPMODEKEY.Value.Modifiers.All(Input.GetKey) && (MagicPortalFluid.isAdmin || sameperson && !MagicPortalFluid.ConfigEnableCrystalsNKeys.Value))
+                        if (Input.GetKey(MagicPortalFluid.portalRMPMODEKEY.Value.MainKey) && MagicPortalFluid.portalRMPMODEKEY.Value.Modifiers.All(Input.GetKey) && (MagicPortalFluid.isAdmin ))
                         {
                             if (ModeSelectionPopup._popupInstance != null)
                             {
@@ -310,7 +310,7 @@ namespace RareMagicPortal
                              return false; // Prevent the default interaction
                         }
                             
-                        if (Input.GetKey(MagicPortalFluid.portalRMPKEY.Value.MainKey) && MagicPortalFluid.portalRMPKEY.Value.Modifiers.All(Input.GetKey) && (MagicPortalFluid.isAdmin || sameperson && !MagicPortalFluid.ConfigEnableCrystalsNKeys.Value)) // creator can change it if enable crystals is off
+                        if (Input.GetKey(MagicPortalFluid.portalRMPKEY.Value.MainKey) && MagicPortalFluid.portalRMPKEY.Value.Modifiers.All(Input.GetKey) && (MagicPortalFluid.isAdmin || sameperson && !PortalN.Portals[PortalName].PortalZDOs[zdoName].CrystalActive)) // creator can change it if enable crystals is off
                         {
                             MagicPortalFluid.Globaliscreator = sameperson; // set this for yml permissions
 
@@ -561,9 +561,10 @@ namespace RareMagicPortal
                     __result = hovertag;
                     MessageHud.instance.ShowMessage(MessageHud.MessageType.Center, hovertag, 1);
                 }
-
-                    // Update the hover text based on player permissions and state
-                    UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, text);
+                var portalData = PortalN.Portals[portalName];
+                var zdoData = portalData.PortalZDOs[zdoName];
+                // Update the hover text based on player permissions and state
+                UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, text, zdoData);
 
                 if (portalZDO.SpecialMode != PortalModeClass.PortalMode.TargetPortal && MagicPortalFluid.TargetPortalLoaded)
                 {
@@ -571,11 +572,11 @@ namespace RareMagicPortal
                 }
             }
 
-            private static void UpdateHoverText(ref string hoverText, string currentColor, string nextColor, bool isCreator, Color currentColorHex, string portalName, string text)
+            private static void UpdateHoverText(ref string hoverText, string currentColor, string nextColor, bool isCreator, Color currentColorHex, string portalName, string text, ZDOP portal)
             {
                 if (portalName != "" && portalName != "Empty tag")
                 {
-                    if (MagicPortalFluid.isAdmin || (isCreator && !MagicPortalFluid.ConfigEnableCrystalsNKeys.Value))
+                    if (MagicPortalFluid.isAdmin || (isCreator && portal.CrystalActive))
                     {
                         if (MagicPortalFluid.portalRMPKEY.Value.MainKey is KeyCode.None)
                         {
@@ -583,7 +584,7 @@ namespace RareMagicPortal
                         }
 
 
-                        if (MagicPortalFluid.ConfigEnableCrystalsNKeys.Value)
+                        if (portal.CrystalActive)
                         {
                             hoverText = string.Format(
                                 "{0}\n<size={4}>[<color={5}>{2}</color>] Change <color={7}>Portal</color>[{1}] Crystal to: [<color={8}>{3}</color>]</size>\n<size={4}>{6}</size>",
@@ -615,7 +616,7 @@ namespace RareMagicPortal
                     }
                     else
                     {
-                        if (MagicPortalFluid.ConfigEnableCrystalsNKeys.Value)
+                        if (portal.CrystalActive)
                         {
                             hoverText = string.Format(
                                 "{0}\n<size={2}><color={5}>{1} Portal</color></size>\n<size={2}>{4}</size>",
@@ -716,28 +717,11 @@ namespace RareMagicPortal
             // Check if the portal is under special conditions like admin access or free passage
             if (portalName != "" && portalName != "Empty tag")
             {
-                // Check for admin-only access
-                if (portalData.Admin_only_Access && MagicPortalFluid.AdminColor.Value != "none")
-                {
-                    currentColor = MagicPortalFluid.AdminColor.Value;
-                    currentColorHex = PortalColors[currentColor].HexName;
-                    nextColor = PortalColors[currentColor].NextColor;
-                    return PortalColors[currentColor].Pos;
-                }
 
                 // Check for free passage
                 if (portalData.Free_Passage && MagicPortalFluid.FreePassageColor.Value != "none")
                 {
                     currentColor = MagicPortalFluid.FreePassageColor.Value;
-                    currentColorHex = PortalColors[currentColor].HexName;
-                    nextColor = PortalColors[currentColor].NextColor;
-                    return PortalColors[currentColor].Pos;
-                }
-
-                // Check if the portal can teleport anything
-                if (portalData.TeleportAnything && MagicPortalFluid.TelePortAnythingColor.Value != "none")
-                {
-                    currentColor = MagicPortalFluid.TelePortAnythingColor.Value;
                     currentColorHex = PortalColors[currentColor].HexName;
                     nextColor = PortalColors[currentColor].NextColor;
                     return PortalColors[currentColor].Pos;
@@ -821,9 +805,9 @@ namespace RareMagicPortal
             //RMP.LogWarning("Make sure to remove in release color "+ ColorName);
 
             //main set loop
-            PortalN.Portals[PortalName].TeleportAnything = false;
-            PortalN.Portals[PortalName].Admin_only_Access = false;
-            PortalN.Portals[PortalName].Free_Passage = false;
+           // PortalN.Portals[PortalName].TeleportAnything = false;
+           // PortalN.Portals[PortalName].Admin_only_Access = false;
+            //PortalN.Portals[PortalName].Free_Passage = false;
 
             PortalN.Portals[PortalName].Color = ColorName;
             PortalN.Portals[PortalName].PortalZDOs[zdoID].Color = ColorName;
@@ -833,25 +817,12 @@ namespace RareMagicPortal
                 PortalN.Portals[PortalName].Free_Passage = true;
             }
 
-            if (MagicPortalFluid.ConfigEnableCrystalsNKeys.Value)
+            if (PortalN.Portals[PortalName].PortalZDOs[zdoID].CrystalActive)
             {
-                if (MagicPortalFluid.AdminColor.Value == ColorName)
-                {
-                    PortalN.Portals[PortalName].Admin_only_Access = true;
-                    PortalN.Portals[PortalName].TeleportAnything = true;
-                }
-                if (MagicPortalFluid.ConfigEnableGoldAsMaster.Value == MagicPortalFluid.Toggle.On)
-                {
-                   // PortalN.Portals[PortalName].Portal_Crystal_Cost["Gold"] = 1;
-                   // PortalN.Portals[PortalName].Portal_Key["Gold"] = true;
-                }
+
                 if (MagicPortalFluid.FreePassageColor.Value == ColorName)
                 {
                     PortalN.Portals[PortalName].Free_Passage = true;
-                }
-                if (MagicPortalFluid.TelePortAnythingColor.Value == ColorName)
-                {
-                    PortalN.Portals[PortalName].TeleportAnything = true;
                 }
             }
             if (BiomeCol != null)
@@ -982,22 +953,22 @@ namespace RareMagicPortal
             bool TeleportEvery = PortalN.Portals[PortalName].TeleportAnything;
 
             Player player = Player.m_localPlayer;
-            if (OdinsKin && MagicPortalFluid.isAdmin && !flag || currentColor == MagicPortalFluid.AdminColor.Value)
+            if (OdinsKin && MagicPortalFluid.isAdmin && !flag )
             {
                 player.Message(MessageHud.MessageType.TopLeft, "$rmp_kin_welcome"); // forgot this one
                 return true;
             }
-            else if (OdinsKin && !MagicPortalFluid.isAdmin && MagicPortalFluid.ConfigEnableCrystalsNKeys.Value && !flag) // If requires admin, but not admin, but only with enable crystals otherwise just a normal portal
+            else if (OdinsKin && !MagicPortalFluid.isAdmin && PortalN.Portals[PortalName].PortalZDOs[zdoID].CrystalActive && !flag) // If requires admin, but not admin, but only with enable crystals otherwise just a normal portal
             {
                 player.Message(MessageHud.MessageType.Center, "$rmp_kin_only");
                 //Teleporting = false;
                 return false;
             }
 
-            if (TeleportEvery && !flag || currentColor == MagicPortalFluid.TelePortAnythingColor.Value) // if no crystals, then just white, if crystals then free passage
+            if (TeleportEvery && !flag ) // if no crystals, then just white, if crystals then free passage
             {
                 player.Message(MessageHud.MessageType.TopLeft, "$rmp_freepassage");
-                if (MagicPortalFluid.ConfigEnableCrystalsNKeys.Value)
+                if (PortalN.Portals[PortalName].PortalZDOs[zdoID].CrystalActive)
                 {
                     player.Message(MessageHud.MessageType.Center, "$rmp_allowsEverything");
                 }
@@ -1165,6 +1136,7 @@ namespace RareMagicPortal
             RMP.LogInfo("Writing New YML");
             int colorint = 1;
             bool cloneoverride = false;
+            bool namealreadyexists = false; // maybe
 
             PortalName.Portal paulgo;
             if (writeZdoOnly)
@@ -1196,47 +1168,60 @@ namespace RareMagicPortal
 
             if (!cloneoverride)
             {
-                PortalN.Portals[PortalName].Free_Passage = false;
-                PortalN.Portals[PortalName].TeleportAnything = false;
-                PortalN.Portals[PortalName].Admin_only_Access = false;
-                //PortalN.Portals[PortalName].PortalZDOs[ZDOID].Creator = Player.m_localPlayer.GetPlayerName(); // not really
 
+                if (!writeZdoOnly)  // so set the init portal name stuff leave, everything else
+                {
+                    PortalN.Portals[PortalName].SpecialMode = MagicPortalFluid.DefaultMode.Value;
+                    PortalN.Portals[PortalName].PortalZDOs[ZDOID].SpecialMode = MagicPortalFluid.DefaultMode.Value;
+                    PortalN.Portals[PortalName].Free_Passage = false;
+                    PortalN.Portals[PortalName].TeleportAnything = false;
+                    PortalN.Portals[PortalName].Admin_only_Access = false;
 
+                    if(MagicPortalFluid.DefaultMode.Value == PortalModeClass.PortalMode.AdminOnly)
+                    {
+                        PortalN.Portals[PortalName].Admin_only_Access = true;
+                    }
+
+                    if (MagicPortalFluid.ConfigAddRestricted.Value != "")
+                        PortalN.Portals[PortalName].AdditionalProhibitItems = MagicPortalFluid.ConfigAddRestricted.Value.Split(',').ToList(); // one time
+
+                    if (MagicPortalFluid.ConfigAllowItems.Value != "")
+                        PortalN.Portals[PortalName].AdditionalAllowItems = MagicPortalFluid.ConfigAllowItems.Value.Split(',').ToList(); // one time
+
+                    if (MagicPortalFluid.ConfigMaxWeight.Value != 0)
+                        PortalN.Portals[PortalName].MaxWeight = MagicPortalFluid.ConfigMaxWeight.Value; // one time
+
+                    if (MagicPortalFluid.FreePassageColor.Value == "None" || MagicPortalFluid.FreePassageColor.Value == "none") { } // already set something above
+                    else if (MagicPortalFluid.DefaultColor.Value == MagicPortalFluid.FreePassageColor.Value || MagicPortalFluid.FreePassageColor.Value == "Yellow" && colorint == 1)
+                    {
+                        PortalN.Portals[PortalName].Free_Passage = true;
+                        colorint = PortalColors[MagicPortalFluid.FreePassageColor.Value].Pos;
+                    }
+
+                    if (MagicPortalFluid.DefaultColor.Value == "None" || MagicPortalFluid.DefaultColor.Value == "none")
+                    {
+                        colorint = 1; // yellow
+                        PortalN.Portals[PortalName].Color = "Yellow";
+                    }
+                    else
+                    {
+                        colorint = PortalColors[MagicPortalFluid.DefaultColor.Value].Pos;
+                        PortalN.Portals[PortalName].Color = MagicPortalFluid.DefaultColor.Value;
+                    }
+
+                }
+             
                 if (MagicPortalFluid.DefaultColor.Value == "None" || MagicPortalFluid.DefaultColor.Value == "none")
                 {
-                    PortalN.Portals[PortalName].Free_Passage = false; // already false, but just to rei
                     colorint = 1; // yellow
-                    PortalN.Portals[PortalName].Color = "Yellow";
+                    PortalN.Portals[PortalName].PortalZDOs[ZDOID].Color = "Yellow";
                 }
                 else
                 {
                     colorint = PortalColors[MagicPortalFluid.DefaultColor.Value].Pos;
-                    PortalN.Portals[PortalName].Color = MagicPortalFluid.DefaultColor.Value;
+                    PortalN.Portals[PortalName].PortalZDOs[ZDOID].Color = MagicPortalFluid.DefaultColor.Value;
                 }
 
-                if (MagicPortalFluid.FreePassageColor.Value == "None" || MagicPortalFluid.FreePassageColor.Value == "none") { } // already set something above
-                else if (MagicPortalFluid.DefaultColor.Value == MagicPortalFluid.FreePassageColor.Value || MagicPortalFluid.FreePassageColor.Value == "Yellow" && colorint == 1)
-                {
-                    PortalN.Portals[PortalName].Free_Passage = true;
-                    colorint = PortalColors[MagicPortalFluid.FreePassageColor.Value].Pos;
-                }
-
-                if (MagicPortalFluid.TelePortAnythingColor.Value == "None" || MagicPortalFluid.TelePortAnythingColor.Value == "none") { } // already set something above
-                else if (MagicPortalFluid.DefaultColor.Value == MagicPortalFluid.TelePortAnythingColor.Value || MagicPortalFluid.TelePortAnythingColor.Value == "Yellow" && colorint == 1)
-                {
-                    PortalN.Portals[PortalName].TeleportAnything = true;
-                    colorint = PortalColors[MagicPortalFluid.TelePortAnythingColor.Value].Pos;
-                }
-
-                if (MagicPortalFluid.AdminColor.Value == "None" || MagicPortalFluid.AdminColor.Value == "none") { } // already set something above
-                else if (MagicPortalFluid.DefaultColor.Value == MagicPortalFluid.AdminColor.Value || MagicPortalFluid.AdminColor.Value == "Yellow" && colorint == 1)
-                {
-                    PortalN.Portals[PortalName].Admin_only_Access = true;
-                    colorint = PortalColors[MagicPortalFluid.AdminColor.Value].Pos;
-                }
-
-                if (MagicPortalFluid.ConfigAddRestricted.Value != "")
-                    PortalN.Portals[PortalName].AdditionalProhibitItems = MagicPortalFluid.ConfigAddRestricted.Value.Split(',').ToList(); // one time
             }
 
             var wacky = PortalN.Portals[PortalName];
