@@ -36,7 +36,7 @@ namespace RareMagicPortal
             public bool FastTeleport { get; set; } = false;
             public bool RandomTeleport { get; set; } = false;
             public PortalModeClass.PortalMode SpecialMode { get; set; } = PortalModeClass.PortalMode.Normal;
-            public string BiomeColor { get; set; } // Not used
+            public string BiomeColor { get; set; } = "";
             public string Biome { get; set; } // Used
             public bool Active { get; set; } = true;
             public string Password { get; set; } = "";

@@ -241,20 +241,8 @@ namespace RareMagicPortal
                         }
 
 
-                        int colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance);
+                        int colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance); // handles biomecolor now
 
-                        if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On) // obviously teleportWorldData needs to be set
-                        {
-                            if (zdoData.BiomeColor != "skip" && zdoData.Biome != "")
-                            {
-                                if (color != teleportWorldData.OldColor)
-                                {  // don't waste resources
-                                    teleportWorldData.TargetColor = color;
-                                    SetTeleportWorldColors(teleportWorldData, true);
-                                }
-                                return;
-                            }
-                        }
                         if (color != teleportWorldData.LinkColor || color != teleportWorldData.OldColor)
                         {  // don't waste resources
                             teleportWorldData.TargetColor = color;
@@ -514,41 +502,30 @@ namespace RareMagicPortal
                         ? PortalColorLogic.PortalColors[MagicPortalFluid.DefaultColor.Value].Pos
                         : 1;
                 }
-
-                
-                if (!__instance.m_nview || __instance.m_nview.m_zdo == null || __instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeHashCode) == "")
+              
+                if ( __instance.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeHashCode) == "" || string.IsNullOrEmpty(portalZDO.Biome) )
                 {
-
                     string biome = closestPlayer.GetCurrentBiome().ToString();
-
- 
-                       if ( MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
+                    portalZDO.Biome = biome;
+                    if ( MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
                     {
-                        var biomecolor = functions.GetBiomeColor(biome);
+                        portalZDO.BiomeColor = functions.GetBiomeColor(biome);
+                        colorIndex = PortalColors[portalZDO.BiomeColor].Pos;
 
-                        if (!string.IsNullOrEmpty(biomecolor) && PortalColorLogic.PortalColors.ContainsKey(biomecolor))
-                        {
-                            color = PortalColorLogic.PortalColors[biomecolor].HexName;
-                        }
-                        else
-                        {
-                            color = PortalColorLogic.PortalColors["Black"].HexName; 
-                        }
+                    } else
+                    {
+                        //PortalN.Portals[portalName].PortalZDOs[zdoName].BiomeColor = "skip"; // They only should get skip if they have been changed after the fact while in BiomeColor Mode
                     }
 
-
                     // __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastColoredByHashCode, Player.m_localPlayer?.GetPlayerID() ?? 0L);
-
                     __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeHashCode, biome);
-                    PortalN.Portals[portalName].PortalZDOs[zdoName].Biome = biome;
-
-                    if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.Off)
-                        PortalN.Portals[portalName].PortalZDOs[zdoName].BiomeColor = "skip";
 
                     PortalColorLogic.RMP.LogInfo("Setting ZDO Biome Data For First Time");
 
                     if (portalName == "")
                         PortalColorLogic.updateYmltoColorChange("", colorIndex, zdoName);
+                    else
+                        ClientORServerYMLUpdate(portaL, portalName, zdoName, colorIndex);
                 }
 
                 bool tagisset = portalZDO.ShowName; // PopUp Hover Text 
@@ -563,7 +540,8 @@ namespace RareMagicPortal
                 }
                 var portalData = PortalN.Portals[portalName];
                 var zdoData = portalData.PortalZDOs[zdoName];
-                // Update the hover text based on player permissions and state
+
+
                 UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, text, zdoData);
 
                 if (portalZDO.SpecialMode != PortalModeClass.PortalMode.TargetPortal && MagicPortalFluid.TargetPortalLoaded)
@@ -690,11 +668,13 @@ namespace RareMagicPortal
 
         internal static int CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextColor, string portalName, string zdoName = "", TeleportWorld instance = null, int overrideInt = 0)
         {
-            string biomeColor = "";
+
             int crystalCost = MagicPortalFluid.ConfigCrystalsConsumable.Value;
 
             if (zdoName == "")
                 zdoName = instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
+
+             var piece = instance.GetComponent<Piece>();
 
             if (!PortalN.Portals.ContainsKey(portalName))
             {
@@ -710,10 +690,7 @@ namespace RareMagicPortal
             var zdoData = portalData.PortalZDOs[zdoName];
 
 
-            if (instance != null && zdoData.BiomeColor != "skip")
-            {
-                biomeColor = functions.GetBiomeColor(zdoData.Biome);
-            }
+
             // Check if the portal is under special conditions like admin access or free passage
             if (portalName != "" && portalName != "Empty tag")
             {
@@ -728,13 +705,23 @@ namespace RareMagicPortal
                 }
             }
 
-            // Check for biome-specific colors
-            if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && (biomeColor != ""))
+            if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && !string.IsNullOrEmpty(zdoData.Biome) && zdoData.BiomeColor != "skip")
             {
-                currentColor = biomeColor;
+                string BioColor = "";
+                if (zdoData.BiomeColor == "")
+                {
+                    string colorme = functions.GetBiomeColor(zdoData.Biome);
+                    zdoData.BiomeColor = colorme;
+                    BioColor = colorme;
+                }
+                if (BioColor == "")
+                    BioColor = zdoData.BiomeColor;
+
+                currentColor = BioColor;
                 currentColorHex = PortalColors[currentColor].HexName;
                 nextColor = PortalColors[currentColor].NextColor;
                 return PortalColors[currentColor].Pos;
+
             }
 
             // Fallback to default or free passage color if the portal name is empty
