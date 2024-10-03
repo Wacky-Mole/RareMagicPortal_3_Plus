@@ -136,7 +136,7 @@ namespace RareMagicPortal
         public static string Worldname = "demo_world";
         public static bool LoggingOntoServerFirst = true;
         internal static Dictionary<string, Material> originalMaterials;
-        public static Dictionary<string, ZDO> PortalsKnown = new();
+        //public static Dictionary<string, ZDO> PortalsKnown = new();
         public static GameObject fxRMP = null;
 
         public static bool piecehaslvl = false;
@@ -221,6 +221,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<Toggle>? RiskyYMLSave;
         internal static ConfigEntry<Toggle>? UseSmallUpdates;
         internal static ConfigEntry<Toggle>? PreventTargetPortalFromChanging;
+        internal static ConfigEntry<Toggle>? PreventTargetPortalOwnerFromChanging;
         internal static ConfigEntry<string>? PPRed;
         internal static ConfigEntry<string>? PPGreen;
         internal static ConfigEntry<string>? PPBlue;
@@ -1154,7 +1155,8 @@ namespace RareMagicPortal
             string normalMode = "1.1 Normal Mode-----------";
 
             string targetportal = "1.2 Target Portal-----------";
-            PreventTargetPortalFromChanging = config(targetportal, "PreventTargetPortalChange", Toggle.On, "Prevent People (non creator/admin) from changing TargetPortal Mode. Groups/Private/Public etc");
+            PreventTargetPortalFromChanging = config(targetportal, "Prevent Target Portal Change", Toggle.On, "Prevent People (non creator/admin) from changing TargetPortal Mode. Groups/Private/Public/Guilds etc");
+            PreventTargetPortalOwnerFromChanging = config(targetportal, "Prevent Creator of TargetPortalChange", Toggle.Off, "Only allow Admins to Change TargetPortal Mode Groups/Private/Public/Guilds etc");
             ConfigTargetPortalAnimation = config(targetportal, "Force Portal Animation", Toggle.Off, "Forces Portal Animation for Target Portal Mod, is not synced and only applies the config if the mod is loaded", false);
 
             string crystalkeymode = "1.3 Crystal Key Mode-----------";

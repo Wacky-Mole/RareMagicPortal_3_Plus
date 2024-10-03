@@ -153,6 +153,7 @@ namespace RareMagicPortal_3_Plus.Patches
             }
         }
 
+        /*
 
         [HarmonyPatch(typeof(ZDOMan), nameof(ZDOMan.AddPeer))]
         public static class SendKnownPortalsOnConnectPeers
@@ -195,18 +196,6 @@ namespace RareMagicPortal_3_Plus.Patches
             }
         }
 
-        [HarmonyPatch(typeof(Game), nameof(Game.Start))]
-        public class StartPortalGettingRMP
-        {
-            private static void Postfix()
-            {
-                MagicPortalFluid.PortalsKnown.Clear();
-                Game.instance.StartCoroutine(GetandFetPortals());
-                if (ZNet.instance.IsServer())
-                    MagicPortalFluid.isAdmin = true;
-            }
-        }
-
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.Awake))]
         private static class AddNewPortalToListRMP
         {
@@ -224,14 +213,28 @@ namespace RareMagicPortal_3_Plus.Patches
                 }
             }
         }
+ */
+        [HarmonyPatch(typeof(Game), nameof(Game.Start))]
+        public class StartPortalGettingRMP
+        {
+            private static void Postfix()
+            {
+                //MagicPortalFluid.PortalsKnown.Clear();
+                //Game.instance.StartCoroutine(GetandFetPortals());
+                if (ZNet.instance.IsServer())
+                    MagicPortalFluid.isAdmin = true;
+            }
+        }
 
+
+       
 
         [HarmonyPatch(typeof(Player), nameof (Player.TeleportTo))]
         public static class FastTeleRMP
         {
             public static void Postfix(ref float ___m_teleportTimer, Player __instance, Vector3 pos, Quaternion rot, ref bool distantTeleport, ref bool __result)
             {
-                UnityEngine.Debug.Log("distantTeleport teleport is " + !MagicPortalFluid.LastTeleportFast);
+               // UnityEngine.Debug.Log("distantTeleport teleport is " + !MagicPortalFluid.LastTeleportFast);
                 distantTeleport = !MagicPortalFluid.LastTeleportFast;
                 if (MagicPortalFluid.LastTeleportFast)
                 {
@@ -467,14 +470,15 @@ namespace RareMagicPortal_3_Plus.Patches
                     var activePins = functions.GetActivePins();
                     if (activePins == null) return;
 
-                    MagicPortalFluid.RareMagicPortal.LogWarning("Got TargetPortal Icons count " + activePins.Count() + " Going to reduce and color");
+                    //MagicPortalFluid.RareMagicPortal.LogWarning("Got TargetPortal Icons count " + activePins.Count() + " Going to reduce and color");
+                    //MagicPortalFluid.RareMagicPortal.LogWarning("Got TargetPortal Icons count FOR PORTALSKNOWN" + MagicPortalFluid.PortalsKnown.Count() + " Going to reduce and color");
                     HashSet<Vector3> existingPins = new(activePins.Keys.Select(p => p.m_pos));
 
-                    foreach (var know in MagicPortalFluid.PortalsKnown) // PortalsKnown key is zdo.toString()
-                    {
-                        string PortalName = know.Value.GetString("tag");
-                        string zdoID = know.Value.GetString(MagicPortalFluid._portalID);
-                       // MagicPortalFluid.RareMagicPortal.LogWarning("known "+ zdoID);
+                    foreach (var know in activePins.Values) // PortalsKnown key is zdo.toString()
+                    {                      
+                        string PortalName = know.GetString("tag");
+                        string zdoID = know.GetString(MagicPortalFluid._portalID);
+                        //MagicPortalFluid.RareMagicPortal.LogWarning("PortalName "+ PortalName+ " active " + zdoID);
                         if (zdoID != "") //  if blank or if default is target Portal maybe
                         {             
                             int colorint = PortalColorLogic.CrystalandKeyLogicColor(
@@ -488,16 +492,16 @@ namespace RareMagicPortal_3_Plus.Patches
                             var portalZDO = portal.PortalZDOs[zdoID];
                             if (portalZDO.SpecialMode == PortalModeClass.PortalMode.TargetPortal) {
                                // MagicPortalFluid.RareMagicPortal.LogWarning(portalZDO + " Is in targetPortal Mode");
-                                if (existingPins.Contains(know.Value.m_position))
+                                if (existingPins.Contains(know.m_position))
                                 {
-                                    existingPins.Remove(know.Value.m_position);
+                                    existingPins.Remove(know.m_position);
                                    // MagicPortalFluid.RareMagicPortal.LogWarning("      Removed ");
                                 }
                             }
-                            //MagicPortalFluid.RareMagicPortal.LogWarning(" colorint for this icon " + colorint);
+                          //  MagicPortalFluid.RareMagicPortal.LogWarning(" colorint for this icon " + colorint);
                             foreach (var pin in activePins.Keys)
                             {
-                                if (pin.m_pos == know.Value.m_position)
+                                if (pin.m_pos == know.m_position)
                                 {
                                     pin.m_icon = colorint == 0 || colorint == 999
                                         ? MagicPortalFluid.IconDefault
@@ -525,7 +529,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 }
                 catch (Exception ex)
                 {
-                    // RMP.LogInfo($"Error in UpdatePortalIcons: {ex.Message}");
+                    MagicPortalFluid.RareMagicPortal.LogInfo($"Error in UpdatePortalIcons: {ex.Message}");
                 }
             }
 
