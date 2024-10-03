@@ -274,6 +274,7 @@ namespace RareMagicPortal
                     portal = __instance.GetComponent<Piece>();
                     string PortalName = __instance.m_nview.m_zdo.GetString("tag");
                     string zdoName = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
+                    var oneportal = PortalN.Portals[PortalName].PortalZDOs[zdoName];
 
                     if (portal != null && PortalName != "" && PortalName != "Empty tag")
                     {
@@ -282,7 +283,7 @@ namespace RareMagicPortal
                         if (portal.m_creator == closestPlayer.GetPlayerID())
                             sameperson = true;
 
-                        if (Input.GetKey(MagicPortalFluid.portalRMPMODEKEY.Value.MainKey) && MagicPortalFluid.portalRMPMODEKEY.Value.Modifiers.All(Input.GetKey) && (MagicPortalFluid.isAdmin ))
+                        if (Input.GetKey(MagicPortalFluid.portalRMPMODEKEY.Value.MainKey) && MagicPortalFluid.portalRMPMODEKEY.Value.Modifiers.All(Input.GetKey) && (MagicPortalFluid.isAdmin )) // popup box
                         {
                             if (ModeSelectionPopup._popupInstance != null)
                             {
@@ -297,8 +298,8 @@ namespace RareMagicPortal
                             }, currentcolor, PortalName, zdoName);
                              return false; // Prevent the default interaction
                         }
-                            
-                        if (Input.GetKey(MagicPortalFluid.portalRMPKEY.Value.MainKey) && MagicPortalFluid.portalRMPKEY.Value.Modifiers.All(Input.GetKey) && (MagicPortalFluid.isAdmin || sameperson && !PortalN.Portals[PortalName].PortalZDOs[zdoName].CrystalActive)) // creator can change it if enable crystals is off
+
+                        if (Input.GetKey(MagicPortalFluid.portalRMPKEY.Value.MainKey) && MagicPortalFluid.portalRMPKEY.Value.Modifiers.All(Input.GetKey) && CanChangePortalColor( MagicPortalFluid.isAdmin, sameperson, oneportal))
                         {
                             MagicPortalFluid.Globaliscreator = sameperson; // set this for yml permissions
 
@@ -315,34 +316,31 @@ namespace RareMagicPortal
                                 SetTeleportWorldColors(teleportWorldData, true);
                             }
 
-                                //__instance.m_nview.m_zdo.Set(MagicPortalFluid._teleportWorldColorHashCode, Utils.ColorToVec3(setcolor));
-                                //__instance.m_nview.m_zdo.Set(_teleportWorldColorAlphaHashCode, color);
-                                //__instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastColoredByHashCode, Player.m_localPlayer?.GetPlayerID() ?? 0L);
-                                //__instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeColorHashCode, "skip");
-                                //RMP.LogInfo("New color int " + colorint);
+                            //__instance.m_nview.m_zdo.Set(MagicPortalFluid._teleportWorldColorHashCode, Utils.ColorToVec3(setcolor));
+                            //__instance.m_nview.m_zdo.Set(_teleportWorldColorAlphaHashCode, color);
+                            //__instance.m_nview.m_zdo.Set(MagicPortalFluid._portalLastColoredByHashCode, Player.m_localPlayer?.GetPlayerID() ?? 0L);
+                            //__instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeColorHashCode, "skip");
+                            //RMP.LogInfo("New color int " + colorint);
+
+                            if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
+                                oneportal.BiomeColor = "skip";
 
                             updateYmltoColorChange(PortalName, colorint, zdoName); // update yaml
-                            //colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance);// Do this again now that it has been updated. // why do this again?
+                                                                                    //colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance);// Do this again now that it has been updated. // why do this again?
 
                             return false; // stop interaction on changing name
+                            
                         }
 
-                        if (sameperson || !sameperson && !MagicPortalFluid.ConfigCreatorLock.Value || closestPlayer.m_noPlacementCost)
+                        if (sameperson || !sameperson && !MagicPortalFluid.ConfigCreatorLock.Value || closestPlayer.m_noPlacementCost) // Only creator || not creator and not in lock mode || not in noplacementcost mode
                         {
                             return true;
-                        } // Only creator || not creator and not in lock mode || not in noplacementcost mode
+                        } 
                         human.Message(MessageHud.MessageType.Center, "$rmp_onlyownercanchange");
-                        return false; // noncreator doesn't have permiss
+                        return false; 
                     }
-
-
-
                     return true;
-                }
-
-                if (MagicPortalFluid.TargetPortalLoaded) // this sorta doesn't matter because it shouldn't display if not in target portal mode
-                { }
-                
+                }               
                 return true;
             }
             internal static Exception? Finalizer(Exception __exception) => __exception is SkipPortalException4 ? null : __exception;
@@ -453,6 +451,7 @@ namespace RareMagicPortal
                     string ply = Player.GetPlayer(portal.m_creator)?.m_name;
                     if (ply == null)
                         ply = "";
+                    PortalColorLogic.RMP.LogInfo(" Portal creator name is " + ply);
 
                     if (!PortalN.Portals.ContainsKey(portalName))
                     {
@@ -494,7 +493,7 @@ namespace RareMagicPortal
 
                 // Update hover text
                 Color color = currentColorHex;
-                string text = currentColor + " Crystal Portal";
+                
 
                 if (portalName == "" && currentColor != MagicPortalFluid.DefaultColor.Value && MagicPortalFluid.JustSent == 0)
                 {
@@ -540,9 +539,11 @@ namespace RareMagicPortal
                 }
                 var portalData = PortalN.Portals[portalName];
                 var zdoData = portalData.PortalZDOs[zdoName];
+                var currentmode = portalZDO.SpecialMode;
+                string text = currentColor + " Crystal Portal";
 
 
-                UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, text, zdoData);
+                UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, text, zdoData, currentmode);
 
                 if (portalZDO.SpecialMode != PortalModeClass.PortalMode.TargetPortal && MagicPortalFluid.TargetPortalLoaded)
                 {
@@ -550,37 +551,77 @@ namespace RareMagicPortal
                 }
             }
 
-            private static void UpdateHoverText(ref string hoverText, string currentColor, string nextColor, bool isCreator, Color currentColorHex, string portalName, string text, ZDOP portal)
+            private static void UpdateHoverText(ref string hoverText, string currentColor, string nextColor, bool isCreator, Color currentColorHex, string portalName, string Crystaltext, ZDOP portal, PortalModeClass.PortalMode currentmode)
             {
                 if (portalName != "" && portalName != "Empty tag")
                 {
-                    if (MagicPortalFluid.isAdmin || (isCreator && portal.CrystalActive))
+                    if (MagicPortalFluid.isAdmin || (isCreator && !portal.CrystalActive ))
                     {
                         if (MagicPortalFluid.portalRMPKEY.Value.MainKey is KeyCode.None)
                         {
                             return;
                         }
+                        string adminstring = "";
+                        string crystalString = "";
+                        if (MagicPortalFluid.isAdmin)
+                        {
+                            adminstring = " \n Change Portal Mode [" + MagicPortalFluid.portalRMPMODEKEY.Value + " + " + "E]";
+                        }
 
-
-                        if (portal.CrystalActive)
+                       
+                        if (MagicPortalFluid.isAdmin && portal.CrystalActive)
                         {
                             hoverText = string.Format(
-                                "{0}\n<size={4}>[<color={5}>{2}</color>] Change <color={7}>Portal</color>[{1}] Crystal to: [<color={8}>{3}</color>]</size>\n<size={4}>{6}</size>",
+                                "{0}\n<size={4}>[<color={5}>{2}</color>] Change <color={7}>Portal</color>[{1}] Crystal to: [<color={8}>{3}</color>]</size>\n<size={4}>{6}</size>\n{9} Mode{10}",
                                 hoverText,
                                 currentColor,
                                 MagicPortalFluid.portalRMPKEY.Value + " + " + "E",
                                 nextColor,
                                 15,
                                 "#" + ColorUtility.ToHtmlStringRGB(Color.yellow),
-                                text,
+                                Crystaltext,
                                 "#" + ColorUtility.ToHtmlStringRGB(currentColorHex),
-                                "#" + ColorUtility.ToHtmlStringRGB(PortalColorLogic.PortalColors[nextColor].HexName)
+                                "#" + ColorUtility.ToHtmlStringRGB(PortalColorLogic.PortalColors[nextColor].HexName),
+                                currentmode,
+                                adminstring
+
+                            );
+                        }
+
+                        if (MagicPortalFluid.isAdmin && !portal.CrystalActive)
+                        {
+                            hoverText = string.Format(
+                                "{0}\n<size={4}>[<color={5}>{2}</color>] Change <color={7}>Portal</color>[{1}] </size>\n<size={4}>{6}</size>\n{9} Mode{10}",
+                                hoverText,
+                                currentColor,
+                                MagicPortalFluid.portalRMPKEY.Value + " + " + "E",
+                                nextColor,
+                                15,
+                                "#" + ColorUtility.ToHtmlStringRGB(Color.yellow),
+                                Crystaltext,
+                                "#" + ColorUtility.ToHtmlStringRGB(currentColorHex),
+                                "#" + ColorUtility.ToHtmlStringRGB(PortalColorLogic.PortalColors[nextColor].HexName),
+                                currentmode,
+                                adminstring
+
+                            );
+                        }
+                        else if  ( MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && MagicPortalFluid.ConfigPreventCreatorsToChangeBiomeColor.Value == MagicPortalFluid.Toggle.On ) // prevent them from changing
+                        {
+                            hoverText = string.Format(
+                                "{0}\n<size={2}><color={4}>{1} Portal</color></size>\n{5} Mode",
+                                hoverText,
+                                currentColor,
+                                15,
+                                "#" + ColorUtility.ToHtmlStringRGB(Color.yellow),
+                                "#" + ColorUtility.ToHtmlStringRGB(currentColorHex),
+                                currentmode
                             );
                         }
                         else
                         {
                             hoverText = string.Format(
-                                "{0}\n<size={4}>[<color={5}>{2}</color>] Change <color={6}>Portal</color>[{1}] Color to: [<color={7}>{3}</color>] </size>",
+                                "{0}\n<size={4}>[<color={5}>{2}</color>] Change <color={6}>Portal</color>[{1}] Color to: [<color={7}>{3}</color>] </size>\n{8} Mode",
                                 hoverText,
                                 currentColor,
                                 MagicPortalFluid.portalRMPKEY.Value + " + " + "E",
@@ -588,7 +629,9 @@ namespace RareMagicPortal
                                 15,
                                 "#" + ColorUtility.ToHtmlStringRGB(Color.yellow),
                                 "#" + ColorUtility.ToHtmlStringRGB(currentColorHex),
-                                "#" + ColorUtility.ToHtmlStringRGB(PortalColorLogic.PortalColors[nextColor].HexName)
+                                "#" + ColorUtility.ToHtmlStringRGB(PortalColorLogic.PortalColors[nextColor].HexName),
+                                currentmode
+                                
                             );
                         }
                     }
@@ -597,24 +640,26 @@ namespace RareMagicPortal
                         if (portal.CrystalActive)
                         {
                             hoverText = string.Format(
-                                "{0}\n<size={2}><color={5}>{1} Portal</color></size>\n<size={2}>{4}</size>",
+                                "{0}\n<size={2}><color={5}>{1} Portal</color></size>\n<size={2}>{4}</size>\n{6} Mode",
                                 hoverText,
                                 currentColor,
                                 15,
                                 "#" + ColorUtility.ToHtmlStringRGB(Color.yellow),
-                                text,
-                                "#" + ColorUtility.ToHtmlStringRGB(currentColorHex)
+                                Crystaltext,
+                                "#" + ColorUtility.ToHtmlStringRGB(currentColorHex),
+                                currentmode
                             );
                         }
                         else
                         {
                             hoverText = string.Format(
-                                "{0}\n<size={2}><color={4}>{1} Portal</color></size>",
+                                "{0}\n<size={2}><color={4}>{1} Portal</color></size>\n{5} Mode",
                                 hoverText,
                                 currentColor,
                                 15,
                                 "#" + ColorUtility.ToHtmlStringRGB(Color.yellow),
-                                "#" + ColorUtility.ToHtmlStringRGB(currentColorHex)
+                                "#" + ColorUtility.ToHtmlStringRGB(currentColorHex),
+                                currentmode
                             );
                         }
                     }
@@ -624,14 +669,16 @@ namespace RareMagicPortal
                     string jo = "Please name Portal, ";
                     string hi = " Color ";
                     hoverText = string.Format(
-                        "{0}\n<size={1}><color={3}>{2}{5}</color><color={3}>{6}</color></size>",
+                        "{0}\n<size={1}><color={3}>{2}{5}</color><color={3}>{6}</color></size>\n{7} Mode",
                         hoverText,
                         15,
                         jo,
                         "#" + ColorUtility.ToHtmlStringRGB(Color.yellow),
                         "#" + ColorUtility.ToHtmlStringRGB(currentColorHex),
                         hi,
-                        currentColor
+                        currentColor,
+                        currentmode
+
                     );
                 }
             }
@@ -1291,6 +1338,32 @@ namespace RareMagicPortal
                 SetTeleportWorldColors(teleportWorldData, false, false);
             }
         }
+
+        private static  bool CanChangePortalColor( bool isAdmin, bool isCreator, ZDOP portalData)
+        {
+            // Check if admin override or PreventColorChange allows the player to change colors
+            bool canChangeColor = isAdmin ||
+                                  MagicPortalFluid.PreventColorChange.Value == MagicPortalFluid.Toggle.Off ||
+                                  (MagicPortalFluid.PreventColorChange.Value == MagicPortalFluid.Toggle.On && isCreator);
+
+            // If default biome colors are used, check if portal creators are prevented from changing it
+            if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && canChangeColor)
+            {
+                if (MagicPortalFluid.ConfigPreventCreatorsToChangeBiomeColor.Value == MagicPortalFluid.Toggle.On && !isAdmin)
+                {
+                    canChangeColor = false;  // Prevent creators from changing colors when biome colors are enforced
+                }
+            }
+
+            // If CrystalActive is active set to false
+            if (portalData.CrystalActive && !isAdmin )
+            {
+                canChangeColor = false;
+            }
+
+            return canChangeColor;
+        }
+
 
 
         private static void SetTeleportWorldColors(TeleportWorldDataRMP teleportWorldData, bool SetcolorTarget = false, bool SetMaterial = false)

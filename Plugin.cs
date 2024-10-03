@@ -199,6 +199,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<int>? MaxPortalsPerPerson;
         internal static ConfigEntry<Toggle>? AdminOnlyMakesPortals;
         internal static ConfigEntry<Toggle>? ConfigUseBiomeColors;
+        internal static ConfigEntry<Toggle>? ConfigPreventCreatorsToChangeBiomeColor;
         internal static ConfigEntry<string>? BiomeRepColors;
         internal static ConfigEntry<string>? EnabledColors;
         internal static ConfigEntry<string>? FreePassageColor;
@@ -1185,9 +1186,11 @@ namespace RareMagicPortal
             
             //TelePortAnythingColor = config(colors, "TelePortAnythingColor", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available Colors that can be selected for the TeleportAnything only portals - Only 1 can be set - Default is none");
           
-            PreventColorChange = config(colors, "Prevent Color Changing", Toggle.Off, "If true, only admins can change color. This will be overriden if CrystalActive is set for Portal");
+            PreventColorChange = config(colors, "Prevent Color Changing", Toggle.Off, "If true, only admins/creators can change color. This will be overriden if CrystalActive is enabled (only admin can) for the Portal");
 
             ConfigUseBiomeColors = config(colors, "Use Biome Colors by Default", Toggle.Off, "Overrides the default color to use specific biome-related colors. If an admin/owner changes it, the selected color will persist.");
+
+            ConfigPreventCreatorsToChangeBiomeColor = config(colors, "Prevent Portal Creators from Changing Biome Color", Toggle.On, "If 'Use Biome Colors by Default' is enabled, this allows portal creators to change portal colors for portals they created.");
 
             BiomeRepColors = config(colors, "Biome Colors", "Meadows:Tan,BlackForest:Blue,Swamp:Green,Mountain:Black,Plains:Orange,Mistlands:Purple,DeepNorth:Cyan,AshLands:Red,Ocean:Blue", "Biomes and their related Colors. - No spaces");
 
