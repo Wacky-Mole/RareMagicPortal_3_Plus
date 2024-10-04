@@ -52,58 +52,58 @@ namespace RareMagicPortal_3_Plus
                 {
                     return true;
                 }
+                string portalName = null;
 
-                try
+                var activePins = functions.GetActivePins();
+
+                foreach (Minimap.PinData pinData in activePins.Keys)
                 {
-                    Minimap minimap = Minimap.instance;
-
-
-                    var activePins = functions.GetActivePins();
-
-                    // Find the closest pin to the mouse position
-                    Minimap.PinData? closestPin = minimap.GetClosestPin(minimap.ScreenToWorldPoint(Input.mousePosition), minimap.m_removeRadius * (minimap.m_largeZoom * 2f));
-                    if (closestPin == null || !activePins.TryGetValue(closestPin, out ZDO portalZDO))
-                    {
-                        return true; // If no valid pin is found or it doesn't exist in activePins, skip further processing
-                    }
-
-                    // Get the portal name using your HandlePortalClick method
-                    string portalName = null;
-                    try
-                    {
-                        portalName = functions.HandlePortalClick();
-                    }
-                    catch
-                    {
-                        portalName = null;
-                    }
-
-                    if (portalName == null)
-                    {
-                        throw new SkipPortalException2(); // Stop TargetPortals from executing
-                    }
-
-                    if (!Player.m_localPlayer.IsTeleportable())
-                    {
-                        Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_noteleport");
-                        return false;
-                    }
-
-                    if (PortalColorLogic.CrystalandKeyLogic(portalName, portalZDO.ToString()))
-                    {
-                        return true; // Allow TargetPortal to do its checks
-                    }
-                    else
-                    {
-                        throw new SkipPortalException2(); // Stop TargetPortals from executing
-                    }
+                    pinData.m_save = true;
                 }
-                catch (Exception ex)
+                Minimap Minimap = Minimap.instance;
+                Minimap.PinData? closestPin = Minimap.GetClosestPin(Minimap.ScreenToWorldPoint(Input.mousePosition), Minimap.m_removeRadius * (Minimap.m_largeZoom * 2f));
+
+                foreach (Minimap.PinData pinData in activePins.Keys)
                 {
-                    // Log the exception for debugging purposes
-                    // RMP.LogInfo($"Error while accessing activePins: {ex.Message}");
-                    return true; // Ensure the original method runs if there is an error
+                    pinData.m_save = false;
                 }
+
+                if (closestPin is null)
+                {
+                  //  MagicPortalFluid.RareMagicPortal.LogWarning("closeest is Null");
+                    throw new SkipPortalException2();
+                }
+
+                if (!activePins.TryGetValue(closestPin, out ZDO portalZDO))
+                {
+                  //  MagicPortalFluid.RareMagicPortal.LogWarning("Try and Get Value");
+                    throw new SkipPortalException2();
+                }
+
+                portalName = portalZDO.GetString("tag");
+
+                if (portalName == null || portalName == "")
+                {
+                   // MagicPortalFluid.RareMagicPortal.LogWarning("PortalName = null or empty");
+                    throw new SkipPortalException2(); // Stop TargetPortals from executing
+                }
+
+                if (!Player.m_localPlayer.IsTeleportable())
+                {
+                    Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$msg_noteleport");
+                    return false;
+                }
+
+                if (PortalColorLogic.CrystalandKeyLogic(portalName, portalZDO.GetString(MagicPortalFluid._portalID)))
+                {
+                    return true; // Allow TargetPortal to do its checks
+                }
+                else
+                {
+                   // MagicPortalFluid.RareMagicPortal.LogWarning("No Crystal Exception");
+                    throw new SkipPortalException2(); // Stop TargetPortals from executing
+                }          
+
             }
 
             internal static Exception? Finalizer(Exception __exception) => __exception is SkipPortalException2 ? null : __exception;

@@ -1190,7 +1190,7 @@ namespace RareMagicPortal
           
             PreventColorChange = config(colors, "Prevent Color Changing", Toggle.Off, "If true, only admins/creators can change color. This will be overriden if CrystalActive is enabled (only admin can) for the Portal");
 
-            ConfigUseBiomeColors = config(colors, "Use Biome Colors by Default", Toggle.Off, "Overrides the default color to use specific biome-related colors. If an admin/owner changes it, the selected color will persist.");
+            ConfigUseBiomeColors = config(colors, "Use Biome Colors by Default", Toggle.On, "Overrides the default color to use specific biome-related colors. If an admin/owner changes it, the selected color will persist.");
 
             ConfigPreventCreatorsToChangeBiomeColor = config(colors, "Prevent Portal Creators from Changing Biome Color", Toggle.On, "If 'Use Biome Colors by Default' is enabled, this allows portal creators to change portal colors for portals they created.");
 

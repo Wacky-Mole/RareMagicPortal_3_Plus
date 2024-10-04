@@ -153,74 +153,12 @@ namespace RareMagicPortal_3_Plus.Patches
             }
         }
 
-        /*
 
-        [HarmonyPatch(typeof(ZDOMan), nameof(ZDOMan.AddPeer))]
-        public static class SendKnownPortalsOnConnectPeers
-        {
-            [UsedImplicitly]
-            private static void Postfix(ZDOMan __instance, ZNetPeer netPeer)
-            {
-                if (ZNet.instance.IsServer())
-                {
-                    foreach (ZDO zdo in MagicPortalFluid.PortalsKnown.Values)
-                    {
-                        __instance.ForceSendZDO(netPeer.m_uid, zdo.m_uid);
-                    }
-                }
-            }
-        }
-
-        private static IEnumerator GetandFetPortals()
-        {
-            while (true)
-            {
-                List<ZDO> portalList = ZDOMan.instance.GetPortals();
-                var found = portalList.ToDictionary(zdo => zdo.ToString(), zdo => zdo);
-
-                if (ZNet.instance.IsServer())
-                {
-                    var newPortals = found.Keys.Except(MagicPortalFluid.PortalsKnown.Select(zdo => zdo.ToString()));
-
-                    foreach (string portalKey in newPortals)
-                    {
-                        if (found.TryGetValue(portalKey, out ZDO zdo))
-                        {
-                            ZDOMan.instance.ForceSendZDO(zdo.m_uid);
-                        }
-                    }
-                }
-
-                MagicPortalFluid.PortalsKnown = found;
-                yield return new WaitForSeconds(10f);
-            }
-        }
-
-        [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.Awake))]
-        private static class AddNewPortalToListRMP
-        {
-            private static void Postfix(TeleportWorld __instance)
-            {
-                if (__instance.TryGetComponent<WearNTear>(out var wear))
-                {
-                  // MagicPortalFluid.PortalsKnown.Add(__instance.m_nview.GetZDO().ToString(), __instance.m_nview.GetZDO());
-                    Action? onDestroy = wear.m_onDestroyed;
-                    wear.m_onDestroyed = () =>
-                    {
-                        onDestroy?.Invoke();
-                        MagicPortalFluid.PortalsKnown.Remove(__instance.m_nview.GetZDO().ToString());
-                    };
-                }
-            }
-        }
- */
         [HarmonyPatch(typeof(Game), nameof(Game.Start))]
         public class StartPortalGettingRMP
         {
             private static void Postfix()
             {
-                //MagicPortalFluid.PortalsKnown.Clear();
-                //Game.instance.StartCoroutine(GetandFetPortals());
                 if (ZNet.instance.IsServer())
                     MagicPortalFluid.isAdmin = true;
             }
@@ -277,11 +215,14 @@ namespace RareMagicPortal_3_Plus.Patches
                 {
                     throw new SkipPortalException();
                 }
-                
+               // ZLog.LogWarning("Start Trigger");
                 string PortalName = __instance.m_teleportWorld.m_nview.m_zdo.GetString("tag");
                 var zdoname = __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);  
                 var portal = PortalColorLogic.PortalN.Portals[PortalName];
                 var portalZDO = portal.PortalZDOs[zdoname];
+                MagicPortalFluid.TeleportingforWeight = 1;// what?
+                MagicPortalFluid.LastTeleportFast = portalZDO.FastTeleport;
+                //MagicPortalFluid.m_hadTarget = __instance.m_teleportWorld.m_hadTarget;
                 if (!portalZDO.Active) // skip all
                 {
                     throw new SkipPortalException();
@@ -299,7 +240,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     {
                     if (PasswordPopup._popupInstance != null)
                     {
-                        return false; // Prevent the default interaction
+                        throw new SkipPortalException();
                     }
                     PasswordPopup popup = new();
                     popup.ShowPasswordPopup((password) =>
@@ -324,19 +265,33 @@ namespace RareMagicPortal_3_Plus.Patches
                         }                      
                     });
 
-                        return false;// while waiting
+                    throw new SkipPortalException();
                 }
 
-                MagicPortalFluid.TeleportingforWeight = 1;// what?
-                //MagicPortalFluid.m_hadTarget = __instance.m_teleportWorld.m_hadTarget;
-                MagicPortalFluid.LastTeleportFast = portalZDO.FastTeleport;
+               // ZLog.LogWarning("cancel target");
 
-
-                // Check crystal and key logic
-                if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID), __instance.m_teleportWorld.m_nview.m_zdo.GetString(MagicPortalFluid._portalBiomeColorHashCode)))
+                // The teleport modes that don't consume until passed another step. 
+                bool cancelTargetPortal = true;
+                if (portal.SpecialMode == PortalModeClass.PortalMode.TargetPortal) // only this one doesn't throw exception
                 {
-                    bool cancelTargetPortal = true;
+                    cancelTargetPortal = false;
+                    MagicPortalFluid.Teleporting = true; // activates map for targetportal 
+                    return true; // otherwise
 
+                }
+
+                if (portal.SpecialMode == PortalModeClass.PortalMode.TransportNetwork)
+                {
+                    LastPortalTrigger = __instance.m_teleportWorld.m_nview.GetZDO().GetPosition();
+                    LastPortalName = PortalName;
+                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Warp to Location with /warp destination");
+
+                }
+               // ZLog.LogWarning("CrystalKeyLogic");
+                // Check crystal and key logic
+                if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID))) // for some of these need to skip til success in other areas.
+                {
+                   // ZLog.LogWarning("After CrystalKeyLogic");
                     if (portal.SpecialMode == PortalModeClass.PortalMode.CordsPortal)
                     {
                         string coords = portalZDO.Coords; // Assuming Coords is a string like "12.5, 34.6, 78.9"
@@ -404,13 +359,6 @@ namespace RareMagicPortal_3_Plus.Patches
                         ((Character)Player.m_localPlayer).m_lastGroundTouch = 0f;
                     }
 
-                    if (portal.SpecialMode == PortalModeClass.PortalMode.TransportNetwork)
-                    {
-                        LastPortalTrigger = __instance.m_teleportWorld.m_nview.GetZDO().GetPosition();
-                        LastPortalName = PortalName;
-                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Warp to Location with /warp destination");
-                        
-                    }
 
 
                     if (portal.SpecialMode == PortalModeClass.PortalMode.TargetPortal) // only this one doesn't throw exception
@@ -427,7 +375,7 @@ namespace RareMagicPortal_3_Plus.Patches
                         throw new SkipPortalException();
                     }
 
-                    MagicPortalFluid.Teleporting = true; // activates map for targetportal 
+                    MagicPortalFluid.Teleporting = true; // for anything else
                     return true; // otherwise
 
                 }
@@ -556,6 +504,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     if (distance < someThreshold)
                     {
                         MagicPortalFluid.RareMagicPortal.LogInfo("Player IS close enough to Tele Network");
+
 
                         var target = PortalColorLogic.PortalN.Portals[destination];
                         string cords = "";

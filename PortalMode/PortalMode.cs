@@ -2,6 +2,7 @@
 using RareMagicPortal;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
 using YamlDotNet.Serialization;
@@ -32,7 +33,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             return inputPassword == actualPassword;
         }
 
-        public static void HandlePortalModeSelection(TeleportWorld portalInstance, Player player, PortalMode selectedMode,  ModeSelectionPopup PopInstance)
+        public static void HandlePortalModeSelection(TeleportWorld portalInstance, Player player, PortalMode selectedMode, ModeSelectionPopup PopInstance)
         {
 
             // reset to default for special fields only like active // random teleport
@@ -43,14 +44,29 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     foreach (var zdoEntry in port.Value.PortalZDOs)
                     {
                         zdoEntry.Value.Active = true;
-                        zdoEntry.Value.RandomTeleport = false;                      
-                       // zdoEntry.Value.OverridePortal = false;
+                        zdoEntry.Value.RandomTeleport = false;
+                        // zdoEntry.Value.OverridePortal = false;
                     }
                 }
             }
             // set PortalNames to Default for specials
             PortalColorLogic.PortalN.Portals[PopInstance.portalName].Admin_only_Access = false;
-            PortalColorLogic.PortalN.Portals[PopInstance.portalName].PortalZDOs[PopInstance.zdo].Color = PortalColorLogic.PortalN.Portals[PopInstance.portalName].Color;
+
+
+
+            if (selectedMode == PortalMode.Normal || selectedMode == PortalMode.AdminOnly || selectedMode == PortalMode.OneWay || selectedMode == PortalMode.OneWayPasswordLock)// Not for all
+            {              
+                foreach (var port in PortalColorLogic.PortalN.Portals)
+                {
+                    if (port.Key == PopInstance.portalName)
+                    {
+                        foreach (var zdoEntry in port.Value.PortalZDOs)
+                        {
+                            zdoEntry.Value.Color = PortalColorLogic.PortalN.Portals[PopInstance.portalName].Color;
+                        }
+                    }
+                }
+            }
 
 
 
@@ -217,8 +233,27 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
         private static void SetTargetPortalMode(ModeSelectionPopup PopInstance)
         {
-            SetMode(PortalMode.TargetPortal, PopInstance.portalName, PopInstance.zdo);
-            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now set to Target Portal mode.");
+            if (MagicPortalFluid.TargetPortalLoaded)
+            {
+                SetMode(PortalMode.TargetPortal, PopInstance.portalName, PopInstance.zdo);
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now set to Target Portal mode.");
+            }
+            else
+            {
+                SetMode(PortalMode.Normal, PopInstance.portalName, PopInstance.zdo);
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, "TargetPortal Mod is NOT Installed, Setting to Normal Mode");
+
+                foreach (var port in PortalColorLogic.PortalN.Portals)
+                {
+                    if (port.Key == PopInstance.portalName)
+                    {
+                        foreach (var zdoEntry in port.Value.PortalZDOs)
+                        {
+                            zdoEntry.Value.Color = PortalColorLogic.PortalN.Portals[PopInstance.portalName].Color;
+                        }
+                    }
+                }
+            }                        
         }
 
         private static void SetCrystalKeyMode(ModeSelectionPopup PopInstance)

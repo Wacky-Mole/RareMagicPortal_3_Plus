@@ -563,7 +563,7 @@ namespace RareMagicPortal
                 var zdoData = portalData.PortalZDOs[zdoName];
                 var currentmode = portalZDO.SpecialMode;
                 string text = currentColor + " Crystal Portal";
-                text = "<color=#" + currentColorHex + ">" + text + "</color>";
+                text = "<color=#" + ColorUtility.ToHtmlStringRGB(currentColorHex) + ">" + text + "</color>";
 
 
                 UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, text, zdoData, currentmode);
@@ -982,23 +982,26 @@ namespace RareMagicPortal
             bool OdinsKin = false;
             bool Free_Passage = false;
 
-            string BiomeC = "";
-            string currentColor = "";
             var flag = false;
+            string requiredColor = PortalN.Portals[PortalName].PortalZDOs[zdoID].Color;
 
-            MagicPortalFluid.RareMagicPortal.LogInfo($"Portal name is " + PortalName);//+" currentcolor " + currentColor + " BiomeC " + BiomeC + "BiomeColor" + BiomeColor);
+            if (!string.IsNullOrEmpty(PortalN.Portals[PortalName].PortalZDOs[zdoID].Biome))
+                BiomeColor = PortalN.Portals[PortalName].PortalZDOs[zdoID].BiomeColor;
+
+            MagicPortalFluid.RareMagicPortal.LogInfo($"Checking CrystalKey for " + PortalName);//+" currentcolor " + currentColor + " BiomeC " + BiomeC + "BiomeColor" + BiomeColor);
             /*
             if (!PortalN.Portals.ContainsKey(PortalName)) // if doesn't contain use defaults
             {
                 WritetoYML(PortalName, zdoID);
             } */
 
-            if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && BiomeColor != "skip" && PortalN.Portals[PortalName].PortalZDOs[zdoID].BiomeColor != "skip")
+            if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && BiomeColor != "skip" && !string.IsNullOrEmpty(PortalN.Portals[PortalName].PortalZDOs[zdoID].Biome) )
             {
-                flag = true;
-                int intS = Int32.Parse(PortalN.Portals[PortalName].PortalZDOs[zdoID].BiomeColor);
-                PortalColor pcol = (PortalColor)intS;
-                currentColor = pcol.ToString();
+                if (BiomeColor != "")
+                {
+                    flag = true;
+                    requiredColor = PortalN.Portals[PortalName].PortalZDOs[zdoID].BiomeColor;
+                }
             }
             
 
@@ -1084,7 +1087,7 @@ namespace RareMagicPortal
                     }
                 }
 
-                string requiredColor = PortalN.Portals[PortalName].PortalZDOs[zdoID].Color;
+                
 
                 // Validate the player has either a crystal or key for the required color
                 bool hasCrystal = CrystalCount.ContainsKey(requiredColor) && CrystalCount[requiredColor] > 0;

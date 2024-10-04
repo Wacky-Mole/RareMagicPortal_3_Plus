@@ -205,8 +205,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             
             RMP.LogMessage("Selected Mode is " + selectedMode);
             modeDropdown.value = (int)selectedMode;
-            // Update description for the default selection
-            //UpdateModeDescription();
+            crystalsKeysBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].CrystalActive;
             OnCrystalKeyChange();
             PopulateSelected();
 
