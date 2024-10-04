@@ -155,6 +155,19 @@
     <Compile Include="PortalColorLogic.cs" />
     <Compile Include="PortalMode\BasePopup.cs" />
     <Compile Include="PortalMode\PortalMode.cs" />
+    <Compile Include="Scripts\DragControl.cs" />
+    <Compile Include="Scripts\PortalFX_AxisRotateByTime.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Scripts\PortalFX_Turbulence.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Scripts\PortalFX_UVAnimation.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Scripts\PortalsFX_RandomMoves.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="Util\functions.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="PortalName.cs" />

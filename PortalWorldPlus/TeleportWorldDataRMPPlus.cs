@@ -3,16 +3,34 @@ using RareMagicPortal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static RareMagicPortal.PortalName;
 
 
 
 namespace RareMagicPortal.PortalWorld
 {
+    [HarmonyPatch(typeof(Game),nameof(Game.Awake))]
 
-	internal class PLUS
+    class TeleportWorldPatchRMPPLUSAdd
+    {
+        internal static bool Prefix(Game __instance)
+        {
+			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal1G);
+
+			return true;
+		}
+
+
+    }
+
+
+
+    internal class PLUS
 	{
 		// PLUS Version only
 
@@ -43,18 +61,18 @@ namespace RareMagicPortal.PortalWorld
                 return;
             }
 
-			/*
+			
             if (__instance.m_model.name == PLUS.ModelDefault)  //  hopefully a better way can be found
-                PLUS._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassDefault.FactoryMethod(__instance));
+                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassDefault.FactoryMethod(__instance));
             else if (__instance.m_model.name == PLUS.Model1)
-                _teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel1.FactoryMethod(__instance));
+               MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel1.FactoryMethod(__instance));
             else if (__instance.m_model.name == PLUS.Model2)
-                _teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel2.FactoryMethod(__instance));
+                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel2.FactoryMethod(__instance));
             else if (__instance.m_model.name == PLUS.Model3)
-                _teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel3.FactoryMethod(__instance));
+                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel3.FactoryMethod(__instance));
             else if (__instance.m_model.name == PLUS.Model4)
-                _teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel4.FactoryMethod(__instance));
-			*/
+                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel4.FactoryMethod(__instance));
+			
         }
     }
 

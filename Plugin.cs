@@ -300,6 +300,8 @@ namespace RareMagicPortal
         private static TeleportWorldDataCreator ClassModel3 = new TeleportWorldDataCreatorD();
         private static TeleportWorldDataCreator ClassModel4 = new TeleportWorldDataCreatorE();
 
+        internal static GameObject portal1G = null;
+
         public static Dictionary<string, Sprite> Icons = new Dictionary<string, Sprite>();
 
         internal static Localization english = null!;
@@ -331,7 +333,7 @@ namespace RareMagicPortal
 
         internal static readonly Dictionary<TeleportWorld, TeleportWorldDataRMP> _teleportWorldDataCache = new();
 
-        private static readonly Dictionary<TeleportWorld, ClassBase> _teleportWorldDataCacheDefault = new();
+        internal static readonly Dictionary<TeleportWorld, ClassBase> _teleportWorldDataCacheDefault = new();
 
         private static readonly KeyboardShortcut _changePortalReq = new(KeyCode.E, KeyCode.LeftControl);
         private static readonly KeyboardShortcut _portalRMPsacrifceKEY = new(KeyCode.E, KeyCode.LeftControl);
@@ -389,6 +391,7 @@ namespace RareMagicPortal
             Localizer.Load();
 
             LoadAssets();
+            LoadPortals();
             PortalDrink();
 
             assetPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), typeof(MagicPortalFluid).Namespace);
@@ -636,6 +639,25 @@ namespace RareMagicPortal
                 [nameof(PortalColor.Cyan)] = GemColorCyan.Value,
                 [nameof(PortalColor.Orange)] = GemColorOrange.Value
             };
+        }
+
+        private void LoadPortals()
+        {
+
+            BuildPiece portal1 = new("wackyportals", "wacky_portal1", "assets");
+
+            portal1.Name.English("Portal 1"); // Localize the name and description for the building piece for a language.
+            portal1.Description.English("Portal 1 is fun");
+            portal1.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
+            portal1.RequiredItems.Add("SurtlingCore", 20, false);
+            //examplePiece1.Category.Set(BuildPieceCategory.Misc);
+            portal1.Category.Set("Portals"); // You can set a custom category for your piece. Instead of the default ones like above.
+            portal1.Crafting.Set(PieceManager.CraftingTable.Workbench); // Set a crafting station requirement for the piece.
+            portal1.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
+            portal1G = portal1.Prefab;
+
+
+
         }
 
 
@@ -1169,7 +1191,7 @@ namespace RareMagicPortal
             string allowedUsers = "1.6 Allowed Users Mode-----------";
 
             string transportNetwork = "1.7 TransportNetwork-----------";
-            flyonactivate = config(transportNetwork, "Fly on Warp", Toggle.On, "Fly on Warping. I put this here in case of anticheat");
+            flyonactivate = config(transportNetwork, "Fly on Warp", Toggle.On, "Fly on Warping. I put this here in case of anticheat or fall dmg somehow");
 
             string coordsportal = "1.8 Coordinates Portal-----------";
 
