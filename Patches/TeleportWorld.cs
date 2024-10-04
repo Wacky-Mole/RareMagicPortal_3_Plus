@@ -32,20 +32,33 @@ namespace RareMagicPortal_3_Plus.Patches
     {
 
 
-        /*
+        
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.HaveTarget))] 
         [HarmonyPriority(Priority.LowerThanNormal)]
         public static class SetPortalsConnectedRMP
         {
-            private static bool Prefix(TeleportWorld __instance,  ref bool __result)
+            private static void Postfix(TeleportWorld __instance,  ref bool __result)  // switched from prefix to post
             {
 
                 //return true;//  OVERRIDE THIS FROM TARGET PORTAL
                 if (!MagicPortalFluid.TargetPortalLoaded)
-                    return true;
+                    return;
 
+                try
+                {
+                    string PortalName = __instance.m_nview.m_zdo.GetString("tag");
+                    var zdoname = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
+                    var portal = PortalColorLogic.PortalN.Portals[PortalName];
+                    var portalZDO = portal.PortalZDOs[zdoname];
+                    if (portalZDO.SpecialMode == PortalModeClass.PortalMode.TargetPortal)
+                    {
+                        __result = true;
+                        return;
+                    }
+                }
+                catch { }
 
-
+                /*
                 if (__instance.m_nview == null || __instance.m_nview.GetZDO() == null)
                 {
                     __result = false;
@@ -54,10 +67,11 @@ namespace RareMagicPortal_3_Plus.Patches
                 __result = __instance.m_nview.GetZDO().GetConnectionZDOID(ZDOExtraData.ConnectionType.Portal) != ZDOID.None;
 
                 return false;
+                */
             }
         }
 
-        */
+        
 
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.TargetFound))]
         [HarmonyPriority(Priority.LowerThanNormal)]

@@ -565,6 +565,9 @@ namespace RareMagicPortal
                 string text = currentColor + " Crystal Portal";
                 text = "<color=#" + ColorUtility.ToHtmlStringRGB(currentColorHex) + ">" + text + "</color>";
 
+               // if (portalZDO.SpecialMode == PortalModeClass.PortalMode.TargetPortal && __result.Contains(Localization.instance.Localize("$piece_portal_unconnected")))
+                 //   __result.Replace(Localization.instance.Localize("$piece_portal_unconnected"), Localization.instance.Localize("$piece_portal_connected")); // this is dumb
+
 
                 UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, text, zdoData, currentmode);
 
@@ -988,7 +991,7 @@ namespace RareMagicPortal
             if (!string.IsNullOrEmpty(PortalN.Portals[PortalName].PortalZDOs[zdoID].Biome))
                 BiomeColor = PortalN.Portals[PortalName].PortalZDOs[zdoID].BiomeColor;
 
-            MagicPortalFluid.RareMagicPortal.LogInfo($"Checking CrystalKey for " + PortalName);//+" currentcolor " + currentColor + " BiomeC " + BiomeC + "BiomeColor" + BiomeColor);
+            MagicPortalFluid.RareMagicPortal.LogInfo($"Checking CrystalKey for Portal " + PortalName);//+" currentcolor " + currentColor + " BiomeC " + BiomeC + "BiomeColor" + BiomeColor);
             /*
             if (!PortalN.Portals.ContainsKey(PortalName)) // if doesn't contain use defaults
             {
@@ -1234,7 +1237,24 @@ namespace RareMagicPortal
                     PortalN.Portals[PortalName].TeleportAnything = false;
                     PortalN.Portals[PortalName].Admin_only_Access = false;
 
-                    if(MagicPortalFluid.DefaultMode.Value == PortalModeClass.PortalMode.AdminOnly)
+                    if (MagicPortalFluid.DefaultMode.Value == PortalModeClass.PortalMode.CrystalKeyMode) 
+                        PortalN.Portals[PortalName].PortalZDOs[ZDOID].CrystalActive = true;
+
+                    if (MagicPortalFluid.EnableCrystalsforNewIfPossible.Value == MagicPortalFluid.Toggle.On)
+                    {
+                        if (MagicPortalFluid.DefaultMode.Value == PortalModeClass.PortalMode.TargetPortal && MagicPortalFluid.TargetPortalLoaded ||
+                            MagicPortalFluid.DefaultMode.Value == PortalModeClass.PortalMode.RandomTeleport ||
+                            MagicPortalFluid.DefaultMode.Value == PortalModeClass.PortalMode.PasswordLock ||
+                            MagicPortalFluid.DefaultMode.Value == PortalModeClass.PortalMode.OneWayPasswordLock ||
+                            MagicPortalFluid.DefaultMode.Value == PortalModeClass.PortalMode.OneWay ||
+                            MagicPortalFluid.DefaultMode.Value == PortalModeClass.PortalMode.CordsPortal
+                            )
+                        {
+                            PortalN.Portals[PortalName].PortalZDOs[ZDOID].CrystalActive = true;
+                        }
+                    }
+
+                    if(MagicPortalFluid.DefaultMode.Value == PortalModeClass.PortalMode.AdminOnly )
                     {
                         PortalN.Portals[PortalName].Admin_only_Access = true;
                     }
