@@ -195,6 +195,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<KeyboardShortcut>? portalRMPsacrifceKEY = null!;
         internal static ConfigEntry<Toggle>? ConfigMessageLeft;
         internal static ConfigEntry<Toggle>? ConfigTargetPortalAnimation;
+        internal static ConfigEntry<Toggle>? flyonactivate;
         internal static ConfigEntry<int>? ConfigMaxWeight;
         internal static ConfigEntry<int>? MaxPortalsPerPerson;
         internal static ConfigEntry<Toggle>? AdminOnlyMakesPortals;
@@ -1168,6 +1169,7 @@ namespace RareMagicPortal
             string allowedUsers = "1.6 Allowed Users Mode-----------";
 
             string transportNetwork = "1.7 TransportNetwork-----------";
+            flyonactivate = config(transportNetwork, "Fly on Warp", Toggle.On, "Fly on Warping. I put this here in case of anticheat");
 
             string coordsportal = "1.8 Coordinates Portal-----------";
 

@@ -1219,6 +1219,16 @@ namespace RareMagicPortal
             {
                 PortalN.Portals[PortalName].PortalZDOs[ZDOID] = PortalN.Portals[oldname].PortalZDOs[ZDOID].Clone(); // copy from another if just changed portal name // maybe config?
                 cloneoverride = true;
+                PortalN.Portals[PortalName].SpecialMode = PortalN.Portals[oldname].SpecialMode;
+                PortalN.Portals[PortalName].Free_Passage = PortalN.Portals[oldname].Free_Passage;
+                PortalN.Portals[PortalName].TeleportAnything = PortalN.Portals[oldname].TeleportAnything;
+                PortalN.Portals[PortalName].Admin_only_Access = PortalN.Portals[oldname].Admin_only_Access;
+                PortalN.Portals[PortalName].AllowedUsers = PortalN.Portals[oldname].AllowedUsers;
+                PortalN.Portals[PortalName].Color = PortalN.Portals[oldname].Color;
+                PortalN.Portals[PortalName].MaxWeight = PortalN.Portals[oldname].MaxWeight;
+                PortalN.Portals[PortalName].AdditionalAllowItems = PortalN.Portals[oldname].AdditionalAllowItems;
+                PortalN.Portals[PortalName].AdditionalProhibitItems = PortalN.Portals[oldname].AdditionalProhibitItems;
+
             }
 
             if (creator != "")

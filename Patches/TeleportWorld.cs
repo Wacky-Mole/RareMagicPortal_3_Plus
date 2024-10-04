@@ -566,8 +566,8 @@ namespace RareMagicPortal_3_Plus.Patches
             vfx = MagicPortalFluid.Instantiate(MagicPortalFluid.fxRMP, parent).transform;       
             vfx.localPosition = new Vector3(0f, -0.01f, 0f); 
             vfx.localScale = new Vector3(0.01352632f, 0.01352632f, 0.01352632f);
-
-            MagicPortalFluid.context.StartCoroutine(FlyWithDelay(player, targetCoords));     
+            if (MagicPortalFluid.flyonactivate.Value == MagicPortalFluid.Toggle.On)
+                MagicPortalFluid.context.StartCoroutine(FlyWithDelay(player, targetCoords));     
             MagicPortalFluid.context.StartCoroutine(TeleportWithDelay(player, targetCoords));
 
 
@@ -584,7 +584,7 @@ namespace RareMagicPortal_3_Plus.Patches
         {
             yield return new WaitForSeconds(4.5f);
             float ascendSpeed = 5f;
-            float ascendDuration = 1f;
+            float ascendDuration = 4f;
             Rigidbody playerRigidbody = player.GetComponent<Rigidbody>();
             playerRigidbody.velocity = new Vector3(0, 5f, 0);
             MagicPortalFluid.context.StartCoroutine(AscendCoroutine(playerRigidbody, ascendSpeed, ascendDuration));

@@ -68,7 +68,6 @@ namespace RareMagicPortal
         {
        
             public string Color { get; set; } = "Yellow";
-            public bool TransportNetwork { get; set; } = false;
             public PortalModeClass.PortalMode SpecialMode { get; set; } = PortalModeClass.PortalMode.Normal;
             public bool Gold_Allow { get; set; } = true;
             public bool Free_Passage { get; set; } = false;
