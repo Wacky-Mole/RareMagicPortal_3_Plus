@@ -21,6 +21,12 @@ namespace RareMagicPortal.PortalWorld
         internal static bool Prefix(Game __instance)
         {
 			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal1G);
+			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal2G);
+			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal3G);
+			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal4G);
+			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal5G);
+			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal6G);
+			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal8G);
 
 			return true;
 		}
@@ -28,7 +34,29 @@ namespace RareMagicPortal.PortalWorld
 
     }
 
+    [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.Awake))]
+     static class SetInitialPortalModefunz
+    {
+        [HarmonyPriority(Priority.HigherThanNormal)]
+        private static void Prefix(TeleportWorld __instance)
+        {
+            MagicPortalFluid.RareMagicPortal.LogWarning("hi");
+			if (__instance.TryGetComponent<Piece>(out Piece piece) )
+			{
+                MagicPortalFluid.RareMagicPortal.LogWarning("pass one");
+                if (piece.m_nview is { } mview )
+				{ 
+					MagicPortalFluid.RareMagicPortal.LogWarning("pass two");
 
+					if (!piece.IsPlacedByPlayer() && mview.GetZDO().GetInt("TargetPortal PortalMode", -1) == -1) {
+						MagicPortalFluid.RareMagicPortal.LogWarning("pass  three");
+					}
+				}
+			}
+				
+					
+        }
+    }
 
     internal class PLUS
 	{
@@ -39,12 +67,14 @@ namespace RareMagicPortal.PortalWorld
 		public static string Model2 = "RuneRing";
 		public static string Model3 = "Gates";
 		public static string Model4 = "QuadPortal";
+		public static string Model5 = "PlatformCircle";
 
 		static internal TeleportWorldDataCreator ClassDefault = new TeleportWorldDataCreatorA();
 		static internal TeleportWorldDataCreator ClassModel1 = new TeleportWorldDataCreatorB();
 		static internal TeleportWorldDataCreator ClassModel2 = new TeleportWorldDataCreatorC();
 		static internal TeleportWorldDataCreator ClassModel3 = new TeleportWorldDataCreatorD();
 		static internal TeleportWorldDataCreator ClassModel4 = new TeleportWorldDataCreatorE();
+		static internal TeleportWorldDataCreator ClassModel5 = new TeleportWorldDataCreatorF();
 
 
 	}
@@ -60,7 +90,7 @@ namespace RareMagicPortal.PortalWorld
             {
                 return;
             }
-
+			MagicPortalFluid.RareMagicPortal.LogWarning("PLUS loading");
 			
             if (__instance.m_model.name == PLUS.ModelDefault)  //  hopefully a better way can be found
                 MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassDefault.FactoryMethod(__instance));
@@ -72,7 +102,7 @@ namespace RareMagicPortal.PortalWorld
                 MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel3.FactoryMethod(__instance));
             else if (__instance.m_model.name == PLUS.Model4)
                 MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel4.FactoryMethod(__instance));
-			
+
         }
     }
 
@@ -135,10 +165,19 @@ namespace RareMagicPortal.PortalWorld
 	}
 
 
+    class TeleportWorldDataCreatorF : TeleportWorldDataCreator
+    {
+        public override ClassBase FactoryMethod(TeleportWorld teleportWorld)
+        {
+            return new TeleportWorldDataRMPModel5(teleportWorld);
+        }
+    }
 
 
 
-	public abstract class ClassBase
+
+
+    public abstract class ClassBase
 	{
 
 		/// public const string ModelDefault = "small_portal";
@@ -552,11 +591,11 @@ namespace RareMagicPortal.PortalWorld
 			teleportWorld.GetComponentsInNamedChild<ParticleSystemRenderer>("Particle System2")
 				.Where(psr => psr.material != null)
 				.Select(psr => psr.material));
-
+			/*
 			Materials.AddRange(
 			teleportWorld.GetComponentsInNamedChild<ParticleSystemRenderer>("Distortion") // in tint
 				.Where(psr => psr.material != null)
-				.Select(psr => psr.material));
+				.Select(psr => psr.material)); */ // bad
 
 			MeshRend.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("RuneRing")); // material
 			//  .Where(psr => psr.material != null)
@@ -745,7 +784,100 @@ namespace RareMagicPortal.PortalWorld
 
 	}
 
-	internal static class TeleportWorldExtensionRMP // totally cool
+    class TeleportWorldDataRMPModel5 : ClassBase
+    {
+        public new Color TargetColor = Color.clear;
+        public new Color OldColor = Color.clear;
+        public List<Light> Lights { get; } = new List<Light>();
+        public List<Material> Materials { get; } = new List<Material>();
+        private Material DefaultMaterials { get; }
+
+        private Transform CenterAdmin { get; set; }
+        public List<Material> Materials2 { get; } = new List<Material>();
+        public List<Renderer> MeshRend { get; } = new List<Renderer>();
+        public new TeleportWorld TeleportW { get; }
+
+        public override Color GetOldColor()
+        {
+            return this.OldColor;
+        }
+        public override Color GetTargetColor()
+        {
+            return this.TargetColor;
+        }
+        public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
+        {
+            this.OldColor = this.TargetColor;
+            this.TargetColor = newcolor;
+
+            foreach (Light light in this.Lights)
+            {
+                light.color = this.TargetColor;
+            }
+
+            if (SetcolorTarget)
+            {
+                Color Mod = newcolor;
+                Mod = Mod * .6f;
+                this.TeleportW.m_colorTargetfound = Mod;
+            }
+
+            //Material mat = RareMagicPortal.Globals.originalMaterials["portal_small"];
+            foreach (Renderer red in this.MeshRend)
+            {
+                //red.material.color = this.TargetColor; // hue of gate
+                if (this.TargetColor == Color.black)
+                {
+                    //red.material.SetColor("_EmissionColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
+                    red.material.SetColor("_TintColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
+                    red.material = RareMagicPortal.Globals.originalMaterials["silver_necklace"];
+                   // CenterAdmin.gameObject.SetActive(true);
+                }
+                else
+                {
+                    red.material = DefaultMaterials;
+                    //red.material.SetColor("_EmissionColor", this.TargetColor); // actual emission
+                    red.material.SetColor("_TintColor", this.TargetColor); // actual emission
+                }
+            }
+
+            foreach (Material material in this.Materials)
+            {
+                material.color = this.TargetColor;
+                material.SetColor("_TintColor", this.TargetColor); // actual tint
+            }
+            foreach (Material material in this.Materials2)
+            {
+                Color Col2 = this.TargetColor;
+                Col2.r = +.3f;
+                material.color = Col2;
+                material.SetColor("_TintColor", Col2); // actual tint
+            }
+        }
+
+        public TeleportWorldDataRMPModel5(TeleportWorld teleportWorld)
+        {
+
+
+            Materials.AddRange(
+            teleportWorld.GetComponentsInNamedChild<ParticleSystemRenderer>("Particle System") // in tint
+                .Where(psr => psr.material != null)
+                .Select(psr => psr.material));
+
+
+            Lights.AddRange(teleportWorld.GetComponentsInNamedChild<Light>("Point light"));
+
+            MeshRend.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("Quad"));
+            DefaultMaterials = teleportWorld.GetComponentsInNamedChild<Renderer>("Quad").Last().material;
+
+           // CenterAdmin = teleportWorld.GetComponentsInNamedChild<Transform>("CenterAdmin").First();
+
+            TeleportW = teleportWorld;
+        }
+
+    }
+
+    internal static class TeleportWorldExtensionRMP // totally cool
     {
         public static IEnumerable<T> GetComponentsInNamedChild<T>(this TeleportWorld teleportWorld, string childName)
         {

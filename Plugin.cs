@@ -293,6 +293,7 @@ namespace RareMagicPortal
         public static string Model2 = "RuneRing";
         public static string Model3 = "Gates";
         public static string Model4 = "QuadPortal";
+        public static string Model5 = "PlatformCircle";
 
         private static TeleportWorldDataCreator ClassDefault = new TeleportWorldDataCreatorA();
         private static TeleportWorldDataCreator ClassModel1 = new TeleportWorldDataCreatorB();
@@ -301,6 +302,12 @@ namespace RareMagicPortal
         private static TeleportWorldDataCreator ClassModel4 = new TeleportWorldDataCreatorE();
 
         internal static GameObject portal1G = null;
+        internal static GameObject portal2G = null;
+        internal static GameObject portal3G = null;
+        internal static GameObject portal4G = null;
+        internal static GameObject portal5G = null;
+        internal static GameObject portal6G = null;
+        internal static GameObject portal8G = null;
 
         public static Dictionary<string, Sprite> Icons = new Dictionary<string, Sprite>();
 
@@ -332,7 +339,6 @@ namespace RareMagicPortal
         private static readonly string targetPortalPluginKey = "org.bepinex.plugins.targetportal";
 
         internal static readonly Dictionary<TeleportWorld, TeleportWorldDataRMP> _teleportWorldDataCache = new();
-
         internal static readonly Dictionary<TeleportWorld, ClassBase> _teleportWorldDataCacheDefault = new();
 
         private static readonly KeyboardShortcut _changePortalReq = new(KeyCode.E, KeyCode.LeftControl);
@@ -645,7 +651,6 @@ namespace RareMagicPortal
         {
 
             BuildPiece portal1 = new("wackyportals", "wacky_portal1", "assets");
-
             portal1.Name.English("Portal 1"); // Localize the name and description for the building piece for a language.
             portal1.Description.English("Portal 1 is fun");
             portal1.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
@@ -656,6 +661,72 @@ namespace RareMagicPortal
             portal1.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
             portal1G = portal1.Prefab;
 
+
+            BuildPiece portal2 = new("wackyportals", "wacky_portal2", "assets");
+            portal2.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
+            portal2.Description.English("Portal 2 is fun");
+            portal2.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
+            portal2.RequiredItems.Add("SurtlingCore", 20, false);
+            //examplePiece1.Category.Set(BuildPieceCategory.Misc);
+            portal2.Category.Set("Portals"); // You can set a custom category for your piece. Instead of the default ones like above.
+            portal2.Crafting.Set(PieceManager.CraftingTable.Workbench); // Set a crafting station requirement for the piece.
+            portal2.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
+            portal2G = portal2.Prefab;
+
+            BuildPiece portal3 = new("wackyportals", "wacky_portal3", "assets");
+            portal3.Name.English("Portal 3"); // Localize the name and description for the building piece for a language.
+            portal3.Description.English("Portal 3 is fun");
+            portal3.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
+            portal3.RequiredItems.Add("SurtlingCore", 20, false);
+            //examplePiece1.Category.Set(BuildPieceCategory.Misc);
+            portal3.Category.Set("Portals"); // You can set a custom category for your piece. Instead of the default ones like above.
+            portal3.Crafting.Set(PieceManager.CraftingTable.Workbench); // Set a crafting station requirement for the piece.
+            portal3.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
+            portal3G = portal3.Prefab;
+
+            BuildPiece portal4 = new("wackyportals", "wacky_portal4", "assets");
+            portal4.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
+            portal4.Description.English("Portal 2 is fun");
+            portal4.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
+            portal4.RequiredItems.Add("SurtlingCore", 20, false);
+            //examplePiece1.Category.Set(BuildPieceCategory.Misc);
+            portal4.Category.Set("Portals"); // You can set a custom category for your piece. Instead of the default ones like above.
+            portal4.Crafting.Set(PieceManager.CraftingTable.Workbench); // Set a crafting station requirement for the piece.
+            portal4.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
+            portal4G = portal4.Prefab;
+
+            BuildPiece portal5 = new("wackyportals", "wacky_portal5", "assets");
+            portal5.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
+            portal5.Description.English("Portal 2 is fun");
+            portal5.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
+            portal5.RequiredItems.Add("SurtlingCore", 20, false);
+            //examplePiece1.Category.Set(BuildPieceCategory.Misc);
+            portal5.Category.Set("Portals"); // You can set a custom category for your piece. Instead of the default ones like above.
+            portal5.Crafting.Set(PieceManager.CraftingTable.Workbench); // Set a crafting station requirement for the piece.
+            portal5.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
+            portal5G = portal5.Prefab;
+
+            BuildPiece portal6 = new("wackyportals", "wacky_portal6", "assets");
+            portal6.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
+            portal6.Description.English("Portal 2 is fun");
+            portal6.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
+            portal6.RequiredItems.Add("SurtlingCore", 20, false);
+            //examplePiece1.Category.Set(BuildPieceCategory.Misc);
+            portal6.Category.Set("Portals"); // You can set a custom category for your piece. Instead of the default ones like above.
+            portal6.Crafting.Set(PieceManager.CraftingTable.Workbench); // Set a crafting station requirement for the piece.
+            portal6.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
+            portal6G = portal6.Prefab;
+
+            BuildPiece portal8 = new("wackyportals", "wacky_portal8", "assets");
+            portal8.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
+            portal8.Description.English("Portal 2 is fun");
+            portal8.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
+            portal8.RequiredItems.Add("SurtlingCore", 20, false);
+            //examplePiece1.Category.Set(BuildPieceCategory.Misc);
+            portal8.Category.Set("Portals"); // You can set a custom category for your piece. Instead of the default ones like above.
+            portal8.Crafting.Set(PieceManager.CraftingTable.Workbench); // Set a crafting station requirement for the piece.
+            portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
+            portal8G = portal8.Prefab;
 
 
         }
