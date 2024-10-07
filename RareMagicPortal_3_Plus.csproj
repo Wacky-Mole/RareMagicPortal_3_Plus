@@ -82,10 +82,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libs\LocalizationManager.dll</HintPath>
     </Reference>
-    <Reference Include="PieceManager, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\WackyLeaderBoard\Libs\PieceManager.dll</HintPath>
-    </Reference>
     <Reference Include="ServerSync">
       <HintPath>Libs\ServerSync.dll</HintPath>
     </Reference>
@@ -152,6 +148,9 @@
     <Compile Include="Patches\piece.cs" />
     <Compile Include="Patches\TargetPortalPatches.cs" />
     <Compile Include="Patches\TeleportWorld.cs" />
+    <Compile Include="PieceManager\MaterialReplacer.cs" />
+    <Compile Include="PieceManager\PieceManager.cs" />
+    <Compile Include="PieceManager\SnapPointMaker.cs" />
     <Compile Include="PortalColorLogic.cs" />
     <Compile Include="PortalMode\BasePopup.cs" />
     <Compile Include="PortalMode\PortalMode.cs" />
@@ -199,9 +198,6 @@
     <Content Include="Libs\KeyManager.dll" />
     <Content Include="Libs\LocalizationManager.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\PieceManager.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Libs\ServerSync.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

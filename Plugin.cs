@@ -406,8 +406,10 @@ namespace RareMagicPortal
             {
                 MethodInfo original = AccessTools.Method(typeof(Game), nameof(Game.ConnectPortals));
                 MethodInfo original2 = AccessTools.Method(typeof(TeleportWorld), nameof(TeleportWorld.HaveTarget));
+                MethodInfo original3 = AccessTools.Method(typeof(TeleportWorld), nameof(TeleportWorld.Awake));
                 _harmony.Unpatch(original, HarmonyPatchType.All, "org.bepinex.plugins.targetportal"); //lol
                 _harmony.Unpatch(original2, HarmonyPatchType.All, "org.bepinex.plugins.targetportal"); //lol
+                _harmony.Unpatch(original3, HarmonyPatchType.All, "org.bepinex.plugins.targetportal"); //thankgoodness this works
             }
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), (string)null);
             SetupWatcher();
@@ -647,6 +649,7 @@ namespace RareMagicPortal
             };
         }
 
+
         private void LoadPortals()
         {
 
@@ -661,7 +664,7 @@ namespace RareMagicPortal
             portal1.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
             portal1G = portal1.Prefab;
 
-
+            
             BuildPiece portal2 = new("wackyportals", "wacky_portal2", "assets");
             portal2.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
             portal2.Description.English("Portal 2 is fun");
@@ -728,7 +731,7 @@ namespace RareMagicPortal
             portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
             portal8G = portal8.Prefab;
 
-
+            
         }
 
 

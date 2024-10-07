@@ -18,9 +18,11 @@ namespace RareMagicPortal.PortalWorld
 
     class TeleportWorldPatchRMPPLUSAdd
     {
-        internal static bool Prefix(Game __instance)
+        internal static bool Prefix(ref Game __instance)
         {
-			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal1G);
+            MagicPortalFluid.RareMagicPortal.LogWarning("Game awake loading");
+
+            __instance.m_portalPrefabs.Add(MagicPortalFluid.portal1G);
 			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal2G);
 			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal3G);
 			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal4G);
@@ -33,6 +35,22 @@ namespace RareMagicPortal.PortalWorld
 
 
     }
+
+    /*  I never figured out what TargetPortal's problem was with new portals.  It's probably something to do with PieceManager and init TeleportWorld. Lucklily Blaxx code is good enough that I can unpatch this method and it still function well.
+[HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.Awake))]
+[HarmonyPriority(Priority.High)]
+static class SetInitialPortalModeRMP
+{
+    private static void Prefix( TeleportWorld __instance)
+    {
+
+        MagicPortalFluid.RareMagicPortal.LogWarning(" SetInitialPortalMode RMP");
+        if (__instance.GetComponent<Piece>() is { } piece && piece.m_nview.GetZDO() is { } zdo && !piece.IsPlacedByPlayer() && zdo.GetInt("TargetPortal PortalMode", -1) == -1)
+        {
+
+        }
+    }
+} */
 
 
     internal class PLUS
@@ -59,7 +77,8 @@ namespace RareMagicPortal.PortalWorld
     [HarmonyPatch(typeof(TeleportWorld))] 
 	class TeleportWorldPatchRMPPLUS
 	{
-		[HarmonyPostfix]
+        //[HarmonyPriority(Priority.High)]
+        [HarmonyPostfix]
 		[HarmonyPatch(nameof(TeleportWorld.Awake))]
 		static void TeleportWorldAwakePostPLUS(ref TeleportWorld __instance)
 		{
@@ -433,7 +452,7 @@ namespace RareMagicPortal.PortalWorld
 				}
 					
 			}
-			RareMagicPortal.MagicPortalFluid.RareMagicPortal.LogInfo($"about of material {i}");
+			//RareMagicPortal.MagicPortalFluid.RareMagicPortal.LogInfo($"about of material {i}");
 		}
 
 		public TeleportWorldDataRMPModel1(TeleportWorld teleportWorld)

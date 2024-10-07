@@ -31,7 +31,7 @@ namespace RareMagicPortal_3_Plus.Patches
     internal class TeleportWorldPatchs
     {
 
-        /*
+        
         
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.HaveTarget))] 
         [HarmonyPriority(Priority.LowerThanNormal)]
@@ -43,8 +43,8 @@ namespace RareMagicPortal_3_Plus.Patches
                 //return true;//  OVERRIDE THIS FROM TARGET PORTAL
                 if (!MagicPortalFluid.TargetPortalLoaded)
                     return;
-
-
+                try
+                {
                     string PortalName = __instance.m_nview.m_zdo.GetString("tag");
                     var zdoname = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
                     var portal = PortalColorLogic.PortalN.Portals[PortalName];
@@ -54,8 +54,9 @@ namespace RareMagicPortal_3_Plus.Patches
                         __result = true;
                         return;
                     }
-       
-
+                }
+                catch { } // some errors at init // not related to TargetPortal's Awake problem
+                    /*
                 
                 if (__instance.m_nview == null || __instance.m_nview.GetZDO() == null)
                 {
@@ -64,12 +65,13 @@ namespace RareMagicPortal_3_Plus.Patches
 
                 __result = __instance.m_nview.GetZDO().GetConnectionZDOID(ZDOExtraData.ConnectionType.Portal) != ZDOID.None;
 
-                return false;
+                return;
+                    */
                 
             }
         }
 
-        */
+        
 
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.TargetFound))]
         [HarmonyPriority(Priority.LowerThanNormal)]

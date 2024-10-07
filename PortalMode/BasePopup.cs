@@ -126,6 +126,8 @@ namespace RareMagicPortal_3_Plus.PortalMode
         public InputField addBlockField;
         public InputField addAllowField;
         public InputField weightField;
+        public GameObject Guilds;
+        public Dropdown GuilddropField;
 
         public Toggle allowEverythingBox;
         public Toggle hoverNameBox;
@@ -165,6 +167,8 @@ namespace RareMagicPortal_3_Plus.PortalMode
             addBlockField = Lists.transform.Find("AddRestrict/InputField")?.GetComponent<InputField>();
             addAllowField = Lists.transform.Find("AddAllow/InputField")?.GetComponent<InputField>();
             weightField = Lists.transform.Find("Weight/InputField")?.GetComponent<InputField>();
+            Guilds = Lists.transform.Find("GuildInputField").gameObject;
+            GuilddropField = Lists.transform.Find("GuildInputField/Dropdown")?.GetComponent<Dropdown>() ;
 
             allowEverythingBox = Lists.transform.Find("AllowEverything/Toggle")?.GetComponent<Toggle>();
             hoverNameBox = Lists.transform.Find("DisplayPortalName/Toggle")?.GetComponent<Toggle>();
