@@ -31,7 +31,7 @@ namespace RareMagicPortal_3_Plus.Patches
     internal class TeleportWorldPatchs
     {
 
-
+        /*
         
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.HaveTarget))] 
         [HarmonyPriority(Priority.LowerThanNormal)]
@@ -56,7 +56,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     }
        
 
-                /*
+                
                 if (__instance.m_nview == null || __instance.m_nview.GetZDO() == null)
                 {
                     __result = false;
@@ -65,11 +65,11 @@ namespace RareMagicPortal_3_Plus.Patches
                 __result = __instance.m_nview.GetZDO().GetConnectionZDOID(ZDOExtraData.ConnectionType.Portal) != ZDOID.None;
 
                 return false;
-                */
+                
             }
         }
 
-        
+        */
 
         [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.TargetFound))]
         [HarmonyPriority(Priority.LowerThanNormal)]
