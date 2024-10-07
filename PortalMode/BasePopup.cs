@@ -7,6 +7,9 @@ using UnityEngine.UI;
 using UnityEngine.Windows;
 using static RareMagicPortal.PortalColorLogic;
 using static RareMagicPortal.PortalName;
+using Guilds;
+using Toggle = UnityEngine.UI.Toggle;
+using System.Linq;
 
 namespace RareMagicPortal_3_Plus.PortalMode
 {
@@ -126,7 +129,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
         public InputField addBlockField;
         public InputField addAllowField;
         public InputField weightField;
-        public GameObject Guilds;
+        public GameObject GuildsGame;
         public Dropdown GuilddropField;
 
         public Toggle allowEverythingBox;
@@ -167,7 +170,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             addBlockField = Lists.transform.Find("AddRestrict/InputField")?.GetComponent<InputField>();
             addAllowField = Lists.transform.Find("AddAllow/InputField")?.GetComponent<InputField>();
             weightField = Lists.transform.Find("Weight/InputField")?.GetComponent<InputField>();
-            Guilds = Lists.transform.Find("GuildInputField").gameObject;
+            GuildsGame = Lists.transform.Find("GuildInputField").gameObject;
             GuilddropField = Lists.transform.Find("GuildInputField/Dropdown")?.GetComponent<Dropdown>() ;
 
             allowEverythingBox = Lists.transform.Find("AllowEverything/Toggle")?.GetComponent<Toggle>();
@@ -194,6 +197,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             transportNet.SetActive(false);
             allowedUsers.SetActive(false);
             crystalsKeysGameobject.SetActive(false);
+            GuildsGame.SetActive(false);
 
 
             currentcolor = PortalColorLogic.PortalColors[color].HexName;
@@ -244,6 +248,40 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     break;                
                 case PortalModeClass.PortalMode.AllowedUsersOnly:
                     crystalsKeysBox.isOn = PortalColorLogic.PortalN.Portals[portalName].PortalZDOs[zdo].CrystalActive;
+
+                    if (MagicPortalFluid.GuildsLoaded)
+                    {
+                        if (Guilds.API.IsLoaded())
+                        {
+                            GuildsGame.SetActive(true);
+
+                            List<Guild> guilds = Guilds.API.GetGuilds();
+                            GuilddropField.ClearOptions();
+
+                            // Prepare a list of guild names and add "None" as the first option.
+                            List<string> guildNames = new List<string> { "None" };
+                            guildNames.AddRange(guilds.Select(g => g.Name));
+
+                            GuilddropField.AddOptions(guildNames);
+
+                            // If a guild is already assigned to the portal, set it as the current selection.
+                            string assignedGuild = PortalColorLogic.PortalN.Portals[portalName].GuildOnly;
+                            if (string.IsNullOrEmpty(assignedGuild))
+                            {
+                                GuilddropField.value = 0;
+                            }
+                            else
+                            {
+                                // Otherwise, find the index of the assigned guild and set it.
+                                int selectedIndex = guildNames.FindIndex(g => g.Equals(assignedGuild, StringComparison.OrdinalIgnoreCase));
+                                if (selectedIndex >= 0)
+                                {
+                                    GuilddropField.value = selectedIndex;
+                                }
+                            }
+                        }
+                    }
+
                     break;
                 // Now for the Box checking
                 case PortalModeClass.PortalMode.CrystalKeyMode:
@@ -306,7 +344,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
         private void UpdateUIForMode(PortalModeClass.PortalMode selectedMode)
         {
-
+            GuildsGame.SetActive(false);
             password.SetActive(selectedMode == PortalModeClass.PortalMode.PasswordLock || selectedMode == PortalModeClass.PortalMode.OneWayPasswordLock);
             coordinates.SetActive(selectedMode == PortalModeClass.PortalMode.CordsPortal);
             transportNet.SetActive(selectedMode == PortalModeClass.PortalMode.TransportNetwork);

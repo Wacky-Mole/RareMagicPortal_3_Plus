@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using Guilds;
 using RareMagicPortal;
 using System.Collections.Generic;
 using System.Linq;
@@ -328,6 +329,26 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
         private static void AddAllowedUser(ModeSelectionPopup PopInstance)
         {
+            if (Guilds.API.IsLoaded()) {
+                if (PopInstance.GuilddropField.value == 0)
+                {
+                  PortalColorLogic.PortalN.Portals[PopInstance.portalName].GuildOnly = "";                
+                }
+                else
+                {
+                    List<Guild> guilds = Guilds.API.GetGuilds();
+                    List<string> guildNames = new List<string> { "None" };
+                    guildNames.AddRange(guilds.Select(g => g.Name));
+
+                    int selectedIndex = guildNames.FindIndex(g => g.Equals(assignedGuild, StringComparison.OrdinalIgnoreCase));
+                    if (selectedIndex >= 0)
+                    {
+                        GuilddropField.value = selectedIndex;
+                    }
+                }
+
+             }
+
             SetMode(PortalMode.AllowedUsersOnly, PopInstance.portalName, PopInstance.zdo);
 
             MagicPortalFluid.RareMagicPortal.LogMessage("Allowed Users Mode");

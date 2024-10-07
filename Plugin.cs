@@ -84,6 +84,7 @@ namespace RareMagicPortal
 
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     [BepInDependency("org.bepinex.plugins.targetportal", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("org.bepinex.plugins.guilds", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("org.bepinex.plugins.jewelcrafting", BepInDependency.DependencyFlags.SoftDependency)]  // it loads before this mod// not really required, but whatever
     [BepInIncompatibility("randyknapp.mods.advancedportals")]
     internal class MagicPortalFluid : BaseUnityPlugin
@@ -336,6 +337,7 @@ namespace RareMagicPortal
         internal static readonly int _portalID = "PortalID".GetHashCode();
         internal static string PortalFluidname;
         internal static bool TargetPortalLoaded = false;
+        internal static bool GuildsLoaded = false;
         private static readonly string targetPortalPluginKey = "org.bepinex.plugins.targetportal";
 
         internal static readonly Dictionary<TeleportWorld, TeleportWorldDataRMP> _teleportWorldDataCache = new();
@@ -420,7 +422,12 @@ namespace RareMagicPortal
 
             IconColors();
             uiasset = GetAssetBundle("rmpui");
-           // _portalmagicfluid = GetAssetBundle("portalmagicfluid");
+            // _portalmagicfluid = GetAssetBundle("portalmagicfluid");
+
+            if (Guilds.API.IsLoaded())
+            {
+                GuildsLoaded = true;
+            }
 
             RareMagicPortal.LogInfo($"MagicPortalFluid loaded start assets");
 

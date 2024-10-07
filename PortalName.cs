@@ -69,7 +69,6 @@ namespace RareMagicPortal
        
             public string Color { get; set; } = "Yellow";
             public PortalModeClass.PortalMode SpecialMode { get; set; } = PortalModeClass.PortalMode.Normal;
-            public bool Gold_Allow { get; set; } = true;
             public bool Free_Passage { get; set; } = false;
             public bool TeleportAnything { get; set; } = false;
             public bool Admin_only_Access { get; set; } = false;
@@ -80,6 +79,7 @@ namespace RareMagicPortal
             public List<string> AdditionalAllowItems { get; set; } = new List<string>();// { "Blackmetal", "Iron" };
 
             public List<string> AllowedUsers { get; set; } = new List<string>();// { "name", "name2" };// Maybe names instead of steamid
+            public string GuildOnly { get; set; } = "";
              
             public Dictionary<string, ZDOP> PortalZDOs = new();
             public bool EndPart { get; set; } = true;

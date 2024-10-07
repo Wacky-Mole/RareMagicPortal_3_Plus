@@ -75,6 +75,10 @@
     <Reference Include="BepInEx">
       <HintPath>$(BepInExPath)\core\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="GuildsAPI, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\GuildsAPI.dll</HintPath>
+    </Reference>
     <Reference Include="ItemManager">
       <HintPath>Libs\ItemManager.dll</HintPath>
     </Reference>
@@ -192,6 +196,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <Content Include="ILRepack.targets" />
+    <Content Include="Libs\GuildsAPI.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Libs\ItemManager.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
