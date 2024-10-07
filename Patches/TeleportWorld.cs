@@ -44,8 +44,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 if (!MagicPortalFluid.TargetPortalLoaded)
                     return;
 
-                try
-                {
+
                     string PortalName = __instance.m_nview.m_zdo.GetString("tag");
                     var zdoname = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
                     var portal = PortalColorLogic.PortalN.Portals[PortalName];
@@ -55,8 +54,7 @@ namespace RareMagicPortal_3_Plus.Patches
                         __result = true;
                         return;
                     }
-                }
-                catch { }
+       
 
                 /*
                 if (__instance.m_nview == null || __instance.m_nview.GetZDO() == null)

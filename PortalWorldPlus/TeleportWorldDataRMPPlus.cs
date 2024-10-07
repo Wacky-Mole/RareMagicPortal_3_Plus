@@ -34,29 +34,6 @@ namespace RareMagicPortal.PortalWorld
 
     }
 
-    [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.Awake))]
-     static class SetInitialPortalModefunz
-    {
-        [HarmonyPriority(Priority.HigherThanNormal)]
-        private static void Prefix(TeleportWorld __instance)
-        {
-            MagicPortalFluid.RareMagicPortal.LogWarning("hi");
-			if (__instance.TryGetComponent<Piece>(out Piece piece) )
-			{
-                MagicPortalFluid.RareMagicPortal.LogWarning("pass one");
-                if (piece.m_nview is { } mview )
-				{ 
-					MagicPortalFluid.RareMagicPortal.LogWarning("pass two");
-
-					if (!piece.IsPlacedByPlayer() && mview.GetZDO().GetInt("TargetPortal PortalMode", -1) == -1) {
-						MagicPortalFluid.RareMagicPortal.LogWarning("pass  three");
-					}
-				}
-			}
-				
-					
-        }
-    }
 
     internal class PLUS
 	{
