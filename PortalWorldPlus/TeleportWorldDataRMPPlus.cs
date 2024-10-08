@@ -29,6 +29,7 @@ namespace RareMagicPortal.PortalWorld
 			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal5G);
 			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal6G);
 			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal8G);
+			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal9G);
 
 			return true;
 		}
@@ -62,7 +63,8 @@ static class SetInitialPortalModeRMP
 		public static string Model2 = "RuneRing";
 		public static string Model3 = "Gates";
 		public static string Model4 = "QuadPortal";
-		public static string Model5 = "PlatformCircle";
+		public static string Model5 = "Quad";
+		public static string Model6 = "stonemodel";
 
 		static internal TeleportWorldDataCreator ClassDefault = new TeleportWorldDataCreatorA();
 		static internal TeleportWorldDataCreator ClassModel1 = new TeleportWorldDataCreatorB();
@@ -70,6 +72,7 @@ static class SetInitialPortalModeRMP
 		static internal TeleportWorldDataCreator ClassModel3 = new TeleportWorldDataCreatorD();
 		static internal TeleportWorldDataCreator ClassModel4 = new TeleportWorldDataCreatorE();
 		static internal TeleportWorldDataCreator ClassModel5 = new TeleportWorldDataCreatorF();
+		static internal TeleportWorldDataCreator ClassModel6 = new TeleportWorldDataCreatorG();
 
 
 	}
@@ -86,7 +89,7 @@ static class SetInitialPortalModeRMP
             {
                 return;
             }
-			//MagicPortalFluid.RareMagicPortal.LogWarning("PLUS loading");
+			MagicPortalFluid.RareMagicPortal.LogWarning("Model name " + __instance.m_model.name);
 			
             if (__instance.m_model.name == PLUS.ModelDefault)  //  hopefully a better way can be found
                 MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassDefault.FactoryMethod(__instance));
@@ -98,6 +101,10 @@ static class SetInitialPortalModeRMP
                 MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel3.FactoryMethod(__instance));
             else if (__instance.m_model.name == PLUS.Model4)
                 MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel4.FactoryMethod(__instance));
+			else if (__instance.m_model.name == PLUS.Model5)
+                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel5.FactoryMethod(__instance));
+			else if (__instance.m_model.name == PLUS.Model6)
+                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel6.FactoryMethod(__instance));
 
         }
     }
@@ -110,7 +117,9 @@ static class SetInitialPortalModeRMP
 		TeleportWorldDataRMPModel1,
 		TeleportWorldDataRMPModel2,
 		TeleportWorldDataRMPModel3,
-		TeleportWorldDataRMPModel4
+		TeleportWorldDataRMPModel4,
+		TeleportWorldDataRMPModel5,
+		TeleportWorldDataRMPModel6
 	}
 
 
@@ -166,6 +175,13 @@ static class SetInitialPortalModeRMP
         public override ClassBase FactoryMethod(TeleportWorld teleportWorld)
         {
             return new TeleportWorldDataRMPModel5(teleportWorld);
+        }
+    }    
+	class TeleportWorldDataCreatorG : TeleportWorldDataCreator
+    {
+        public override ClassBase FactoryMethod(TeleportWorld teleportWorld)
+        {
+            return new TeleportWorldDataRMPModel6(teleportWorld);
         }
     }
 
@@ -792,6 +808,7 @@ static class SetInitialPortalModeRMP
         private Transform CenterAdmin { get; set; }
         public List<Material> Materials2 { get; } = new List<Material>();
         public List<Renderer> MeshRend { get; } = new List<Renderer>();
+        public List<Renderer> MeshRendPlatform { get; } = new List<Renderer>();
         public new TeleportWorld TeleportW { get; }
 
         public override Color GetOldColor()
@@ -833,22 +850,21 @@ static class SetInitialPortalModeRMP
                 else
                 {
                     red.material = DefaultMaterials;
-                    //red.material.SetColor("_EmissionColor", this.TargetColor); // actual emission
+                    red.material.SetColor("_EmissionColor", this.TargetColor); // actual emission
                     red.material.SetColor("_TintColor", this.TargetColor); // actual emission
                 }
+            }
+
+            foreach (Renderer red2 in this.MeshRendPlatform)
+            {
+                red2.material.SetColor("_EmissionColor", this.TargetColor *2);// actual emission 
+                red2.material.SetColor("_TintColor", this.TargetColor);               
             }
 
             foreach (Material material in this.Materials)
             {
                 material.color = this.TargetColor;
                 material.SetColor("_TintColor", this.TargetColor); // actual tint
-            }
-            foreach (Material material in this.Materials2)
-            {
-                Color Col2 = this.TargetColor;
-                Col2.r = +.3f;
-                material.color = Col2;
-                material.SetColor("_TintColor", Col2); // actual tint
             }
         }
 
@@ -865,7 +881,7 @@ static class SetInitialPortalModeRMP
             Lights.AddRange(teleportWorld.GetComponentsInNamedChild<Light>("Point light"));
 
             MeshRend.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("Quad"));
-            MeshRend.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("PlatformCircle"));
+            MeshRendPlatform.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("PlatformCircle"));
 
             DefaultMaterials = teleportWorld.GetComponentsInNamedChild<Renderer>("Quad").Last().material;
 
@@ -874,6 +890,102 @@ static class SetInitialPortalModeRMP
            // CenterAdmin = teleportWorld.GetComponentsInNamedChild<Transform>("CenterAdmin").First();
 
             TeleportW = teleportWorld;
+        }
+
+    }    class TeleportWorldDataRMPModel6 : ClassBase
+    {
+        public new Color TargetColor = Color.clear;
+        public new Color OldColor = Color.clear;
+        public List<Light> Lights { get; } = new List<Light>();
+        public List<Material> Materials { get; } = new List<Material>();
+        private Material DefaultMaterials { get; }
+        private Material Platform { get; }
+
+        private Transform CenterAdmin { get; set; }
+        public List<Material> Materials2 { get; } = new List<Material>();
+        public List<Renderer> MeshRend { get; } = new List<Renderer>();
+        public List<Renderer> MeshRendPlatform { get; } = new List<Renderer>();
+        public new TeleportWorld TeleportW { get; }
+
+        public override Color GetOldColor()
+        {
+            return this.OldColor;
+        }
+        public override Color GetTargetColor()
+        {
+            return this.TargetColor;
+        }
+        public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
+        {
+            this.OldColor = this.TargetColor;
+            this.TargetColor = newcolor;
+
+            foreach (Light light in this.Lights)
+            {
+                light.color = this.TargetColor;
+            }
+
+            if (SetcolorTarget)
+            {
+                Color Mod = newcolor;
+                Mod = Mod * .6f;
+                this.TeleportW.m_colorTargetfound = Mod;
+            }
+
+            //Material mat = RareMagicPortal.Globals.originalMaterials["portal_small"];
+            foreach (Renderer red in this.MeshRend)
+            {
+                //red.material.color = this.TargetColor; // hue of gate
+                if (this.TargetColor == Color.black)
+                {
+                    //red.material.SetColor("_EmissionColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
+                    red.material.SetColor("_TintColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
+                    red.material = RareMagicPortal.Globals.originalMaterials["silver_necklace"];
+                   // CenterAdmin.gameObject.SetActive(true);
+                }
+                else
+                {
+                    red.material = DefaultMaterials;
+                    red.material.SetColor("_EmissionColor", this.TargetColor); // actual emission
+                    red.material.SetColor("_TintColor", this.TargetColor); // actual emission
+                }
+            }
+
+            foreach (Renderer red2 in this.MeshRendPlatform)
+            {
+                red2.material.SetColor("_EmissionColor", this.TargetColor );// actual emission 
+                red2.material.SetColor("_TintColor", this.TargetColor);               
+            }
+
+            foreach (Material material in this.Materials)
+            {
+                material.color = this.TargetColor;
+                material.SetColor("_TintColor", this.TargetColor); // actual tint
+            }
+        }
+
+        public TeleportWorldDataRMPModel6(TeleportWorld teleportWorld)
+        {
+
+			/*
+            Materials.AddRange(
+            teleportWorld.GetComponentsInNamedChild<ParticleSystemRenderer>("Particle System") // in tint
+                .Where(psr => psr.material != null)
+                .Select(psr => psr.material));
+
+
+            Lights.AddRange(teleportWorld.GetComponentsInNamedChild<Light>("Point light"));
+
+            MeshRend.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("Quad"));
+            MeshRendPlatform.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("PlatformCircle"));
+
+            DefaultMaterials = teleportWorld.GetComponentsInNamedChild<Renderer>("Quad").Last().material;
+
+            Platform = teleportWorld.GetComponentsInNamedChild<Renderer>("PlatformCircle").Last().material;
+
+           // CenterAdmin = teleportWorld.GetComponentsInNamedChild<Transform>("CenterAdmin").First();
+			*/
+            TeleportW = teleportWorld; 
         }
 
     }
