@@ -20,7 +20,7 @@ namespace RareMagicPortal.PortalWorld
     {
         internal static bool Prefix(ref Game __instance)
         {
-            MagicPortalFluid.RareMagicPortal.LogWarning("Game awake loading");
+           // MagicPortalFluid.RareMagicPortal.LogWarning("Game awake loading");
 
             __instance.m_portalPrefabs.Add(MagicPortalFluid.portal1G);
 			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal2G);
@@ -86,7 +86,7 @@ static class SetInitialPortalModeRMP
             {
                 return;
             }
-			MagicPortalFluid.RareMagicPortal.LogWarning("PLUS loading");
+			//MagicPortalFluid.RareMagicPortal.LogWarning("PLUS loading");
 			
             if (__instance.m_model.name == PLUS.ModelDefault)  //  hopefully a better way can be found
                 MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassDefault.FactoryMethod(__instance));
@@ -787,6 +787,7 @@ static class SetInitialPortalModeRMP
         public List<Light> Lights { get; } = new List<Light>();
         public List<Material> Materials { get; } = new List<Material>();
         private Material DefaultMaterials { get; }
+        private Material Platform { get; }
 
         private Transform CenterAdmin { get; set; }
         public List<Material> Materials2 { get; } = new List<Material>();
@@ -864,7 +865,11 @@ static class SetInitialPortalModeRMP
             Lights.AddRange(teleportWorld.GetComponentsInNamedChild<Light>("Point light"));
 
             MeshRend.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("Quad"));
+            MeshRend.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("PlatformCircle"));
+
             DefaultMaterials = teleportWorld.GetComponentsInNamedChild<Renderer>("Quad").Last().material;
+
+            Platform = teleportWorld.GetComponentsInNamedChild<Renderer>("PlatformCircle").Last().material;
 
            // CenterAdmin = teleportWorld.GetComponentsInNamedChild<Transform>("CenterAdmin").First();
 

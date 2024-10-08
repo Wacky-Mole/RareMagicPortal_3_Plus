@@ -580,13 +580,14 @@ namespace RareMagicPortal
                 }
                 var portalData = PortalN.Portals[portalName];
                 var zdoData = portalData.PortalZDOs[zdoName];
-                var currentmode = portalZDO.SpecialMode;
+                var currentmode = portalZDO.SpecialMode.ToString() + " Mode";
                 string text = currentColor + " Crystal Portal";
                 text = "<color=#" + ColorUtility.ToHtmlStringRGB(currentColorHex) + ">" + text + "</color>";
 
-               // if (portalZDO.SpecialMode == PortalModeClass.PortalMode.TargetPortal && __result.Contains(Localization.instance.Localize("$piece_portal_unconnected")))
-                 //   __result.Replace(Localization.instance.Localize("$piece_portal_unconnected"), Localization.instance.Localize("$piece_portal_connected")); // this is dumb
-
+                if (!string.IsNullOrEmpty(portalData.GuildOnly))
+                {
+                    currentmode = $"{portalData.GuildOnly} Only";
+                }
 
                 UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, text, zdoData, currentmode);
 
@@ -596,7 +597,7 @@ namespace RareMagicPortal
                 }
             }
 
-            private static void UpdateHoverText(ref string hoverText, string currentColor, string nextColor, bool isCreator, Color currentColorHex, string portalName, string Crystaltext, ZDOP portal, PortalModeClass.PortalMode currentmode)
+            private static void UpdateHoverText(ref string hoverText, string currentColor, string nextColor, bool isCreator, Color currentColorHex, string portalName, string Crystaltext, ZDOP portal, string currentmode)
             {
                 if (portalName != "" && portalName != "Empty tag")
                 {
@@ -622,7 +623,7 @@ namespace RareMagicPortal
                         if (MagicPortalFluid.isAdmin)
                         {
                             hoverText = string.Format(
-                                "{0}\n<size={4}>[<color={5}>{2}</color>] Change <color={7}>Portal</color>[{1}] Crystal to: [<color={8}>{3}</color>]</size>{6}\n{9} Mode{10}",
+                                "{0}\n<size={4}>[<color={5}>{2}</color>] Change <color={7}>Portal</color>[{1}] Crystal to: [<color={8}>{3}</color>]</size>{6}\n{9} {10}",
                                 hoverText,
                                 currentColor,
                                 MagicPortalFluid.portalRMPKEY.Value + " + " + "E",
@@ -641,7 +642,7 @@ namespace RareMagicPortal
                         else if  ( MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On && MagicPortalFluid.ConfigPreventCreatorsToChangeBiomeColor.Value == MagicPortalFluid.Toggle.On ) // prevent them from changing
                         {
                             hoverText = string.Format(
-                                "{0}\n<size={2}><color={4}>{1} Portal</color></size>\n{5} Mode",
+                                "{0}\n<size={2}><color={4}>{1} Portal</color></size>\n{5}",
                                 hoverText,
                                 currentColor,
                                 15,
@@ -653,7 +654,7 @@ namespace RareMagicPortal
                         else
                         {
                             hoverText = string.Format(
-                                "{0}\n<size={4}>[<color={5}>{2}</color>] Change <color={6}>Portal</color>[{1}] Color to: [<color={7}>{3}</color>] </size>\n{8} Mode",
+                                "{0}\n<size={4}>[<color={5}>{2}</color>] Change <color={6}>Portal</color>[{1}] Color to: [<color={7}>{3}</color>] </size>\n{8}",
                                 hoverText,
                                 currentColor,
                                 MagicPortalFluid.portalRMPKEY.Value + " + " + "E",
@@ -672,7 +673,7 @@ namespace RareMagicPortal
                         if (portal.CrystalActive)
                         {
                             hoverText = string.Format(
-                                "{0}\n<size={2}><color={5}>{1} Portal</color></size>\n<size={2}>{4}</size>\n{6} Mode",
+                                "{0}\n<size={2}><color={5}>{1} Portal</color></size>\n<size={2}>{4}</size>\n{6}",
                                 hoverText,
                                 currentColor,
                                 15,
@@ -685,7 +686,7 @@ namespace RareMagicPortal
                         else
                         {
                             hoverText = string.Format(
-                                "{0}\n<size={2}><color={4}>{1} Portal</color></size>\n{5} Mode",
+                                "{0}\n<size={2}><color={4}>{1} Portal</color></size>\n{5}",
                                 hoverText,
                                 currentColor,
                                 15,
@@ -701,7 +702,7 @@ namespace RareMagicPortal
                     string jo = "Please name Portal, ";
                     string hi = " Color ";
                     hoverText = string.Format(
-                        "{0}\n<size={1}><color={3}>{2}{5}</color><color={3}>{6}</color></size>\n{7} Mode",
+                        "{0}\n<size={1}><color={3}>{2}{5}</color><color={3}>{6}</color></size>\n{7}",
                         hoverText,
                         15,
                         jo,

@@ -52,6 +52,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             }
             // set PortalNames to Default for specials
             PortalColorLogic.PortalN.Portals[PopInstance.portalName].Admin_only_Access = false;
+            PortalColorLogic.PortalN.Portals[PopInstance.portalName].GuildOnly = "";
 
 
 
@@ -333,21 +334,26 @@ namespace RareMagicPortal_3_Plus.PortalMode
                 if (PopInstance.GuilddropField.value == 0)
                 {
                   PortalColorLogic.PortalN.Portals[PopInstance.portalName].GuildOnly = "";                
-                }
-                else
+                }else
                 {
                     List<Guild> guilds = Guilds.API.GetGuilds();
                     List<string> guildNames = new List<string> { "None" };
                     guildNames.AddRange(guilds.Select(g => g.Name));
 
-                    int selectedIndex = guildNames.FindIndex(g => g.Equals(assignedGuild, StringComparison.OrdinalIgnoreCase));
-                    if (selectedIndex >= 0)
+                    int selectedIndex = PopInstance.GuilddropField.value;
+
+                    if (selectedIndex > 0 && selectedIndex < guildNames.Count) // Ensure that a valid guild is selected.
                     {
-                        GuilddropField.value = selectedIndex;
+                        string selectedGuild = guildNames[selectedIndex]; // Get the selected guild's name.
+                        PortalColorLogic.PortalN.Portals[PopInstance.portalName].GuildOnly = selectedGuild; // Set GuildOnly to the selected guild.
+
+                        MagicPortalFluid.RareMagicPortal.LogMessage("Guild Members Only");
+                        Player.m_localPlayer.Message(MessageHud.MessageType.Center, "All Portals with this name are now in Guild Members Only mode.");
+                        SetMode(PortalMode.AllowedUsersOnly, PopInstance.portalName, PopInstance.zdo);
+                        return;
                     }
                 }
-
-             }
+            }
 
             SetMode(PortalMode.AllowedUsersOnly, PopInstance.portalName, PopInstance.zdo);
 

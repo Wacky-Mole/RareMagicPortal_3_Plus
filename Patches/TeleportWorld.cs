@@ -24,6 +24,7 @@ using TMPro;
 using UnityEngine.Windows;
 using System.Net.NetworkInformation;
 using UnityEngine.UI;
+using Guilds;
 
 
 namespace RareMagicPortal_3_Plus.Patches
@@ -100,11 +101,15 @@ namespace RareMagicPortal_3_Plus.Patches
                         __result = false;
                         return false;
                     }
-                    if (portal.SpecialMode == PortalModeClass.PortalMode.AllowedUsersOnly && (portal.AllowedUsers == null || !portal.AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName())))// allowed users
-                    {
-                        __result = false;
-                        return false;
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.AllowedUsersOnly){
+
+                        if ( portal.GuildOnly == "" && (portal.AllowedUsers == null || !portal.AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName()))) // Allowed Users) // Guild check
+                        {
+                            __result = false;
+                            return false;
+                        }
                     }
+
 
                     if (portal.SpecialMode == PortalModeClass.PortalMode.CordsPortal )  // Override color showing 
                     {
@@ -241,10 +246,43 @@ namespace RareMagicPortal_3_Plus.Patches
                 {
                     throw new SkipPortalException();
                 }
-                if (portal.SpecialMode == PortalModeClass.PortalMode.AllowedUsersOnly && (portal.AllowedUsers == null || !portal.AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName())) ||
-                    portal.SpecialMode == PortalModeClass.PortalMode.AdminOnly && !MagicPortalFluid.isAdmin )// allowed users                 
+                if ( portal.SpecialMode == PortalModeClass.PortalMode.AdminOnly && !MagicPortalFluid.isAdmin )       
                 {
                     throw new SkipPortalException();
+                }
+
+                if (portal.SpecialMode == PortalModeClass.PortalMode.AllowedUsersOnly) {
+
+                    bool pass = false;
+                    if (MagicPortalFluid.GuildsLoaded)
+                    {
+                        if (!string.IsNullOrEmpty(portal.GuildOnly))
+                        {
+                            if (Guilds.API.IsLoaded())
+                            {
+                                Player currentPlayer = Player.m_localPlayer; // Get the current player  
+                                Guild? playerGuild = Guilds.API.GetPlayerGuild(currentPlayer); // Get the player's guild
+
+                                if (playerGuild != null && playerGuild.Name.Equals(portal.GuildOnly, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    // Player is part of the allowed guild
+                                    MagicPortalFluid.RareMagicPortal.LogMessage($"Player is allowed to use this portal. Guild: {playerGuild.Name}");
+                                    pass = true;
+                                }
+                                else
+                                {   
+                                    Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"{playerGuild.Name} Only");
+                                    //throw new SkipPortalException(); catch in next block
+
+                                }
+                            }
+                        }
+                    }
+
+                    if (!pass && (portal.AllowedUsers == null || !portal.AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName())))
+                    {
+                        throw new SkipPortalException();
+                    }
                 }
 
                 if ((portalZDO.SpecialMode == PortalModeClass.PortalMode.PasswordLock ||
@@ -261,7 +299,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     {
                         if (PortalModeClass.CheckPassword(password, PortalColorLogic.PortalN.Portals[PortalName].PortalZDOs[zdoname].Password))
                         {
-                            UnityEngine.Debug.Log("Entered Correct password");
+                            MagicPortalFluid.RareMagicPortal.LogMessage("Entered Correct password");
                             if (portal.AllowedUsers == null)
                             {
                                 portal.AllowedUsers = new List<string>(); 
@@ -274,7 +312,7 @@ namespace RareMagicPortal_3_Plus.Patches
                         }
                         else
                         {
-                            UnityEngine.Debug.LogWarning("Incorrect password entered.");
+                            MagicPortalFluid.RareMagicPortal.LogMessage("Incorrect password entered.");
                             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Incorrect password.");
                         }                      
                     });
@@ -282,7 +320,6 @@ namespace RareMagicPortal_3_Plus.Patches
                     throw new SkipPortalException();
                 }
 
-               // ZLog.LogWarning("cancel target");
 
                 // The teleport modes that don't consume until passed another step. 
                 bool cancelTargetPortal = true;
