@@ -609,6 +609,7 @@ namespace RareMagicPortal
                         }
                         string adminstring = "";
                         string crystalString = "";
+                        string creatorChange = "";
                         if (MagicPortalFluid.isAdmin)
                         {
                             adminstring = "\n[<color=#" + ColorUtility.ToHtmlStringRGB(Color.yellow) + ">" + MagicPortalFluid.portalRMPMODEKEY.Value + " + " + "E</color>] Open Portal Mode UI ";
@@ -617,6 +618,10 @@ namespace RareMagicPortal
                         if (portal.CrystalActive)
                         {
                             crystalString = "\n<size=15>" + Crystaltext +"</size>";
+                        }
+                        if (isCreator && !portal.CrystalActive && MagicPortalFluid.ConfigPreventCreatorsToChangeBiomeColor.Value == MagicPortalFluid.Toggle.Off || MagicPortalFluid.isAdmin)
+                        {
+                            creatorChange = $"Change <color={"#" + ColorUtility.ToHtmlStringRGB(currentColorHex)}>Portal</color>[{currentColor}]";
                         }
 
                        

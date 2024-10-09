@@ -158,6 +158,8 @@
     <Compile Include="PortalColorLogic.cs" />
     <Compile Include="PortalMode\BasePopup.cs" />
     <Compile Include="PortalMode\PortalMode.cs" />
+    <Compile Include="PortalScreens\portalscreens.cs" />
+    <Compile Include="PortalScreens\ps_patches.cs" />
     <Compile Include="Scripts\DragControl.cs" />
     <Compile Include="Scripts\PortalFX_AxisRotateByTime.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
