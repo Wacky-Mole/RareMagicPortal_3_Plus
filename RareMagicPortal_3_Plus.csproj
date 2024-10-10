@@ -150,6 +150,7 @@
     <Compile Include="ColorfulLights.cs" />
     <Compile Include="Patches\Player.cs" />
     <Compile Include="Patches\piece.cs" />
+    <Compile Include="Patches\stoneportal.cs" />
     <Compile Include="Patches\TargetPortalPatches.cs" />
     <Compile Include="Patches\TeleportWorld.cs" />
     <Compile Include="PieceManager\MaterialReplacer.cs" />

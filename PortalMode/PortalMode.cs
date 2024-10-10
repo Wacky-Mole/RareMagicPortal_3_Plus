@@ -229,6 +229,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
                     }
                 }
             }
+            PopInstance.crystalsKeysBox.isOn = false;
             SetMode(PortalMode.Normal, PopInstance.portalName, PopInstance.zdo);
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now in Normal mode.");
         }

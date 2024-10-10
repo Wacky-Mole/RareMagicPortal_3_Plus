@@ -580,16 +580,21 @@ namespace RareMagicPortal
                 }
                 var portalData = PortalN.Portals[portalName];
                 var zdoData = portalData.PortalZDOs[zdoName];
+                //var currentmode = $"<color=#" + ColorUtility.ToHtmlStringRGB(currentColorHex) + ">" + portalZDO.SpecialMode.ToString() + " Mode</color>";
                 var currentmode = portalZDO.SpecialMode.ToString() + " Mode";
-                string text = currentColor + " Crystal Portal";
-                text = "<color=#" + ColorUtility.ToHtmlStringRGB(currentColorHex) + ">" + text + "</color>";
+                string Crystaltext = currentColor + " Portal";               
+                if (zdoData.CrystalActive)                
+                    Crystaltext = currentColor + " Crystal Portal";
+             
+                //Crystaltext = "<color=#" + ColorUtility.ToHtmlStringRGB(currentColorHex) + ">" + Crystaltext + "</color>";
 
                 if (!string.IsNullOrEmpty(portalData.GuildOnly))
                 {
                     currentmode = $"{portalData.GuildOnly} Only";
                 }
-
-                UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, text, zdoData, currentmode);
+                //__result = __result.Replace(Localization.instance.Localize("$piece_portal_connected"), mode + (mode is PortalMode.Public or PortalMode.Admin ? "" : $"
+                //(Owner: {__instance.m_nview.GetZDO().GetString("TargetPortal PortalOwnerName")})")) + $"\n[<b><color=yellow>{portalModeToggleModifierKey.Value}</color> + <color=yellow>{Localization.instance.Localize("$KEY_Use")}</color></b>] Toggle Mode";
+                UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, Crystaltext, zdoData, currentmode);
 
                 if (portalZDO.SpecialMode != PortalModeClass.PortalMode.TargetPortal && MagicPortalFluid.TargetPortalLoaded)
                 {
@@ -601,30 +606,55 @@ namespace RareMagicPortal
             {
                 if (portalName != "" && portalName != "Empty tag")
                 {
-                    if (MagicPortalFluid.isAdmin || (isCreator && !portal.CrystalActive ))
+                   // if (MagicPortalFluid.isAdmin || (isCreator && !portal.CrystalActive ))
+                    
+                    if (MagicPortalFluid.portalRMPKEY.Value.MainKey is KeyCode.None)
                     {
-                        if (MagicPortalFluid.portalRMPKEY.Value.MainKey is KeyCode.None)
-                        {
-                            return;
-                        }
-                        string adminstring = "";
-                        string crystalString = "";
-                        string creatorChange = "";
-                        if (MagicPortalFluid.isAdmin)
-                        {
-                            adminstring = "\n[<color=#" + ColorUtility.ToHtmlStringRGB(Color.yellow) + ">" + MagicPortalFluid.portalRMPMODEKEY.Value + " + " + "E</color>] Open Portal Mode UI ";
-                        }
+                        return;
+                    }
+                    string adminstring = "";
+                    string crystalString = "";
+                    string creatorChange = "";
+                    bool canChangeTag = true;
 
-                        if (portal.CrystalActive)
+                    
+                    string newhoverText = $"\"{portalName}\"";
+                    if (portal.SpecialMode != PortalModeClass.PortalMode.TargetPortal)
+                    {
+                        if (canChangeTag)
                         {
-                            crystalString = "\n<size=15>" + Crystaltext +"</size>";
-                        }
-                        if (isCreator && !portal.CrystalActive && MagicPortalFluid.ConfigPreventCreatorsToChangeBiomeColor.Value == MagicPortalFluid.Toggle.Off || MagicPortalFluid.isAdmin)
-                        {
-                            creatorChange = $"Change <color={"#" + ColorUtility.ToHtmlStringRGB(currentColorHex)}>Portal</color>[{currentColor}]";
-                        }
 
-                       
+                        }
+                        else
+                        {
+
+                        }
+                    }
+
+                    if (MagicPortalFluid.isAdmin)
+                    {
+                        adminstring = "[<color=#" + ColorUtility.ToHtmlStringRGB(Color.yellow) + ">" + MagicPortalFluid.portalRMPMODEKEY.Value + " + " + "E</color>] Open Portal Mode UI ";
+                    }
+
+                    crystalString = $"<size=15><color=#{ColorUtility.ToHtmlStringRGB(currentColorHex)}>" + Crystaltext +"</color></size>";
+                    
+                    if (isCreator && !portal.CrystalActive && MagicPortalFluid.ConfigPreventCreatorsToChangeBiomeColor.Value == MagicPortalFluid.Toggle.Off || MagicPortalFluid.isAdmin)
+                    {
+                        creatorChange = $"<size={15}>[<color={"#" + ColorUtility.ToHtmlStringRGB(Color.yellow)}>{MagicPortalFluid.portalRMPKEY.Value +"+" + "E" }</color>] " +
+                            $"Change <color=#{ColorUtility.ToHtmlStringRGB(currentColorHex)}>[{currentColor}]</color> to: " +
+                            $"[<color=#{ColorUtility.ToHtmlStringRGB(PortalColorLogic.PortalColors[nextColor].HexName)}>{nextColor}</color>]</size>";
+                    }
+
+                    hoverText = string.Format(
+                        "{0}\n{1} \n{2}\n{3}\n{4}",
+                        hoverText,
+                        creatorChange,
+                        crystalString,
+                        currentmode,
+                        adminstring
+                        );
+
+                        /*
                         if (MagicPortalFluid.isAdmin)
                         {
                             hoverText = string.Format(
@@ -701,6 +731,7 @@ namespace RareMagicPortal
                             );
                         }
                     }
+                        */
                 }
                 else
                 {

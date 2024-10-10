@@ -242,6 +242,8 @@ namespace RareMagicPortal
         internal static ConfigEntry<string>? ColorBLACKAllows;
         internal static ConfigEntry<string>? ColorWHITEAllows;
         internal static ConfigEntry<string>? ColorGOLDAllows;
+        public static ConfigEntry<string> StonePortalconfigRequirements;
+        public static ConfigEntry<string> configCraftingStationStonePortal;
 
         public static string crystalcolorre = ""; // need to reset everytime maybe?
         public string message_eng_NO_Portal = $"Portal Crystals/Key Required"; // Blue Portal Crystal
@@ -699,8 +701,8 @@ namespace RareMagicPortal
 
 
             BuildPiece portal4 = new("wackyportals", "wacky_portal4", "assets");
-            portal4.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
-            portal4.Description.English("Portal 2 is fun");
+            portal4.Name.English("Portal 4"); // Localize the name and description for the building piece for a language.
+            portal4.Description.English("Portal 4 is fun");
             portal4.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
             portal4.RequiredItems.Add("SurtlingCore", 20, false);
             //examplePiece1.Category.Set(BuildPieceCategory.Misc);
@@ -711,8 +713,8 @@ namespace RareMagicPortal
 
 
             BuildPiece portal5 = new("wackyportals", "wacky_portal5", "assets");
-            portal5.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
-            portal5.Description.English("Portal 2 is fun");
+            portal5.Name.English("Portal 5"); // Localize the name and description for the building piece for a language.
+            portal5.Description.English("Portal 5 is fun");
             portal5.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
             portal5.RequiredItems.Add("SurtlingCore", 20, false);
             //examplePiece1.Category.Set(BuildPieceCategory.Misc);
@@ -723,8 +725,8 @@ namespace RareMagicPortal
     
 
             BuildPiece portal6 = new("wackyportals", "wacky_portal6", "assets");
-            portal6.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
-            portal6.Description.English("Portal 2 is fun");
+            portal6.Name.English("Portal 6"); // Localize the name and description for the building piece for a language.
+            portal6.Description.English("Portal 6 is fun");
             portal6.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
             portal6.RequiredItems.Add("SurtlingCore", 20, false);
             //examplePiece1.Category.Set(BuildPieceCategory.Misc);
@@ -735,8 +737,8 @@ namespace RareMagicPortal
 
 
             BuildPiece portal8 = new("wackyportals", "wacky_portal8", "assets");
-            portal8.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
-            portal8.Description.English("Portal 2 is fun");
+            portal8.Name.English("Portal 8"); // Localize the name and description for the building piece for a language.
+            portal8.Description.English("Portal 8 is fun");
             portal8.RequiredItems.Add("FineWood", 20, false); // Set the required items to build. Format: ("PrefabName", Amount, Recoverable)
             portal8.RequiredItems.Add("SurtlingCore", 20, false);
             //examplePiece1.Category.Set(BuildPieceCategory.Misc);
@@ -745,7 +747,7 @@ namespace RareMagicPortal
             portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
             portal8G = portal8.Prefab;
 
-
+            /*
             BuildPiece portal9 = new("wackyportals", "wacky_stone_portal", "assets");
             portal9.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
             portal9.Description.English("Portal 2 is fun");
@@ -756,7 +758,7 @@ namespace RareMagicPortal
             portal9.Crafting.Set(PieceManager.CraftingTable.Workbench); // Set a crafting station requirement for the piece.
             portal9.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
             portal9G = portal9.Prefab;
-
+            */
 
         }
 
