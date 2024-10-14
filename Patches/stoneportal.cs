@@ -23,13 +23,13 @@ namespace RareMagicPortalPlus.Patches
             piece.m_enabled = true;
             piece.m_category = Piece.PieceCategory.Misc;
             piece.m_craftingStation = null;
-            if (zs.m_namedPrefabs.TryGetValue(MagicPortalFluid.configCraftingStationStonePortal.Value.GetStableHashCode(), out var view))
+            if (zs.m_namedPrefabs.TryGetValue(MagicPortalFluid.OrginalStonePortalconfigCraftingStation.Value.GetStableHashCode(), out var view))
             {
                 if (view.TryGetComponent<CraftingStation>(out var craftingStation))
                     piece.m_craftingStation = craftingStation;
             }
             piece.m_description = "$piece_portal_description";
-            piece.m_resources =MagicPortalFluid.StonePortalconfigRequirements.Value.Split(',').Select(s => s.Split(':')).Select(s =>
+            piece.m_resources =MagicPortalFluid.OrginalStonePortalconfigRequirements.Value.Split(',').Select(s => s.Split(':')).Select(s =>
             {
                 Piece.Requirement req = new();
                 var id = s[0];

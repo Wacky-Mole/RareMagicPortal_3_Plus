@@ -242,8 +242,13 @@ namespace RareMagicPortal
         internal static ConfigEntry<string>? ColorBLACKAllows;
         internal static ConfigEntry<string>? ColorWHITEAllows;
         internal static ConfigEntry<string>? ColorGOLDAllows;
-        public static ConfigEntry<string> StonePortalconfigRequirements;
-        public static ConfigEntry<string> configCraftingStationStonePortal;
+        internal static ConfigEntry<string> OrginalStonePortalconfigRequirements;
+        internal static ConfigEntry<string> OrginalStonePortalconfigCraftingStation;
+
+
+        internal static ConfigEntry<bool> PortalImages;
+
+
 
         public static string crystalcolorre = ""; // need to reset everytime maybe?
         public string message_eng_NO_Portal = $"Portal Crystals/Key Required"; // Blue Portal Crystal
@@ -1379,6 +1384,14 @@ namespace RareMagicPortal
 
             AdminOnlyMakesPortals = config(portal, "Only Admin Can Build", Toggle.Off, "Only The Admins Can Build Portals");
 
+            OrginalStonePortalconfigCraftingStation = config(portal, "Orginal Stone Crafting station", "piece_workbench", "Required crafting station.");
+
+            // configCraftingStation.SettingChanged += (s, e) => Fix(ZNetScene.instance);
+
+            OrginalStonePortalconfigRequirements = config(portal, "Orginal Stone Recipe", "GreydwarfEye:20,SurtlingCore:10,Obsidian:100,Thunderstone:10", "Recipe (id:amount,id:amount,...)");
+
+            //configRequirements.SettingChanged += (s, e) => Fix(ZNetScene.instance);
+
 
             string drink = "4.Drink-----------";
             PortalDrinkTimer = config(drink, "Portal Drink Timer", 120, "How Long Odin's Drink lasts");
@@ -1432,6 +1445,10 @@ namespace RareMagicPortal
             GemColorWhite = config(crystal_selector, "Use for Crystal White", CrystalWhite, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
 
             GemColorBlack = config(crystal_selector, "Use for Crystal Black", CrystalBlack, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+
+
+            string portal_images = "9.Portal Images--------";
+            PortalImages = config(portal_images, "Change Portal Images", false, "Portal Images during Teleport");
         }
 
 
