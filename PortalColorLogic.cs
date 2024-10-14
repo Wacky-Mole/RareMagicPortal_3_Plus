@@ -344,10 +344,17 @@ namespace RareMagicPortal
                             //__instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeColorHashCode, "skip");
                             //RMP.LogInfo("New color int " + colorint);
 
-                            if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
+                            if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On )
                             {
-                                oneportal.BiomeColor = "skip";
-                                PortalColorLogic.ClientORServerYMLUpdate(PortalN.Portals[PortalName], PortalName); // need to send this to server or gets overwritten
+                                if (oneportal.BiomeColor == "skip")
+                                {
+                                    updateYmltoColorChange(PortalName, colorint, zdoName); // update yaml
+                                }
+                                else
+                                {
+                                    oneportal.BiomeColor = "skip";
+                                    PortalColorLogic.ClientORServerYMLUpdate(PortalN.Portals[PortalName], PortalName); // need to send this to server or gets overwritten
+                                }
                             }else 
                                 updateYmltoColorChange(PortalName, colorint, zdoName); // update yaml
                               //colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance);// Do this again now that it has been updated. // why do this again?
