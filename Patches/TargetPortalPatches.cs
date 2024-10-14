@@ -96,6 +96,7 @@ namespace RareMagicPortal_3_Plus
 
                 if (PortalColorLogic.CrystalandKeyLogic(portalName, portalZDO.GetString(MagicPortalFluid._portalID)))
                 {
+                    ZLog.Log("Teleportation TRIGGER from TargetPortal, Passed RMP");
                     return true; // Allow TargetPortal to do its checks
                 }
                 else

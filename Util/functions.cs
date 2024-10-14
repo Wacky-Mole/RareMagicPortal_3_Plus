@@ -94,12 +94,13 @@ namespace RareMagicPortal
         {
             if (ZNet.instance.IsServer())// && ZNet.instance.IsDedicated()) removed dedicated  // so no singleplayer announcement
                 return;
+            /*
             if (MagicPortalFluid.JustSent > 0)
             {
                 MagicPortalFluid.JustSent++;
                 return;
-            }
-            if (PortUpdate != null)
+            }  */
+            if (PortUpdate != null) // default
             {
                 ZPackage pkg = new ZPackage(); // Create ZPackage
 
@@ -109,7 +110,7 @@ namespace RareMagicPortal
                 MagicPortalFluid.JustSent = 1;
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.instance.GetServerPeerID(), "RequestServerAnnouncementRMPZDOFULL", new object[] { pkg });
             }
-            else
+            else // just color update
             {
                 ZPackage pkg = new ZPackage(); // Create ZPackage
 
@@ -168,7 +169,16 @@ namespace RareMagicPortal
                         string ZDOP = msgArray[2];
                         MagicPortalFluid.RareMagicPortal.LogInfo($"Server has recieved a YML update from {playername} for {PortalName} with Color {Colorint} for ZDO {ZDOP}");
 
-                        PortalColorLogic.updateYmltoColorChange(PortalName, Colorint, ZDOP);
+                        if (PortalColorLogic.PortalN.Portals.ContainsKey(PortalName))
+                        {
+                            PortalColorLogic.updateYmltoColorChange(PortalName, Colorint, ZDOP);
+                        }
+                        else
+                        {
+                            
+                        }
+
+                        
 
                         //YMLPortalData.Value has been updated
                         return;
@@ -196,7 +206,11 @@ namespace RareMagicPortal
 
                         var deserializer = new DeserializerBuilder()
                             .Build();
-                        var port = deserializer.Deserialize<PortalName.Portal>(portalUpdate);
+
+                       //var serializedPortal = portalName + MagicPortalFluid.StringSeparator + serializer.Serialize(PortalN.Portals[portalName]);
+                        var mainmsg = portalUpdate.Split(MagicPortalFluid.StringSeparator);
+
+                        var port = deserializer.Deserialize<PortalName.Portal>(mainmsg[1]);
                         string portalNCheck = PortalName;
 
                         if (PortalColorLogic.PortalN.Portals.ContainsKey(portalNCheck))
@@ -207,10 +221,12 @@ namespace RareMagicPortal
                         {
                             PortalColorLogic.PortalN.Portals.Add(portalNCheck, port);
                         }
-
+                        if (MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.Off) 
+                            MagicPortalFluid.JustWrote = 2;
+                        
                         PortalColorLogic.ClientORServerYMLUpdate(PortalColorLogic.PortalN.Portals[portalNCheck], portalNCheck); // Would only be on server so it's fine. 
-
                         MagicPortalFluid.RareMagicPortal.LogInfo($"Server has recieved a YML PORTAL update from {playername} for {PortalName} ");
+                        
 
                         //PortalColorLogic.updateYmltoColorChange(PortalName, Colorint, ZDOP);
 

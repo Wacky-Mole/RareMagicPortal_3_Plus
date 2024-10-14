@@ -841,7 +841,7 @@ namespace RareMagicPortal
                     SyncedString = SyncedString.Remove(0, ind + 1);
 
                     if (ConfigEnableYMLLogs.Value == Toggle.On)
-                        RareMagicPortal.LogInfo("Portalname " + PortNam + " String: " + SyncedString);
+                        RareMagicPortal.LogInfo("Portalname " + PortNam + " String:\n" + SyncedString);
 
                     var deserializer = new DeserializerBuilder()
                         .Build();
@@ -925,8 +925,8 @@ namespace RareMagicPortal
 
             if (ZNet.instance.IsServer())
             {
-               // if ( JustWrote == 0) // if local admin or ServerSync admin
-              //  {
+               if ( JustWrote == 0) // if local admin or ServerSync admin
+               {
                     var yml = File.ReadAllText(YMLCurrentFile);
 
                     var deserializer = new DeserializerBuilder()
@@ -945,8 +945,8 @@ namespace RareMagicPortal
                         if (ConfigEnableYMLLogs.Value == Toggle.On)
                             RareMagicPortal.LogInfo(yml);
                     }
-               // }
-               /*
+                }
+               
                 if (JustWrote == 2)
                 {
                     JustWrote = 3; // stops from doing again
@@ -955,7 +955,7 @@ namespace RareMagicPortal
 
                 if (JustWrote == 1)
                     JustWrote = 2;
-               */
+               
             }
         }
 
@@ -999,7 +999,9 @@ namespace RareMagicPortal
                 //PortalN.Portals.Clear();
                 PortalColorLogic.PortalN = deserializer2.Deserialize<PortalName>(SyncedString);
                 JustWrote = 2;
-                File.WriteAllText(YMLCurrentFile, WelcomeString + SyncedString); //overwrites
+
+                if (ClientSave.Value == Toggle.On)
+                    File.WriteAllText(YMLCurrentFile, WelcomeString + SyncedString); //overwrites
             }
             else
             {

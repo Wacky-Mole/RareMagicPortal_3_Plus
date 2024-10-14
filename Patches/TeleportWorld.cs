@@ -419,7 +419,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     if (cancelTargetPortal && MagicPortalFluid.TargetPortalLoaded)
                     {
 
-                            ZLog.Log("Teleportation TRIGGER from Mod");
+                        MagicPortalFluid.RareMagicPortal.LogInfo("Teleportation TRIGGER from Mod");
                         __instance.m_teleportWorld.Teleport(colliderIn.GetComponent<Player>());
 
                         MagicPortalFluid.Teleporting = false;

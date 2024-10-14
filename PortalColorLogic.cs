@@ -345,10 +345,12 @@ namespace RareMagicPortal
                             //RMP.LogInfo("New color int " + colorint);
 
                             if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
+                            {
                                 oneportal.BiomeColor = "skip";
-
-                            updateYmltoColorChange(PortalName, colorint, zdoName); // update yaml
-                                                                                    //colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance);// Do this again now that it has been updated. // why do this again?
+                                PortalColorLogic.ClientORServerYMLUpdate(PortalN.Portals[PortalName], PortalName); // need to send this to server or gets overwritten
+                            }else 
+                                updateYmltoColorChange(PortalName, colorint, zdoName); // update yaml
+                              //colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance);// Do this again now that it has been updated. // why do this again?
 
                             return false; // stop interaction on changing name
                             
@@ -471,6 +473,7 @@ namespace RareMagicPortal
                     {
                         WritetoYML(portalName, zdoName, "", true, __instance, ply);
                     }
+                    return; // a little delay to give rpc calls time
                 }
                 
                // RMP.LogInfo("ZDO name " + zdoName);
@@ -530,9 +533,9 @@ namespace RareMagicPortal
 
                     PortalColorLogic.RMP.LogInfo("Setting ZDO Biome Data For First Time");
 
-                    if (portalName == "")
-                        PortalColorLogic.updateYmltoColorChange("", colorIndex, zdoName);
-                    else
+                   // if (portalName == "")
+                   //     PortalColorLogic.updateYmltoColorChange("", colorIndex, zdoName);
+                  //  else
                         ClientORServerYMLUpdate(portaL, portalName, zdoName, colorIndex);
                 }
 
@@ -607,13 +610,13 @@ namespace RareMagicPortal
                     
                     if (isCreator && !portal.CrystalActive && MagicPortalFluid.ConfigPreventCreatorsToChangeBiomeColor.Value == MagicPortalFluid.Toggle.Off || MagicPortalFluid.isAdmin)
                     {
-                        creatorChange = $"<size={15}>[<color={"#" + ColorUtility.ToHtmlStringRGB(Color.yellow)}>{MagicPortalFluid.portalRMPKEY.Value +"+" + "E" }</color>] " +
+                        creatorChange = $"\n<size={15}>[<color={"#" + ColorUtility.ToHtmlStringRGB(Color.yellow)}>{MagicPortalFluid.portalRMPKEY.Value +"+" + "E" }</color>] " +
                             $"Change <color=#{ColorUtility.ToHtmlStringRGB(currentColorHex)}>[{currentColor}]</color> to: " +
                             $"[<color=#{ColorUtility.ToHtmlStringRGB(PortalColorLogic.PortalColors[nextColor].HexName)}>{nextColor}</color>]</size>";
                     }
 
                     hoverText = string.Format(
-                        "{0}\n{1} \n{2}\n{3}\n{4}",
+                        "{0}{1} \n{2}\n{3}\n{4}",
                         hoverText,
                         creatorChange,
                         crystalString,
@@ -915,13 +918,14 @@ namespace RareMagicPortal
             }
 
             var wacky = PortalN.Portals[PortalName];
-            ClientORServerYMLUpdate(wacky, PortalName, zdoID, colorint);
+            ClientORServerYMLUpdate(wacky, PortalName, zdoID, colorint, true);
         }
 
-        internal static void ClientORServerYMLUpdate(Portal portal, string portalName, string zdoId ="", int colorInt = 0, bool zdoUpdate = false )
+        internal static void ClientORServerYMLUpdate(Portal portal, string portalName, string zdoId ="", int colorInt = 0, bool zdoColorUpdate = false )
         {
             var serializer = new SerializerBuilder().Build();
             var serializedPortal = portalName + MagicPortalFluid.StringSeparator + serializer.Serialize(PortalN.Portals[portalName]);
+            //var serializedPortal =  serializer.Serialize(PortalN.Portals[portalName]);
 
             // Construct full YAML
             string fullYml = MagicPortalFluid.WelcomeString + Environment.NewLine + serializer.Serialize(PortalN);
@@ -970,14 +974,14 @@ namespace RareMagicPortal
             }
             else
             {
-                if (zdoUpdate)
+                if (zdoColorUpdate)
                 {
-                    functions.ServerZDOymlUpdate(portalName, zdoId, 0, serializedPortal);
+                    functions.ServerZDOymlUpdate(portalName, zdoId, colorInt); // only color update
                 }
                 else
                 {
-                    // Handling for client connected to a server
-                    functions.ServerZDOymlUpdate(portalName, zdoId, colorInt);
+                    // Handling for client connected to a server 
+                    functions.ServerZDOymlUpdate(portalName, zdoId, 0, serializedPortal);
                 }
             }
         }
@@ -1186,33 +1190,7 @@ namespace RareMagicPortal
 
            return true;
         }
-        /*
-        [HarmonyPatch(typeof(Player), nameof(Player.Update))]
-        public static class UpdateRemoveItem
-        {
-            private static void Prefix(ref Player __instance)
-            {
-                if (inventoryRemove)
-                {
-                    if (!__instance.m_nview.IsValid() || !__instance.m_nview.IsOwner())
-                    {
-                        return;
-                    }
-                    //RMP.LogInfo("Actual Removal");
-                    var itemhere = __instance.m_inventory.GetItem(removeItems.Last().Key);
-                    if (itemhere == null)
-                    {
-                        RMP.LogInfo("item is null");
-                    }
-                    //itemhere.m_stack
-                    //__instance.m_inventory.m_inventory.Remove(itemhere);
-                    __instance.m_inventory.RemoveItem(itemhere, removeItems.Last().Value);
-                    removeItems.Remove(removeItems.Last().Key);
-                    inventoryRemove = false;
-                    //__instance.m_inventory.Changed();
-                }
-            }
-        }*/
+
 
         internal static void WritetoYML(string PortalName, string ZDOID = null, string oldname = "", bool writeZdoOnly = false, TeleportWorld instance = null, string creator = "") // this only happens if portal is not in yml file at all
         {
@@ -1335,7 +1313,7 @@ namespace RareMagicPortal
             }
 
             var wacky = PortalN.Portals[PortalName];
-            ClientORServerYMLUpdate(wacky, PortalName, ZDOID, colorint );
+            ClientORServerYMLUpdate(wacky, PortalName, ZDOID, colorint, false );
         }
 
 
