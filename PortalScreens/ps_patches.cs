@@ -17,7 +17,7 @@ namespace RareMagicPortalPlus.PortalScreens
             private static void Postfix(Hud __instance)
             {
 
-                if (!MagicPortalFluid.PortalImages.Value)
+                if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
                     return;
 
                 GameObject gameObject = GameObject.Find("_GameMain").transform.Find("LoadingGUI/PixelFix/IngameGui/HUD/LoadingBlack/Teleporting/Swirl").gameObject;
@@ -54,10 +54,10 @@ namespace RareMagicPortalPlus.PortalScreens
         {
             private static bool Prefix(Uirotate __instance)
             {
-                if (!MagicPortalFluid.PortalImages.Value)
+                if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
                     return true;
 
-                
+
                 string name = __instance.gameObject.name;
                 if (!name.Contains("layer"))
                 {
@@ -92,7 +92,7 @@ namespace RareMagicPortalPlus.PortalScreens
         {
             private static void Prefix(Vector3 pos)
             {
-                if (!MagicPortalFluid.PortalImages.Value)
+                if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
                     return;
 
                 Heightmap.Biome biome = WorldGenerator.instance.GetBiome(pos);

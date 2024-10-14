@@ -173,7 +173,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<bool>? ConfigCreator;
         internal static ConfigEntry<float>? ConfiglHealthWood;
         internal static ConfigEntry<float>? ConfiglHealthStone;
-        internal static ConfigEntry<bool>? ConfigCreatorLock;
+        internal static ConfigEntry<Toggle>? ConfigCreatorLock;
         internal static ConfigEntry<int>? ConfigFluidValue;
         //internal static ConfigEntry<bool>? ConfigEnableCrystalsNKeys;
 
@@ -223,6 +223,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<string>? GemColorOrange;
         internal static ConfigEntry<Toggle>? RiskyYMLSave;
         internal static ConfigEntry<Toggle>? UseSmallUpdates;
+        internal static ConfigEntry<Toggle>? ClientSave;
         internal static ConfigEntry<Toggle>? PreventTargetPortalFromChanging;
         internal static ConfigEntry<Toggle>? PreventTargetPortalOwnerFromChanging;
         internal static ConfigEntry<string>? PPRed;
@@ -246,7 +247,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<string> OrginalStonePortalconfigCraftingStation;
 
 
-        internal static ConfigEntry<bool> PortalImages;
+        internal static ConfigEntry<Toggle> PortalImages;
 
 
 
@@ -1264,15 +1265,19 @@ namespace RareMagicPortal
             _serverConfigLocked = config(general, "Force Server Config", true, "Force Server Config");
             _ = ConfigSync.AddLockingConfigEntry(_serverConfigLocked);
 
-            ConfigEnableYMLLogs = config(general, "YML Portal Logs", Toggle.Off, "Show YML Portal Logs after Every update", false);
+            ConfigEnableYMLLogs = config(general, "YML Portal Logs", Toggle.Off, "Show YML Portal Logs after Every update");
 
             RiskyYMLSave = config(general, "Risky Server Save", Toggle.Off, "Only save YML updates when server shuts down");
 
             UseSmallUpdates = config(general, "Use Small Server Updates", Toggle.On, "Only sends a tiny part of the YML to clients");
-       
+
+            ClientSave = config(general, "Clients Save Data", Toggle.Off, "Clients save YML data. (Has Passwords and coord info)");
+      
             portalRMPKEY = config(general, "Modifier key for Color", new KeyboardShortcut(KeyCode.CapsLock), "Modifier keY that has to be pressed while hovering over Portal + E", false);
 
             portalRMPMODEKEY = config(general, "Modifier key for PortalMode", new KeyboardShortcut(KeyCode.LeftControl), "Modifier key that has to be pressed while hovering over Portal + E", false);
+
+
 
             //portalRMPCRYSTALKEY = config(general, "ON/OFF for Crystal Requirement", new KeyboardShortcut(KeyCode.LeftAlt), "Modifier key that has to be pressed while hovering over Portal + E", false); // remove
 
@@ -1281,7 +1286,7 @@ namespace RareMagicPortal
 
             string modes = "1.0 Portal Modes-----------";
             DefaultMode = config(modes, "Default Mode for New Portals", PortalModeClass.PortalMode.Normal, "Portal Mode for all newly placed portals.");
-
+            
             string normalMode = "1.1 Normal Mode-----------";
 
             string targetportal = "1.2 Target Portal-----------";
@@ -1359,36 +1364,40 @@ namespace RareMagicPortal
 
 
             string portal = "2.Portal-----------";
-            ConfigTableStone = config(portal, "Station Requirement Stone", DefaultTableStone,
-                "Which CraftingStation is required nearby for Stone Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_stonecutter, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstationConfigTable = config(portal, "CraftingStation Requirement", DefaultTable,
-            
-            ConfigTableWood = config(portal, "Station Requirement Wood", DefaultTable,"Which CraftingStation is required nearby for Wood Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_workbench, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstation
-
-            ConfigTableLvl = config(portal, "Level of CraftingStation Req", 1, "What level of CraftingStation is required for placing Wood Portal?");
 
             ConfigCreator = config(portal, "Only Creator Can Deconstruct", true, "Only the Creator/Admin of the Portal can deconstruct it. It can still be destroyed");
-
-            ConfiglHealthStone = config(portal, "Portal Health Stone", 1000f, "Health of Portal Stone");
-
-            ConfiglHealthWood = config(portal, "Portal Health Wood", 400f, "Health of Portal Wood");
-
+                     
             ConfigAddRestricted = config(portal, "AdditionalProhibitItems", "", "Additional items to restrict by Default on new portals - 'Wood,Stone'");
 
             ConfigAllowItems = config(portal, "AdditionalAllowItems", "", "Additional items to be allowed by Default on new portals - 'Wood,Stone'");
 
-            ConfigCreatorLock = config(portal, "Only Creator Can Change Name", true, "Only Creator/Admin can change Portal name");
+            ConfigCreatorLock = config(portal, "Only Creator Can Change Name", Toggle.On, "Only Creator/Admin can change Portal name");
 
             ConfigMaxWeight = config(portal, "Max Weight Allowed for new Portals", 0, "This affects all new/renamed portals - Enter the max weight that can transit through a portal at a time. Value of 0 disables the check");
 
             MaxPortalsPerPerson = config(portal, "Max Portals Per Player", 0, "The YML keeps track of creator of Portals, a Value of 0 disables the check");
 
-            AdminOnlyMakesPortals = config(portal, "Only Admin Can Build", Toggle.Off, "Only The Admins Can Build Portals");
+            AdminOnlyMakesPortals = config(portal, "Only Admin Can Build", Toggle.Off, "Only The Admins Can Build Portals");              
 
-            OrginalStonePortalconfigCraftingStation = config(portal, "Orginal Stone Crafting station", "piece_workbench", "Required crafting station.");
 
-            // configCraftingStation.SettingChanged += (s, e) => Fix(ZNetScene.instance);
 
-            OrginalStonePortalconfigRequirements = config(portal, "Orginal Stone Recipe", "GreydwarfEye:20,SurtlingCore:10,Obsidian:100,Thunderstone:10", "Recipe (id:amount,id:amount,...)");
+
+            string wood_portal = "2.1 WoodPortal-----------";
+            ConfigTableWood = config(wood_portal, "Station Requirement Wood", DefaultTable, "Which CraftingStation is required nearby for Wood Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_workbench, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstation
+            ConfigTableLvl = config(wood_portal, "Level of CraftingStation Req", 1, "What level of CraftingStation is required for placing Wood Portal?");
+            ConfiglHealthWood = config(portal, "Portal Health Wood", 400f, "Health of Portal Wood");
+
+            string stone_portal = "2.2 StonePortal-----------";
+            ConfiglHealthStone = config(stone_portal, "Portal Health Stone", 1000f, "Health of Portal Stone");
+            ConfigTableStone = config(portal, "Station Requirement Stone", DefaultTableStone,
+                "Which CraftingStation is required nearby for Stone Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_stonecutter, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstationConfigTable = config(portal, "CraftingStation Requirement", DefaultTable,
+             // configCraftingStation.SettingChanged += (s, e) => Fix(ZNetScene.instance);
+
+            string orginal_portal = "2.3 OrginalStonePortal-----------";
+            OrginalStonePortalconfigCraftingStation = config(orginal_portal, "Orginal Stone Crafting station", "piece_workbench", "Required crafting station.");
+            OrginalStonePortalconfigRequirements = config(orginal_portal, "Orginal Stone Recipe", "GreydwarfEye:20,SurtlingCore:10,Obsidian:100,Thunderstone:10", "Recipe (id:amount,id:amount,...)");
+
+            string wacky1_portal = "2.4 wacky1Portal-----------";
 
             //configRequirements.SettingChanged += (s, e) => Fix(ZNetScene.instance);
 
@@ -1448,7 +1457,7 @@ namespace RareMagicPortal
 
 
             string portal_images = "9.Portal Images--------";
-            PortalImages = config(portal_images, "Change Portal Images", false, "Portal Images during Teleport");
+            PortalImages = config(portal_images, "Change Portal Images", Toggle.Off, "Portal Images during Teleport");
         }
 
 

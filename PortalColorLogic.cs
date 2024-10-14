@@ -227,10 +227,11 @@ namespace RareMagicPortal
 
                     if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
                     {
-                        if (isthistrue)
-                            HandleYippe(teleportWorldData,ref __instance);
                         if (isplustrue)
-                            HandleYippe(teleportWorldDataplus, ref __instance);
+                            HandleYippe(teleportWorldDataplus);
+                        else if (isthistrue)
+                            HandleYippe(teleportWorldData);
+                        
 
                         return;
                     } // end of yippe
@@ -362,14 +363,6 @@ namespace RareMagicPortal
 
                             return true;
                         }
-
-                        if (sameperson || !sameperson && !MagicPortalFluid.ConfigCreatorLock.Value || closestPlayer.m_noPlacementCost) // Only creator || not creator and not in lock mode || not in noplacementcost mode
-                        {
-                            return true;
-                        } 
-
-                        human.Message(MessageHud.MessageType.Center, "$rmp_onlyownercanchange");
-                        return false; 
                     }
 
                     if (Input.GetKey(portalModeToggleModifierKey.MainKey) && oneportal.SpecialMode == PortalModeClass.PortalMode.TargetPortal)
@@ -380,7 +373,16 @@ namespace RareMagicPortal
                         if (MagicPortalFluid.PreventTargetPortalOwnerFromChanging.Value == MagicPortalFluid.Toggle.On && !MagicPortalFluid.isAdmin)
                             throw new SkipPortalException4();
                     }
-                    return true;
+
+                    if (sameperson || !sameperson && MagicPortalFluid.ConfigCreatorLock.Value == MagicPortalFluid.Toggle.Off || closestPlayer.m_noPlacementCost) // Only creator || not creator and not in lock mode || not in noplacementcost mode
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        human.Message(MessageHud.MessageType.Center, "$rmp_onlyownercanchange");
+                        return false;
+                    }
                 }               
                 return true;
             }
@@ -431,40 +433,6 @@ namespace RareMagicPortal
                 }
             }
         }
-        /*
-        [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.TargetFound))]
-        [HarmonyPriority(Priority.High)]
-        public static class TeleportHaveTargetFix
-        {
-            private static string HoldMeDaddy = "";
-            private static int count3 = 0;
-
-            private static void Prefix(ref TeleportWorld __instance)
-            {
-                string PortalName = __instance.m_nview.m_zdo.GetString("tag");
-                
-                HoldMeDaddy = "";
-                if (PortalName.Contains(NameIdentifier))
-                {
-                    HoldMeDaddy = PortalName;
-                    var index = PortalName.IndexOf(NameIdentifier);
-                    PortalName = PortalName.Substring(0, index);// deletes
-                    __instance.SetText(PortalName);
-                }
-            }
-
-            [HarmonyPriority(Priority.Low)]
-            private static void Postfix(ref TeleportWorld __instance, bool __result)
-            {
-                if (HoldMeDaddy != "" && MagicPortalFluid.TargetPortalLoaded) // only write back if target portal loaded otherwise erase ^2
-                    __instance.SetText(HoldMeDaddy);
-
-                //if (!__result) { spam
-                //  RMP.LogDebug("Portal Did not find Matching Portal - real name is " + HoldMeDaddy);
-                // }
-            }
-        } */ // bad times
-
 
        [HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.GetHoverText))]
         public static class TeleportWorldGetHoverTextPostfixRMP
@@ -615,21 +583,20 @@ namespace RareMagicPortal
                     string adminstring = "";
                     string crystalString = "";
                     string creatorChange = "";
-                    bool canChangeTag = true;
 
                     
                     string newhoverText = $"\"{portalName}\"";
-                    if (portal.SpecialMode != PortalModeClass.PortalMode.TargetPortal)
+                    if (MagicPortalFluid.ConfigCreatorLock.Value == MagicPortalFluid.Toggle.On)
                     {
-                        if (canChangeTag)
+                        if (isCreator || MagicPortalFluid.isAdmin)
                         {
 
-                        }
-                        else
+                        }else
                         {
-
+                            hoverText = newhoverText;
                         }
                     }
+
 
                     if (MagicPortalFluid.isAdmin)
                     {
@@ -1372,7 +1339,7 @@ namespace RareMagicPortal
         }
 
 
-        private static void HandleYippe(TeleportWorldDataRMP teleportWorldData, ref TeleportWorld __instance)
+        private static void HandleYippe(TeleportWorldDataRMP teleportWorldData)
         {
             // override color for teleportanything color
             if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow")
@@ -1447,7 +1414,7 @@ namespace RareMagicPortal
                 SetTeleportWorldColors(teleportWorldData, false, false);
             }
         }        
-        private static void HandleYippe(ClassBase teleportWorldData, ref TeleportWorld __instance)
+        private static void HandleYippe(ClassBase teleportWorldData)
         {
             /*
             // override color for teleportanything color
