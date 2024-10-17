@@ -451,7 +451,7 @@ namespace RareMagicPortal
             [HarmonyPriority(Priority.HigherThanNormal)]
             private static void Postfix(ref TeleportWorld __instance, ref string __result)
             {
-                if (!__instance || MagicPortalFluid.NoMoreLoading || MagicPortalFluid.WaitSomeMore)
+                if ( MagicPortalFluid.NoMoreLoading || MagicPortalFluid.WaitSomeMore)
                 {
                     return;
                 }

@@ -54,6 +54,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     {
                         __result = true;
                         return;
+
                     }
                 }
                 catch { } // some errors at init // not related to TargetPortal's Awake problem
@@ -142,7 +143,7 @@ namespace RareMagicPortal_3_Plus.Patches
                         }   
                     }                
                 }
-                catch { } // catch any that haven't been entered yet
+                catch (Exception ex) { MagicPortalFluid.RareMagicPortal.LogWarning("TargetFound: " +ex); } // catch any that haven't been entered yet
                 if (!MagicPortalFluid.TargetPortalLoaded)
                     return true;
                 else if (!__instance.m_hadTarget && MagicPortalFluid.TargetPortalLoaded)

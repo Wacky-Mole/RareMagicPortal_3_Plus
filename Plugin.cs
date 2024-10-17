@@ -1373,7 +1373,7 @@ namespace RareMagicPortal
 
             ConfigAllowItems = config(portal, "AdditionalAllowItems", "", "Additional items to be allowed by Default on new portals - 'Wood,Stone'");
 
-            ConfigCreatorLock = config(portal, "Only Creator Can Change Name", Toggle.On, "Only Creator/Admin can change Portal name");
+            ConfigCreatorLock = config(portal, "Only Creator Can Change Name", Toggle.On, "Only Creator OR Admin (in no build cost mode) can change Portal name");
 
             ConfigMaxWeight = config(portal, "Max Weight Allowed for new Portals", 0, "This affects all new/renamed portals - Enter the max weight that can transit through a portal at a time. Value of 0 disables the check");
 
