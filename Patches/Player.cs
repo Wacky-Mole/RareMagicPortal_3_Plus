@@ -227,9 +227,6 @@ namespace RareMagicPortal_3_Plus.Patches
         }
 
 
-
-
-
         [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
         internal static class ZrouteMethodsClientRMP
 

@@ -103,6 +103,9 @@ namespace RareMagicPortal
 
         //internal static string YMLFULLServer = Paths.ConfigPath + Path.DirectorySeparatorChar + "WackyMole" + ".PortalServerNames.yml";
         internal static string YMLFULLFOLDER = Path.Combine(Path.GetDirectoryName(Paths.ConfigPath + Path.DirectorySeparatorChar), "Portal_Names");
+        internal static string ImageFolder = Path.Combine(Path.GetDirectoryName(Paths.ConfigPath + Path.DirectorySeparatorChar), "RMP_Images");
+        internal static string BackgroundFolder = Path.Combine(ImageFolder, "Background");
+        internal static string BiomeTexturesFolder = Path.Combine(ImageFolder, "BiomeImages");
 
         internal static string ConnectionError = "";
 
@@ -410,6 +413,7 @@ namespace RareMagicPortal
             LoadAssets();
             LoadPortals();
             PortalDrink();
+            CheckCreateImgs();
 
             assetPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), typeof(MagicPortalFluid).Namespace);
 
@@ -474,6 +478,20 @@ namespace RareMagicPortal
             }
         }
 
+        internal static void CheckCreateImgs()
+        {
+            if (!Directory.Exists(ImageFolder))
+            {
+                Directory.CreateDirectory(ImageFolder);
+                Directory.CreateDirectory(BackgroundFolder);
+                Directory.CreateDirectory(BiomeTexturesFolder);
+
+                SpriteTools spriteTools = new SpriteTools();
+                var read = spriteTools.ReadEmbeddedFileBytes("testimg.png");
+                var back = Path.Combine(BackgroundFolder, "teleport_background.png");
+                File.WriteAllBytes(back, read);
+            }
+        }
         internal static void LoadIN()
         {
             LoggingOntoServerFirst = true;

@@ -2,6 +2,7 @@
 using RareMagicPortal;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -131,7 +132,8 @@ namespace RareMagicPortalPlus.PortalScreens
         private static void LoadBackgroundSprite()
         {
             // Load the background sprite from resources or user-defined path
-            Texture2D texture = LoadTextureFromFile("Assets/Backgrounds/teleport_background.png");
+            var background = Path.Combine(MagicPortalFluid.BackgroundFolder, "teleport_background.png");
+            Texture2D texture = LoadTextureFromFile(background);
             if (texture != null)
             {
                 BackgroundSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
@@ -141,9 +143,10 @@ namespace RareMagicPortalPlus.PortalScreens
         private static void LoadPortalBiomeTextures()
         {
             // Load biome-specific sprites
+            
             foreach (Heightmap.Biome biome in Enum.GetValues(typeof(Heightmap.Biome)))
             {
-                string path = $"Assets/BiomeTextures/{biome}.png";
+                var path = Path.Combine(MagicPortalFluid.BiomeTexturesFolder, $"{biome}.png");
                 Texture2D texture = LoadTextureFromFile(path);
                 if (texture != null)
                 {

@@ -34,7 +34,7 @@ namespace RareMagicPortal
         {
             this.ratio = ratio;
         }
-        private byte[] ReadEmbeddedFileBytes(string fileName)
+        internal byte[] ReadEmbeddedFileBytes(string fileName)
         {
             // Get the current executing assembly
             var assembly = Assembly.GetExecutingAssembly(); 
