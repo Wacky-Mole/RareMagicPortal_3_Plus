@@ -251,6 +251,7 @@ namespace RareMagicPortal
 
 
         internal static ConfigEntry<Toggle> PortalImages;
+        internal static ConfigEntry<Toggle> PortalImagesFullScreenOnly;
 
 
 
@@ -1478,6 +1479,7 @@ namespace RareMagicPortal
 
             string portal_images = "9.Portal Images--------";
             PortalImages = config(portal_images, "Change Portal Images", Toggle.Off, "Portal Images during Teleport");
+            PortalImagesFullScreenOnly = config(portal_images, "Full Screen Image Only", Toggle.Off, "Random Full Screen Image");
         }
 
 

@@ -4,14 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.UI;
+using static Heightmap;
 using static RareMagicPortalPlus.PortalScreens.ps_patches;
 
 namespace RareMagicPortalPlus.PortalScreens
 {
     public class ps_patches
     {
+
+        private static Sprite  defaultblack = null;
+        private static GameObject privBKG = null;
         [HarmonyPatch(typeof(Hud), "Awake")]
         private class HudHud_AwakeRMP
         {
@@ -29,20 +34,27 @@ namespace RareMagicPortalPlus.PortalScreens
                     foreach (Transform gamePortalLayer in componentsInChildren)
                     {
                         string layerName = gamePortalLayer.gameObject.name;
-                        PortalLayer portalLayer = PortalImage.PortalLayers.FirstOrDefault(x => x.LayerName == layerName);
+                        MagicPortalFluid.RareMagicPortal.LogWarning("layers found " + layerName);
+
+                        PortalLayer portalLayer  = new PortalLayer();
+                        portalLayer.LayerName = layerName;
+                        //PortalImage.PortalLayers.Add(portalLayer);
+
                         if (portalLayer != null)
                         {
-                            portalLayer.UpdateImageSprite(gamePortalLayer);
+                          //  portalLayer.UpdateImageSprite(gamePortalLayer);
                         }
                     }
                 }
 
-                GameObject gameObject2 = GameObject.Find("_GameMain").transform.Find("LoadingGUI/PixelFix/IngameGui/HUD/LoadingBlack/Bkg").gameObject;
-                if (gameObject2 != null && PortalImage.BackgroundSprite != null)
+               // defaultblack = GameObject.Find("_GameMain").transform.Find("LoadingGUI/PixelFix/IngameGui/HUD/LoadingBlack/Bkg").gameObject;
+                 privBKG = GameObject.Find("_GameMain").transform.Find("LoadingGUI/PixelFix/IngameGui/HUD/LoadingBlack/Bkg").gameObject;
+                if (privBKG != null)
                 {
-                    Image img = gameObject2.GetComponent<Image>();
-                    img.sprite = PortalImage.BackgroundSprite;
-                    img.color = new Color(1f, 1f, 1f, 1f);
+                    Image img = privBKG.GetComponent<Image>();         
+                    defaultblack = img.sprite;
+                    //img.sprite = PortalImage.BackgroundSprite;
+                   // img.color = new Color(1f, 1f, 1f, 1f);
                 }
                 else
                 {
@@ -90,19 +102,39 @@ namespace RareMagicPortalPlus.PortalScreens
         }
 
         [HarmonyPatch(typeof(Player), "TeleportTo")]
-        private class Player_TeleportToRMP
+        private class Player_TeleportToRMPBiomeLayer
         {
             private static void Prefix(Vector3 pos)
             {
                 if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
                     return;
 
-                Heightmap.Biome biome = WorldGenerator.instance.GetBiome(pos);
+                Image img = privBKG.GetComponent<Image>();
+                PortalImage.LoadBackgroundSprite();
+                img.sprite = PortalImage.BackgroundSprite;
+                img.color = new Color(1f, 1f, 1f, 1f);
+
+                Heightmap.Biome biome = Heightmap.Biome.Plains; //WorldGenerator.instance.GetBiome(pos);
+
+                for (int i = 1; i < 4; i++)
+                {
+                    var biomeLayer = PortalImage.PortalLayers[i];
+                    
+                    if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
+                    {
+                        biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
+                    }else
+                    {
+                        biomeLayer.LayerType = ScreenType.Invisible;
+                    }
+                }
+
+                /*
                 var biomeLayer = PortalImage.PortalLayers.FirstOrDefault(x => x.LayerType == ScreenType.BiomeImage);
                 if (biomeLayer != null && PortalImage.PortalBiomeTextures.ContainsKey(biome))
                 {
                     biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
-                }
+                } */
             }
         }
 
@@ -127,14 +159,19 @@ namespace RareMagicPortalPlus.PortalScreens
         {
             LoadBackgroundSprite();
             LoadPortalBiomeTextures();
-           // InitializePortalLayers();
+            InitializePortalLayers();
         }
 
-        private static void LoadBackgroundSprite()
+        internal static void LoadBackgroundSprite()
         {
             // Load the background sprite from resources or user-defined path
-            var background = Path.Combine(MagicPortalFluid.BackgroundFolder, "teleport_background.png");
-            Texture2D texture = LoadTextureFromFile(background);
+            //var background = Path.Combine(MagicPortalFluid.BackgroundFolder, "teleport_background.png");
+
+            var files = Directory.GetFiles(MagicPortalFluid.BackgroundFolder);
+            System.Random random = new System.Random();
+            string randomFile = files[random.Next(files.Length)];
+
+            Texture2D texture = LoadTextureFromFile(randomFile);
             if (texture != null)
             {
                 BackgroundSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
@@ -144,13 +181,16 @@ namespace RareMagicPortalPlus.PortalScreens
         private static void LoadPortalBiomeTextures()
         {
             // Load biome-specific sprites
-            
+            var files = Directory.GetFiles(MagicPortalFluid.BiomeTexturesFolder);
             foreach (Heightmap.Biome biome in Enum.GetValues(typeof(Heightmap.Biome)))
-            {
-                var path = Path.Combine(MagicPortalFluid.BiomeTexturesFolder, $"{biome}.png");
+            {             
+                var path = Path.Combine(MagicPortalFluid.BiomeTexturesFolder, $"{biome}.png");              
+                MagicPortalFluid.RareMagicPortal.LogWarning("searching for " + biome);
+               
                 Texture2D texture = LoadTextureFromFile(path);
                 if (texture != null)
                 {
+                    MagicPortalFluid.RareMagicPortal.LogWarning("Found image " + biome);
                     Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
                     PortalBiomeTextures[biome] = sprite;
                 }
@@ -159,15 +199,24 @@ namespace RareMagicPortalPlus.PortalScreens
 
         private static void InitializePortalLayers()
         {
-            // Initialize portal layers based on user configurations or defaults
-            for (int i = 0; i < 5; i++) // Assuming there are 5 layers
+            PortalLayer layerSwirl = new PortalLayer
             {
-                PortalLayer layer = new PortalLayer
-                {
-                    LayerName = $"layer{i + 1}",
-                    LayerType = ScreenType.Rotating, // Default to rotating, can be changed based on config
-                    RotationSpeed = 50f + i * 10f // Different speed for each layer
-                };
+                LayerName = "Swirl",
+                LayerType = ScreenType.Static
+            };
+           // PortalLayers.Add(layerSwirl);
+
+            for (int i = 0; i < 7; i++) //  7 layers
+            {
+                PortalLayer layer = new PortalLayer();
+                 
+                layer.LayerName = $"layer{i + 1}";
+                if (MagicPortalFluid.PortalImagesFullScreenOnly.Value == MagicPortalFluid.Toggle.On)
+                    layer.LayerType = ScreenType.Invisible;
+                else
+                    layer.LayerType = ScreenType.Rotating;
+                layer.RotationSpeed = 50f + i * 10f;
+                   
                 PortalLayers.Add(layer);
             }
         }
