@@ -21,6 +21,7 @@ namespace RareMagicPortalPlus.PortalScreens
                 if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
                     return;
 
+                PortalImage.Initialize();
                 GameObject gameObject = GameObject.Find("_GameMain").transform.Find("LoadingGUI/PixelFix/IngameGui/HUD/LoadingBlack/Teleporting/Swirl").gameObject;
                 if (gameObject != null)
                 {
@@ -126,7 +127,7 @@ namespace RareMagicPortalPlus.PortalScreens
         {
             LoadBackgroundSprite();
             LoadPortalBiomeTextures();
-            InitializePortalLayers();
+           // InitializePortalLayers();
         }
 
         private static void LoadBackgroundSprite()

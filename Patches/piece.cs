@@ -38,10 +38,10 @@ namespace RareMagicPortal_3_Plus.Patches
         }
 
         [HarmonyPatch(typeof(global::Player), "PlacePiece")]
-        internal static class Player_MessageforPortal_Patch
+        internal static class Player_MessageforPortal_PatchRMP
         {
             [HarmonyPrefix]
-            internal static bool Prefix(ref global::Player __instance, ref Piece piece)
+            private static bool Prefix(ref Player __instance, ref Piece piece, Vector3 pos, Quaternion rot, bool doAttack)
 
             {
                 if (piece == null || __instance == null) return true;

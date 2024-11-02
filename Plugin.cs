@@ -1449,7 +1449,7 @@ namespace RareMagicPortal
             ColorWHITEAllows = config(colors_allow, "Color White Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
 
             ColorGOLDAllows = config(colors_allow, "Color Gold Allows", "", "IF CrystalActive is active on Portal or 'Prevent Color Changing' is true then these additional Allows are active. 'Iron,Copper' ");
-
+            
 
             string crystal_selector = "8.CrystalSelector--------";
 

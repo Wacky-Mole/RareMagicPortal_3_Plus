@@ -102,9 +102,10 @@ namespace RareMagicPortal_3_Plus.Patches
                         __result = false;
                         return false;
                     }
-                    if (portal.SpecialMode == PortalModeClass.PortalMode.AllowedUsersOnly){
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.AllowedUsersOnly)
+                    {
 
-                        if ( portal.GuildOnly == "" && (portal.AllowedUsers == null || !portal.AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName()))) // Allowed Users) // Guild check
+                        if (portal.GuildOnly == "" && (portal.AllowedUsers == null || !portal.AllowedUsers.Contains(Player.m_localPlayer.GetPlayerName()))) // Allowed Users) // Guild check
                         {
                             __result = false;
                             return false;
@@ -112,7 +113,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     }
 
 
-                    if (portal.SpecialMode == PortalModeClass.PortalMode.CordsPortal )  // Override color showing 
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.CordsPortal)  // Override color showing 
                     {
                         __result = true;
                         return false;
@@ -123,7 +124,7 @@ namespace RareMagicPortal_3_Plus.Patches
                         __result = false;
                         return false;
                     }
-                        
+
                     if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
                     {
                         __result = true;
@@ -136,14 +137,15 @@ namespace RareMagicPortal_3_Plus.Patches
                         {
                             __result = false;
                             return false;
-                        }else
+                        }
+                        else
                         {
                             __result = true;
                             return false;
-                        }   
-                    }                
+                        }
+                    }
                 }
-                catch (Exception ex) { MagicPortalFluid.RareMagicPortal.LogWarning("TargetFound: " +ex); } // catch any that haven't been entered yet
+                catch (Exception ex) { }//{ MagicPortalFluid.RareMagicPortal.LogWarning("TargetFound: " +ex); } // catch any that haven't been entered yet
                 if (!MagicPortalFluid.TargetPortalLoaded)
                     return true;
                 else if (!__instance.m_hadTarget && MagicPortalFluid.TargetPortalLoaded)
