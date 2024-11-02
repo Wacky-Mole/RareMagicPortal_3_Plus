@@ -116,10 +116,18 @@ namespace RareMagicPortalPlus.PortalScreens
 
                 Heightmap.Biome biome = Heightmap.Biome.Plains; //WorldGenerator.instance.GetBiome(pos);
 
+                var biomeLayer = PortalImage.PortalLayers[5];
+                biomeLayer.LayerType = ScreenType.BiomeImage;
+                if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
+                {
+                    biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
+                }
+                /*
                 for (int i = 1; i < 4; i++)
                 {
                     var biomeLayer = PortalImage.PortalLayers[i];
-                    
+                    biomeLayer.LayerType = ScreenType.BiomeImage;
+
                     if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
                     {
                         biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
@@ -127,7 +135,7 @@ namespace RareMagicPortalPlus.PortalScreens
                     {
                         biomeLayer.LayerType = ScreenType.Invisible;
                     }
-                }
+                } */
 
                 /*
                 var biomeLayer = PortalImage.PortalLayers.FirstOrDefault(x => x.LayerType == ScreenType.BiomeImage);
@@ -185,7 +193,7 @@ namespace RareMagicPortalPlus.PortalScreens
             foreach (Heightmap.Biome biome in Enum.GetValues(typeof(Heightmap.Biome)))
             {             
                 var path = Path.Combine(MagicPortalFluid.BiomeTexturesFolder, $"{biome}.png");              
-                MagicPortalFluid.RareMagicPortal.LogWarning("searching for " + biome);
+               // MagicPortalFluid.RareMagicPortal.LogWarning("searching for " + biome + " path " + path + " vs file " + files[0]);
                
                 Texture2D texture = LoadTextureFromFile(path);
                 if (texture != null)
@@ -215,6 +223,10 @@ namespace RareMagicPortalPlus.PortalScreens
                     layer.LayerType = ScreenType.Invisible;
                 else
                     layer.LayerType = ScreenType.Rotating;
+
+                if (i<5)
+                    layer.LayerType = ScreenType.Invisible;
+
                 layer.RotationSpeed = 50f + i * 10f;
                    
                 PortalLayers.Add(layer);
