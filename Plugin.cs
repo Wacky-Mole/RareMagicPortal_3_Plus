@@ -488,9 +488,21 @@ namespace RareMagicPortal
                 Directory.CreateDirectory(BiomeTexturesFolder);
 
                 SpriteTools spriteTools = new SpriteTools();
-                var read = spriteTools.ReadEmbeddedFileBytes("testimg.png");
-                var back = Path.Combine(BackgroundFolder, "teleport_background.png");
-                File.WriteAllBytes(back, read);
+
+
+                File.WriteAllBytes(Path.Combine(BackgroundFolder, "teleport_background.png"), spriteTools.ReadEmbeddedFileBytes("testimg.png")); // background image
+
+                File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "All.png"), spriteTools.ReadEmbeddedFileBytes("All.png"));
+                File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "AshLands.png"), spriteTools.ReadEmbeddedFileBytes("AshLands.png"));
+                File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "BlackForest.png"), spriteTools.ReadEmbeddedFileBytes("BlackForest.png"));
+                File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "DeepNorth.png"), spriteTools.ReadEmbeddedFileBytes("DeepNorth.png"));
+                File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "mask.png"), spriteTools.ReadEmbeddedFileBytes("mask.png"));
+                File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "Meadows.png"), spriteTools.ReadEmbeddedFileBytes("Meadows.png"));
+                File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "Mistlands.png"), spriteTools.ReadEmbeddedFileBytes("Mistlands.png"));
+                File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "Mountain.png"), spriteTools.ReadEmbeddedFileBytes("Mountain.png"));
+                File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "Ocean.png"), spriteTools.ReadEmbeddedFileBytes("Ocean.png"));
+                File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "Plains.png"), spriteTools.ReadEmbeddedFileBytes("Plains.png"));
+                File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "Swamp.png"), spriteTools.ReadEmbeddedFileBytes("Swamp.png"));
             }
         }
         internal static void LoadIN()

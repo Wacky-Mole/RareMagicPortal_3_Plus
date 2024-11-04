@@ -203,6 +203,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <Content Include="ILRepack.targets" />
+    <EmbeddedResource Include="Img\All.png" />
+    <EmbeddedResource Include="Img\AshLands.png" />
+    <EmbeddedResource Include="Img\BlackForest.png" />
+    <EmbeddedResource Include="Img\DeepNorth.png" />
+    <EmbeddedResource Include="Img\mask.png" />
+    <EmbeddedResource Include="Img\Meadows.png" />
+    <EmbeddedResource Include="Img\Mistlands.png" />
+    <EmbeddedResource Include="Img\Mountain.png" />
+    <EmbeddedResource Include="Img\Ocean.png" />
+    <EmbeddedResource Include="Img\Plains.png" />
+    <EmbeddedResource Include="Img\Swamp.png" />
+    <EmbeddedResource Include="Img\testimg.png" />
     <Content Include="Libs\GuildsAPI.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
