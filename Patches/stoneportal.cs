@@ -20,17 +20,12 @@ namespace RareMagicPortalPlus.Patches
             private static void Postfix(ZNetScene __instance)
             {
 
-                MagicPortalFluid.RareMagicPortal.LogWarning("Stone Call");
                 if (!__instance) return;
-                MagicPortalFluid.RareMagicPortal.LogWarning("Stone Call 1");
                 if (!__instance.m_namedPrefabs.TryGetValue(PREFAB.GetStableHashCode(), out var portal)) return;
-                MagicPortalFluid.RareMagicPortal.LogWarning("Stone Call 2");
                 FixRecipe(__instance, portal.GetComponent<Piece>());
-                MagicPortalFluid.RareMagicPortal.LogWarning("Stone Call 3");
                 if (!__instance.m_namedPrefabs.TryGetValue("Hammer".GetStableHashCode(), out var hammer)) return;
                 if (hammer.GetComponent<ItemDrop>() is { } item)
                 {
-                    MagicPortalFluid.RareMagicPortal.LogWarning("Stone Call4");
                     var pieces = item.m_itemData.m_shared.m_buildPieces.m_pieces;
                     if (!pieces.Contains(portal))
                         pieces.Add(portal);

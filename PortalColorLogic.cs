@@ -728,7 +728,7 @@ namespace RareMagicPortal
                         "#" + ColorUtility.ToHtmlStringRGB(currentColorHex),
                         hi,
                         currentColor,
-                        currentmode
+                        currentmodestring
 
                     );
                 }
