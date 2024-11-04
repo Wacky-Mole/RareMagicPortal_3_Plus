@@ -70,7 +70,7 @@ namespace RareMagicPortalPlus.PortalScreens
                         else
                             portalLayer.LayerType = ScreenType.Rotating;
 
-                        if (i < 4)
+                        if (i < 5)
                             portalLayer.LayerType = ScreenType.Invisible;
 
                         portalLayer.RotationSpeed = 50f + i * 10f;
@@ -155,29 +155,29 @@ namespace RareMagicPortalPlus.PortalScreens
 
                 Heightmap.Biome biome =  WorldGenerator.instance.GetBiome(pos);
 
-                var biomeLayer = PortalImage.PortalLayers[4];
+                var biomeLayer = PortalImage.PortalLayers[5];
                 biomeLayer.LayerType = ScreenType.BiomeImage;
                 if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
                 {
                     MagicPortalFluid.RareMagicPortal.LogWarning("Setting circle image to " + biome);
                    // biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
 
-                    Image imageComponent = orginal4.GetComponent<Image>();
+                    Image imageComponent = orginal5.GetComponent<Image>();
                     imageComponent.sprite = PortalImage.MaskSprite;//PortalImage.PortalBiomeTextures[biome];
                     //imageComponent.rectTransform.sizeDelta = new Vector2(PortalImage.maskwidth, PortalImage.maskheight);
                     orginal4.SetActive(true);
                     biomeLayer.RotationSpeed = 0;
 
-                    if (!orginal4.TryGetComponent(out Mask _))
+                    if (!orginal5.TryGetComponent(out Mask _))
                     {
-                        orginal4.AddComponent<Mask>().showMaskGraphic = false;
+                        orginal5.AddComponent<Mask>().showMaskGraphic = false;
 
                         GameObject childImageObject = new GameObject("ChildImage");
-                        childImageObject.transform.SetParent(orginal4.transform, false);
+                        childImageObject.transform.SetParent(orginal5.transform, false);
                         childImageObject.AddComponent<Image>();
                     }
-                    orginal4.GetComponent<Uirotate>().enabled = false;
-                    var childImageTrans = orginal4.transform.Find("ChildImage");
+                    orginal5.GetComponent<Uirotate>().enabled = false;
+                    var childImageTrans = orginal5.transform.Find("ChildImage");
                     var childImage = childImageTrans.GetComponent<Image>();
                     childImage.rectTransform.sizeDelta = new Vector2(PortalImage.maskwidth, PortalImage.maskheight);
                     childImage.sprite = PortalImage.PortalBiomeTextures[biome];
