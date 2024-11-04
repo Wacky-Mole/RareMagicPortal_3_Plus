@@ -128,9 +128,6 @@ namespace RareMagicPortalPlus.PortalScreens
                         case ScreenType.Rotating:
                             portalLayer.Rotate();
                             break;
-                        case ScreenType.Animated:
-                            portalLayer.Animate();
-                            break;
                         case ScreenType.Invisible:
                             __instance.gameObject.SetActive(false);
                             break;
@@ -155,7 +152,7 @@ namespace RareMagicPortalPlus.PortalScreens
 
                 Heightmap.Biome biome = WorldGenerator.instance.GetBiome(pos);
 
-                var biomeLayer = PortalImage.PortalLayers[5];
+                var biomeLayer = PortalImage.PortalLayers[4]; // ACTUAL 5
                 biomeLayer.LayerType = ScreenType.BiomeImage;
                 if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
                 {
@@ -165,7 +162,7 @@ namespace RareMagicPortalPlus.PortalScreens
                     Image imageComponent = orginal5.GetComponent<Image>();
                     imageComponent.sprite = PortalImage.MaskSprite;//PortalImage.PortalBiomeTextures[biome];
                     //imageComponent.rectTransform.sizeDelta = new Vector2(PortalImage.maskwidth, PortalImage.maskheight);
-                    orginal4.SetActive(true);
+                    orginal5.SetActive(true);
                     biomeLayer.RotationSpeed = 0;
 
                     if (!orginal5.TryGetComponent(out Mask _))
@@ -187,12 +184,13 @@ namespace RareMagicPortalPlus.PortalScreens
         }
 
         public enum ScreenType
-        {
+        { 
+
+            Invisible,
             BiomeImage,
             Static,
             Rotating,
-            Animated,
-            Invisible
+            
         }
     }
 
@@ -307,24 +305,6 @@ namespace RareMagicPortalPlus.PortalScreens
             {
                 ImageComponent.transform.Rotate(Vector3.forward * Time.deltaTime * RotationSpeed);
             }
-        }
-
-        public void Animate()
-        {
-            if (ImageComponent != null)
-            {
-                // Implement animation logic, e.g., cycling through sprites
-            }
-        }
-
-        private Sprite LoadSprite(string filePath)
-        {
-            Texture2D texture = PortalImage.LoadTextureFromFile(filePath);
-            if (texture != null)
-            {
-                return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            }
-            return null;
         }
     }
 }
