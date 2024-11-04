@@ -159,29 +159,33 @@ namespace RareMagicPortalPlus.PortalScreens
                 biomeLayer.LayerType = ScreenType.BiomeImage;
                 if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
                 {
-                    MagicPortalFluid.RareMagicPortal.LogWarning("Setting circle image to  " + biome);
+                    MagicPortalFluid.RareMagicPortal.LogWarning("Setting circle image to " + biome);
                    // biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
 
                     Image imageComponent = orginal4.GetComponent<Image>();
-                    imageComponent.sprite = PortalImage.PortalBiomeTextures[biome];
+                    imageComponent.sprite = PortalImage.MaskSprite;//PortalImage.PortalBiomeTextures[biome];
+                    //imageComponent.rectTransform.sizeDelta = new Vector2(PortalImage.maskwidth, PortalImage.maskheight);
                     orginal4.SetActive(true);
                     biomeLayer.RotationSpeed = 0;
-                 
+
+                    if (!orginal4.TryGetComponent(out Mask _))
+                    {
+                        orginal4.AddComponent<Mask>().showMaskGraphic = false;
+
+                        GameObject childImageObject = new GameObject("ChildImage");
+                        childImageObject.transform.SetParent(orginal4.transform, false);
+                        childImageObject.AddComponent<Image>();
+                    }
+                    orginal4.GetComponent<Uirotate>().enabled = false;
+                    var childImageTrans = orginal4.transform.Find("ChildImage");
+                    var childImage = childImageTrans.GetComponent<Image>();
+                    childImage.rectTransform.sizeDelta = new Vector2(PortalImage.maskwidth, PortalImage.maskheight);
+                    childImage.sprite = PortalImage.PortalBiomeTextures[biome];
+
                 }
                 
-                if (!orginal5.TryGetComponent(out Mask _))
-                {
-                    var masklayer = PortalImage.PortalLayers[5];
-                    masklayer.LayerType = ScreenType.Static;
-                    Image imageComponent = orginal5.GetComponent<Image>();
-                    imageComponent.sprite = PortalImage.MaskSprite;
-                    orginal5.SetActive(true);
-                    orginal5.AddComponent<Mask>().showMaskGraphic = false;
-                }
-                    
 
-
-
+                   
                     /*
                     for (int i = 1; i < 4; i++)
                     {
@@ -222,6 +226,8 @@ namespace RareMagicPortalPlus.PortalScreens
         public static Sprite BackgroundSprite;
         public static Sprite MaskSprite;
         public static Dictionary<Heightmap.Biome, Sprite> PortalBiomeTextures = new Dictionary<Heightmap.Biome, Sprite>();
+        public static int maskwidth = 0;
+        public static int maskheight = 0;
 
         // Method to initialize and load sprites and configurations
         public static void Initialize()
@@ -270,9 +276,20 @@ namespace RareMagicPortalPlus.PortalScreens
             if (!string.IsNullOrEmpty(maskPath))
             {
                 MagicPortalFluid.RareMagicPortal.LogWarning("Found mask");
-                Texture2D texture = LoadTextureFromFile(maskPath);
-                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-                MaskSprite = sprite;
+
+                // Load the texture data from the file
+                byte[] fileData = System.IO.File.ReadAllBytes(maskPath);
+                Texture2D tex = new Texture2D(2, 2); // Initial size doesn't matter as LoadImage will replace it
+                if (tex.LoadImage(fileData))
+                {
+                    // Successfully loaded texture data, now create a circular sprite
+                    Sprite sprite = SpriteTools.CreateCircularSprite(tex); // Make sure this method exists
+                    MaskSprite = sprite; // Assign the sprite to MaskSprite
+                }
+                else
+                {
+                    MagicPortalFluid.RareMagicPortal.LogWarning("Failed to load image data for mask.");
+                }
             }
         }
 

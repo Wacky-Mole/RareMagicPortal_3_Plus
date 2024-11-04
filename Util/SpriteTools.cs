@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using RareMagicPortalPlus.PortalScreens;
+using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -77,6 +79,50 @@ namespace RareMagicPortal
             Assembly.GetExecutingAssembly().GetManifestResourceStream(fileName + "." + name).CopyTo(stream);
             return stream.ToArray();
         }*/
+
+
+        public static Sprite CreateCircularSprite(Texture2D texture)
+        {
+            int width = texture.width;
+            int height = texture.height;
+            PortalImage.maskheight = height;
+            PortalImage.maskwidth = width;
+
+
+            int radius = Math.Min(width, height) / 2;
+            Vector2 center = new Vector2(width / 2, height / 2);
+
+            // Create a new Texture2D to store the circular texture
+            Texture2D circularTexture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    // Calculate the distance from the center
+                    float distanceFromCenter = Vector2.Distance(new Vector2(x, y), center);
+
+                    // If the pixel is within the circle, copy the color; otherwise, make it transparent
+                    if (distanceFromCenter <= radius)
+                    {
+                        circularTexture.SetPixel(x, y, texture.GetPixel(x, y));
+                    }
+                    else
+                    {
+                        circularTexture.SetPixel(x, y, new Color(0, 0, 0, 0)); // Transparent
+                    }
+                }
+            }
+
+            // Apply changes to the texture
+            circularTexture.Apply();
+
+            // Create a sprite from the circular texture using the full texture dimensions
+            Sprite circularSprite = Sprite.Create(circularTexture, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f));
+            return circularSprite;
+        }
+
+
 
         public Texture2D loadTexture(string name)
         {
