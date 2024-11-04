@@ -56,6 +56,11 @@ namespace RareMagicPortalPlus.PortalScreens
                 if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
                     return true;
 
+                if (MagicPortalFluid.PortalImagesFullScreenOnly.Value == MagicPortalFluid.Toggle.On)
+                {
+                    __instance.gameObject.SetActive(false);
+                    return false;
+                }
 
                 string name = __instance.gameObject.name;
                 if (!name.Contains("layer"))
@@ -240,7 +245,7 @@ namespace RareMagicPortalPlus.PortalScreens
 
             if (!string.IsNullOrEmpty(maskPath))
             {
-                MagicPortalFluid.RareMagicPortal.LogWarning("Found mask");
+              //  MagicPortalFluid.RareMagicPortal.LogWarning("Found mask");
 
                 // Load the texture data from the file
                 var tex = LoadTextureFromFile(maskPath);

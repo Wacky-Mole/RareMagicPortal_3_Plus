@@ -572,7 +572,7 @@ namespace RareMagicPortal
                 }
                 //__result = __result.Replace(Localization.instance.Localize("$piece_portal_connected"), mode + (mode is PortalMode.Public or PortalMode.Admin ? "" : $"
                 //(Owner: {__instance.m_nview.GetZDO().GetString("TargetPortal PortalOwnerName")})")) + $"\n[<b><color=yellow>{portalModeToggleModifierKey.Value}</color> + <color=yellow>{Localization.instance.Localize("$KEY_Use")}</color></b>] Toggle Mode";
-                UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, Crystaltext, zdoData, currentmode);
+                UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, Crystaltext, zdoData, currentmode, portalZDO.SpecialMode);
 
                 if (portalZDO.SpecialMode != PortalModeClass.PortalMode.TargetPortal && MagicPortalFluid.TargetPortalLoaded)
                 {
@@ -580,7 +580,7 @@ namespace RareMagicPortal
                 }
             }
 
-            private static void UpdateHoverText(ref string hoverText, string currentColor, string nextColor, bool isCreator, Color currentColorHex, string portalName, string Crystaltext, ZDOP portal, string currentmode)
+            private static void UpdateHoverText(ref string hoverText, string currentColor, string nextColor, bool isCreator, Color currentColorHex, string portalName, string Crystaltext, ZDOP portal, string currentmodestring,PortalModeClass.PortalMode specialMode )
             {
                 if (portalName != "" && portalName != "Empty tag")
                 {
@@ -607,6 +607,11 @@ namespace RareMagicPortal
                         }
                     }
 
+                    if (specialMode == PortalModeClass.PortalMode.TransportNetwork && MagicPortalFluid.hideTeleNetName.Value == MagicPortalFluid.Toggle.On)
+                    {
+                        hoverText = "";
+                    }
+
 
                     if (MagicPortalFluid.isAdmin)
                     {
@@ -627,7 +632,7 @@ namespace RareMagicPortal
                         hoverText,
                         creatorChange,
                         crystalString,
-                        currentmode,
+                        currentmodestring,
                         adminstring
                         );
 

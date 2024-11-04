@@ -200,6 +200,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<Toggle>? ConfigMessageLeft;
         internal static ConfigEntry<Toggle>? ConfigTargetPortalAnimation;
         internal static ConfigEntry<Toggle>? flyonactivate;
+        internal static ConfigEntry<Toggle>? hideTeleNetName;
         internal static ConfigEntry<int>? ConfigMaxWeight;
         internal static ConfigEntry<int>? MaxPortalsPerPerson;
         internal static ConfigEntry<Toggle>? AdminOnlyMakesPortals;
@@ -490,7 +491,9 @@ namespace RareMagicPortal
                 SpriteTools spriteTools = new SpriteTools();
 
 
-                File.WriteAllBytes(Path.Combine(BackgroundFolder, "teleport_background.png"), spriteTools.ReadEmbeddedFileBytes("testimg.png")); // background image
+                File.WriteAllBytes(Path.Combine(BackgroundFolder, "background1.png"), spriteTools.ReadEmbeddedFileBytes("background1.png")); // background image
+                File.WriteAllBytes(Path.Combine(BackgroundFolder, "background2.png"), spriteTools.ReadEmbeddedFileBytes("background2.png")); // background image
+                File.WriteAllBytes(Path.Combine(BackgroundFolder, "background3.png"), spriteTools.ReadEmbeddedFileBytes("background3.png")); // background image
 
                 File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "All.png"), spriteTools.ReadEmbeddedFileBytes("All.png"));
                 File.WriteAllBytes(Path.Combine(BiomeTexturesFolder, "AshLands.png"), spriteTools.ReadEmbeddedFileBytes("AshLands.png"));
@@ -1337,6 +1340,7 @@ namespace RareMagicPortal
 
             string transportNetwork = "1.7 TransportNetwork-----------";
             flyonactivate = config(transportNetwork, "Fly on Warp", Toggle.On, "Fly on Warping. I put this here in case of anticheat or fall dmg somehow");
+            hideTeleNetName = config(transportNetwork, "Hide Name", Toggle.On, "Hide Portal's Name");
 
             string coordsportal = "1.8 Coordinates Portal-----------";
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PieceManager;
 
 namespace RareMagicPortalPlus.Patches
 {
@@ -13,15 +14,38 @@ namespace RareMagicPortalPlus.Patches
 
         const string PREFAB = "portal";
 
-        [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake)), HarmonyPostfix]
-        static void StonePortalRecipeRMP(ZNetScene __instance) => Fix(__instance);
+        [HarmonyPatch(typeof(ZNetScene), "Awake")]
+        private class StonePortalFixRMP
+        {
+            private static void Postfix(ZNetScene __instance)
+            {
+
+                MagicPortalFluid.RareMagicPortal.LogWarning("Stone Call");
+                if (!__instance) return;
+                MagicPortalFluid.RareMagicPortal.LogWarning("Stone Call 1");
+                if (!__instance.m_namedPrefabs.TryGetValue(PREFAB.GetStableHashCode(), out var portal)) return;
+                MagicPortalFluid.RareMagicPortal.LogWarning("Stone Call 2");
+                FixRecipe(__instance, portal.GetComponent<Piece>());
+                MagicPortalFluid.RareMagicPortal.LogWarning("Stone Call 3");
+                if (!__instance.m_namedPrefabs.TryGetValue("Hammer".GetStableHashCode(), out var hammer)) return;
+                if (hammer.GetComponent<ItemDrop>() is { } item)
+                {
+                    MagicPortalFluid.RareMagicPortal.LogWarning("Stone Call4");
+                    var pieces = item.m_itemData.m_shared.m_buildPieces.m_pieces;
+                    if (!pieces.Contains(portal))
+                        pieces.Add(portal);
+                }
+
+            }
+        }
 
         static void FixRecipe(ZNetScene zs, Piece piece)
         {
             if (!piece) return;
             //Log.LogInfo("Fixing Stone Portal recipe.");
             piece.m_enabled = true;
-            piece.m_category = Piece.PieceCategory.Misc;
+            //piece.m_category = Piece.PieceCategory.;
+            PieceManager.BuildPiece.BuildTableConfigChangedWacky(piece, "Portals");
             piece.m_craftingStation = null;
             if (zs.m_namedPrefabs.TryGetValue(MagicPortalFluid.OrginalStonePortalconfigCraftingStation.Value.GetStableHashCode(), out var view))
             {
@@ -40,19 +64,6 @@ namespace RareMagicPortalPlus.Patches
                     int.TryParse(s[1], out req.m_amount);
                 return req;
             }).Where(req => req.m_resItem).ToArray();
-        }
-        static void Fix(ZNetScene zs)
-        {
-            if (!zs) return;
-            if (!zs.m_namedPrefabs.TryGetValue(PREFAB.GetStableHashCode(), out var portal)) return;
-            FixRecipe(zs, portal.GetComponent<Piece>());
-            if (!zs.m_namedPrefabs.TryGetValue("Hammer".GetStableHashCode(), out var hammer)) return;
-            if (hammer.GetComponent<ItemDrop>() is { } item)
-            {
-                var pieces = item.m_itemData.m_shared.m_buildPieces.m_pieces;
-                if (!pieces.Contains(portal))
-                    pieces.Add(portal);
-            }
         }
 
     }

@@ -214,7 +214,9 @@
     <EmbeddedResource Include="Img\Ocean.png" />
     <EmbeddedResource Include="Img\Plains.png" />
     <EmbeddedResource Include="Img\Swamp.png" />
-    <EmbeddedResource Include="Img\testimg.png" />
+    <EmbeddedResource Include="Img\background1.png" />
+    <EmbeddedResource Include="Img\background2.png" />
+    <EmbeddedResource Include="Img\background3.png" />
     <Content Include="Libs\GuildsAPI.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
