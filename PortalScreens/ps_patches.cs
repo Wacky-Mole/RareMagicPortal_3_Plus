@@ -153,14 +153,14 @@ namespace RareMagicPortalPlus.PortalScreens
                 img.sprite = PortalImage.BackgroundSprite;
                 img.color = new Color(1f, 1f, 1f, 1f);
 
-                Heightmap.Biome biome =  WorldGenerator.instance.GetBiome(pos);
+                Heightmap.Biome biome = WorldGenerator.instance.GetBiome(pos);
 
                 var biomeLayer = PortalImage.PortalLayers[5];
                 biomeLayer.LayerType = ScreenType.BiomeImage;
                 if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
                 {
                     MagicPortalFluid.RareMagicPortal.LogWarning("Setting circle image to " + biome);
-                   // biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
+                    // biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
 
                     Image imageComponent = orginal5.GetComponent<Image>();
                     imageComponent.sprite = PortalImage.MaskSprite;//PortalImage.PortalBiomeTextures[biome];
@@ -183,32 +183,8 @@ namespace RareMagicPortalPlus.PortalScreens
                     childImage.sprite = PortalImage.PortalBiomeTextures[biome];
 
                 }
-                
-
-                   
-                    /*
-                    for (int i = 1; i < 4; i++)
-                    {
-                        var biomeLayer = PortalImage.PortalLayers[i];
-                        biomeLayer.LayerType = ScreenType.BiomeImage;
-
-                        if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
-                        {
-                            biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
-                        }else
-                        {
-                            biomeLayer.LayerType = ScreenType.Invisible;
-                        }
-                    } */
-
-                    /*
-                    var biomeLayer = PortalImage.PortalLayers.FirstOrDefault(x => x.LayerType == ScreenType.BiomeImage);
-                    if (biomeLayer != null && PortalImage.PortalBiomeTextures.ContainsKey(biome))
-                    {
-                        biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
-                    } */
-                }
             }
+        }
 
         public enum ScreenType
         {
@@ -259,9 +235,10 @@ namespace RareMagicPortalPlus.PortalScreens
             var files = Directory.GetFiles(MagicPortalFluid.BiomeTexturesFolder);
             foreach (Heightmap.Biome biome in Enum.GetValues(typeof(Heightmap.Biome)))
             {             
-                var path = Path.Combine(MagicPortalFluid.BiomeTexturesFolder, $"{biome}.png");              
+                var path = Path.Combine(MagicPortalFluid.BiomeTexturesFolder, $"{biome}.png");
+                MagicPortalFluid.RareMagicPortal.LogWarning(" " + biome);
                // MagicPortalFluid.RareMagicPortal.LogWarning("searching for " + biome + " path " + path + " vs file " + files[0]);
-               
+
                 Texture2D texture = LoadTextureFromFile(path);
                 if (texture != null)
                 {
@@ -293,34 +270,6 @@ namespace RareMagicPortalPlus.PortalScreens
             }
         }
 
-        private static void InitializePortalLayers()
-        {
-            PortalLayer layerSwirl = new PortalLayer
-            {
-                LayerName = "Swirl",
-                LayerType = ScreenType.Static
-            };
-           // PortalLayers.Add(layerSwirl);
-
-            for (int i = 0; i < 7; i++) //  7 layers
-            {
-                PortalLayer layer = new PortalLayer();
-                 
-                layer.LayerName = $"layer{i + 1}";
-                if (MagicPortalFluid.PortalImagesFullScreenOnly.Value == MagicPortalFluid.Toggle.On)
-                    layer.LayerType = ScreenType.Invisible;
-                else
-                    layer.LayerType = ScreenType.Rotating;
-
-                if (i<5)
-                    layer.LayerType = ScreenType.Invisible;
-
-                layer.RotationSpeed = 50f + i * 10f;
-                   
-                PortalLayers.Add(layer);
-            }
-        }
-
         public static Texture2D LoadTextureFromFile(string filePath)
         {
             // Implement loading texture from file
@@ -343,36 +292,6 @@ namespace RareMagicPortalPlus.PortalScreens
         public ps_patches.ScreenType LayerType { get; set; }
         public Image ImageComponent { get; set; }
         public float RotationSpeed { get; set; } = 50f;
-
-        public void UpdateImageSprite(Transform gamePortalLayer)
-        {
-            ImageComponent = gamePortalLayer.gameObject.GetComponent<Image>();
-            if (ImageComponent != null)
-            {
-                // Assign the appropriate sprite based on LayerType or other logic
-                switch (LayerType)
-                {
-                    case ps_patches.ScreenType.Static:
-                        // Load a static sprite
-                        ImageComponent.sprite = LoadSprite($"Assets/PortalLayers/{LayerName}.png");
-                        break;
-                    case ps_patches.ScreenType.Rotating:
-                        // Load a rotating sprite
-                        ImageComponent.sprite = LoadSprite($"Assets/PortalLayers/{LayerName}_rotating.png");
-                        break;
-                    case ps_patches.ScreenType.Animated:
-                        // Start animation
-                        break;
-                    case ps_patches.ScreenType.BiomeImage:
-                        // Will be set based on biome
-                        break;
-                    case ps_patches.ScreenType.Invisible:
-                        // Hide the layer
-                        ImageComponent.gameObject.SetActive(false);
-                        break;
-                }
-            }
-        }
 
         public void ChangeBiomeSprite(Sprite newSprite)
         {
