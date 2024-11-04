@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using static Heightmap;
 using static RareMagicPortalPlus.PortalScreens.ps_patches;
+using static UnityEngine.UI.Image;
 
 namespace RareMagicPortalPlus.PortalScreens
 {
@@ -17,6 +18,9 @@ namespace RareMagicPortalPlus.PortalScreens
 
         private static Sprite  defaultblack = null;
         private static GameObject privBKG = null;
+        private static GameObject orginal4 = null;
+        private static GameObject orginal5 = null;
+        private static GameObject orginal6 = null;
         [HarmonyPatch(typeof(Hud), "Awake")]
         private class HudHud_AwakeRMP
         {
@@ -46,7 +50,14 @@ namespace RareMagicPortalPlus.PortalScreens
                         {
                             i++;
                             continue;
-                        }
+                        } // total is 8 0 is swirl, 7 is last
+
+                        if (i == 4)
+                            orginal4 = gamePortalLayer.gameObject;
+                        if (i == 5)
+                            orginal5 = gamePortalLayer.gameObject;                       
+                        if (i == 6)
+                            orginal6 = gamePortalLayer.gameObject;
 
                         string layerName = gamePortalLayer.gameObject.name;
                        // MagicPortalFluid.RareMagicPortal.LogWarning("layers found " + layerName);
@@ -59,12 +70,12 @@ namespace RareMagicPortalPlus.PortalScreens
                         else
                             portalLayer.LayerType = ScreenType.Rotating;
 
-                        if (i < 5)
+                        if (i < 4)
                             portalLayer.LayerType = ScreenType.Invisible;
 
                         portalLayer.RotationSpeed = 50f + i * 10f;
 
-                        PortalImage.PortalLayers.Add(portalLayer);
+                        PortalImage.PortalLayers.Add(portalLayer); // 7 total 0-6
 
                         if (portalLayer != null)
                         {
@@ -111,6 +122,7 @@ namespace RareMagicPortalPlus.PortalScreens
                     switch (portalLayer.LayerType)
                     {
                         case ScreenType.BiomeImage:
+                            return false;
                         case ScreenType.Static:
                             return false;
                         case ScreenType.Rotating:
@@ -141,38 +153,58 @@ namespace RareMagicPortalPlus.PortalScreens
                 img.sprite = PortalImage.BackgroundSprite;
                 img.color = new Color(1f, 1f, 1f, 1f);
 
-                Heightmap.Biome biome = Heightmap.Biome.Plains; //WorldGenerator.instance.GetBiome(pos);
+                Heightmap.Biome biome =  WorldGenerator.instance.GetBiome(pos);
 
-                var biomeLayer = PortalImage.PortalLayers[6];
+                var biomeLayer = PortalImage.PortalLayers[4];
                 biomeLayer.LayerType = ScreenType.BiomeImage;
                 if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
                 {
                     MagicPortalFluid.RareMagicPortal.LogWarning("Setting circle image to  " + biome);
-                    biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
-                }
-                /*
-                for (int i = 1; i < 4; i++)
-                {
-                    var biomeLayer = PortalImage.PortalLayers[i];
-                    biomeLayer.LayerType = ScreenType.BiomeImage;
+                   // biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
 
-                    if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
+                    Image imageComponent = orginal4.GetComponent<Image>();
+                    imageComponent.sprite = PortalImage.PortalBiomeTextures[biome];
+                    orginal4.SetActive(true);
+                    biomeLayer.RotationSpeed = 0;
+                 
+                }
+                
+                if (!orginal5.TryGetComponent(out Mask _))
+                {
+                    var masklayer = PortalImage.PortalLayers[5];
+                    masklayer.LayerType = ScreenType.Static;
+                    Image imageComponent = orginal5.GetComponent<Image>();
+                    imageComponent.sprite = PortalImage.MaskSprite;
+                    orginal5.SetActive(true);
+                    orginal5.AddComponent<Mask>().showMaskGraphic = false;
+                }
+                    
+
+
+
+                    /*
+                    for (int i = 1; i < 4; i++)
+                    {
+                        var biomeLayer = PortalImage.PortalLayers[i];
+                        biomeLayer.LayerType = ScreenType.BiomeImage;
+
+                        if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
+                        {
+                            biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
+                        }else
+                        {
+                            biomeLayer.LayerType = ScreenType.Invisible;
+                        }
+                    } */
+
+                    /*
+                    var biomeLayer = PortalImage.PortalLayers.FirstOrDefault(x => x.LayerType == ScreenType.BiomeImage);
+                    if (biomeLayer != null && PortalImage.PortalBiomeTextures.ContainsKey(biome))
                     {
                         biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
-                    }else
-                    {
-                        biomeLayer.LayerType = ScreenType.Invisible;
-                    }
-                } */
-
-                /*
-                var biomeLayer = PortalImage.PortalLayers.FirstOrDefault(x => x.LayerType == ScreenType.BiomeImage);
-                if (biomeLayer != null && PortalImage.PortalBiomeTextures.ContainsKey(biome))
-                {
-                    biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
-                } */
+                    } */
+                }
             }
-        }
 
         public enum ScreenType
         {
@@ -188,6 +220,7 @@ namespace RareMagicPortalPlus.PortalScreens
     {
         public static List<PortalLayer> PortalLayers = new List<PortalLayer>();
         public static Sprite BackgroundSprite;
+        public static Sprite MaskSprite;
         public static Dictionary<Heightmap.Biome, Sprite> PortalBiomeTextures = new Dictionary<Heightmap.Biome, Sprite>();
 
         // Method to initialize and load sprites and configurations
@@ -227,9 +260,19 @@ namespace RareMagicPortalPlus.PortalScreens
                 if (texture != null)
                 {
                     MagicPortalFluid.RareMagicPortal.LogWarning("Found image " + biome);
+
                     Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
                     PortalBiomeTextures[biome] = sprite;
                 }
+            }
+            string maskPath = files.FirstOrDefault(file => Path.GetFileName(file).Equals("mask.png", StringComparison.OrdinalIgnoreCase));
+
+            if (!string.IsNullOrEmpty(maskPath))
+            {
+                MagicPortalFluid.RareMagicPortal.LogWarning("Found mask");
+                Texture2D texture = LoadTextureFromFile(maskPath);
+                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                MaskSprite = sprite;
             }
         }
 
