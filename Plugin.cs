@@ -1490,8 +1490,8 @@ namespace RareMagicPortal
 
 
             string portal_images = "9.Portal Images--------";
-            PortalImages = config(portal_images, "Change Portal Images", Toggle.Off, "Portal Images during Teleport");
-            PortalImagesFullScreenOnly = config(portal_images, "Full Screen Image Only", Toggle.Off, "Random Full Screen Image");
+            PortalImages = config(portal_images, "Activate Portal Images", Toggle.Off, "Portal Images during Teleport activated - Restart may be required");
+            PortalImagesFullScreenOnly = config(portal_images, "Full Screen Image Only", Toggle.Off, "Random Full Screen Image Only, disables Biome images and swirl. - Restart may be required");
         }
 
 

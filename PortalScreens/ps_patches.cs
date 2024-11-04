@@ -18,21 +18,18 @@ namespace RareMagicPortalPlus.PortalScreens
 
         private static Sprite  defaultblack = null;
         private static GameObject privBKG = null;
-        private static GameObject orginal4 = null;
         private static GameObject orginal5 = null;
-        private static GameObject orginal6 = null;
         [HarmonyPatch(typeof(Hud), "Awake")]
         private class HudHud_AwakeRMP
         {
             private static void Postfix(Hud __instance)
             {
 
-                if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
-                    return;
+                //if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
+                 //   return;
 
                 PortalImage.Initialize();
-                GameObject gameObject = GameObject.Find("_GameMain").transform.Find("LoadingGUI/PixelFix/IngameGui/HUD/LoadingBlack/Teleporting/Swirl").gameObject;
-
+              
                 PortalLayer layerSwirl = new PortalLayer
                 {
                     LayerName = "Swirl",
@@ -40,52 +37,6 @@ namespace RareMagicPortalPlus.PortalScreens
                 };
                 // PortalLayers.Add(layerSwirl);
 
-                int i = 0;
-                if (gameObject != null)
-                {
-                    Transform[] componentsInChildren = gameObject.GetComponentsInChildren<Transform>();
-                    foreach (Transform gamePortalLayer in componentsInChildren)
-                    {
-                        if (i == 0)
-                        {
-                            i++;
-                            continue;
-                        } // total is 8 0 is swirl, 7 is last
-
-                        if (i == 4)
-                            orginal4 = gamePortalLayer.gameObject;
-                        if (i == 5)
-                            orginal5 = gamePortalLayer.gameObject;                       
-                        if (i == 6)
-                            orginal6 = gamePortalLayer.gameObject;
-
-                        string layerName = gamePortalLayer.gameObject.name;
-                       // MagicPortalFluid.RareMagicPortal.LogWarning("layers found " + layerName);
-
-                        PortalLayer portalLayer  = new PortalLayer();
-                        portalLayer.LayerName = layerName;
-                        portalLayer.ImageComponent = gamePortalLayer.gameObject.GetComponent<Image>();
-                        if (MagicPortalFluid.PortalImagesFullScreenOnly.Value == MagicPortalFluid.Toggle.On)
-                            portalLayer.LayerType = ScreenType.Invisible;
-                        else
-                            portalLayer.LayerType = ScreenType.Rotating;
-
-                        if (i < 5)
-                            portalLayer.LayerType = ScreenType.Invisible;
-
-                        portalLayer.RotationSpeed = 50f + i * 10f;
-
-                        PortalImage.PortalLayers.Add(portalLayer); // 7 total 0-6
-
-                        if (portalLayer != null)
-                        {
-                          //  portalLayer.UpdateImageSprite(gamePortalLayer);
-                        }
-                        i++;
-                    }
-                }
-
-               // defaultblack = GameObject.Find("_GameMain").transform.Find("LoadingGUI/PixelFix/IngameGui/HUD/LoadingBlack/Bkg").gameObject;
                  privBKG = GameObject.Find("_GameMain").transform.Find("LoadingGUI/PixelFix/IngameGui/HUD/LoadingBlack/Bkg").gameObject;
                 if (privBKG != null)
                 {
@@ -93,10 +44,6 @@ namespace RareMagicPortalPlus.PortalScreens
                     defaultblack = img.sprite;
                     //img.sprite = PortalImage.BackgroundSprite;
                    // img.color = new Color(1f, 1f, 1f, 1f);
-                }
-                else
-                {
-                    // Handle case where background sprite is null or gameObject2 is null
                 }
             }
         }
@@ -126,6 +73,7 @@ namespace RareMagicPortalPlus.PortalScreens
                         case ScreenType.Static:
                             return false;
                         case ScreenType.Rotating:
+                            __instance.gameObject.SetActive(true);
                             portalLayer.Rotate();
                             break;
                         case ScreenType.Invisible:
@@ -150,13 +98,62 @@ namespace RareMagicPortalPlus.PortalScreens
                 img.sprite = PortalImage.BackgroundSprite;
                 img.color = new Color(1f, 1f, 1f, 1f);
 
+                if (MagicPortalFluid.PortalImagesFullScreenOnly.Value == MagicPortalFluid.Toggle.On)
+                    return;
+
+
+                if (PortalImage.PortalLayers.Count() == 0)
+                {
+                    GameObject gameObject = GameObject.Find("_GameMain").transform.Find("LoadingGUI/PixelFix/IngameGui/HUD/LoadingBlack/Teleporting/Swirl").gameObject;
+                    int i = 0;
+                    if (gameObject != null)
+                    {
+                        Transform[] componentsInChildren = gameObject.GetComponentsInChildren<Transform>();
+                        foreach (Transform gamePortalLayer in componentsInChildren)
+                        {
+                            if (i == 0)
+                            {
+                                i++;
+                                continue;
+                            } // total is 8 0 is swirl, 7 is last
+
+                            if (i == 5)
+                                orginal5 = gamePortalLayer.gameObject;
+
+                            string layerName = gamePortalLayer.gameObject.name;
+                           // MagicPortalFluid.RareMagicPortal.LogWarning("layers found " + layerName);
+
+                            PortalLayer portalLayer = new PortalLayer();
+                            portalLayer.LayerName = layerName;
+                            portalLayer.ImageComponent = gamePortalLayer.gameObject.GetComponent<Image>();
+                            if (MagicPortalFluid.PortalImagesFullScreenOnly.Value == MagicPortalFluid.Toggle.On)
+                                portalLayer.LayerType = ScreenType.Invisible;
+                            else
+                                portalLayer.LayerType = ScreenType.Rotating;
+
+                            if (i < 5)
+                                portalLayer.LayerType = ScreenType.Invisible;
+
+                            portalLayer.RotationSpeed = 50f + i * 10f;
+
+                            PortalImage.PortalLayers.Add(portalLayer); // 7 total 0-6
+
+                            if (portalLayer != null)
+                            {
+                                //  portalLayer.UpdateImageSprite(gamePortalLayer);
+                            }
+                            i++;
+                        }
+                    }
+                }
+
                 Heightmap.Biome biome = WorldGenerator.instance.GetBiome(pos);
 
                 var biomeLayer = PortalImage.PortalLayers[4]; // ACTUAL 5
                 biomeLayer.LayerType = ScreenType.BiomeImage;
                 if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
                 {
-                    MagicPortalFluid.RareMagicPortal.LogWarning("Setting circle image to " + biome);
+                    MagicPortalFluid.RareMagicPortal.LogInfo("Setting circle image to " + biome);
                     // biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
 
                     Image imageComponent = orginal5.GetComponent<Image>();
@@ -182,15 +179,13 @@ namespace RareMagicPortalPlus.PortalScreens
                 }
             }
         }
-
         public enum ScreenType
         { 
 
             Invisible,
             BiomeImage,
             Static,
-            Rotating,
-            
+            Rotating,           
         }
     }
 
@@ -202,13 +197,10 @@ namespace RareMagicPortalPlus.PortalScreens
         public static Dictionary<Heightmap.Biome, Sprite> PortalBiomeTextures = new Dictionary<Heightmap.Biome, Sprite>();
         public static int maskwidth = 0;
         public static int maskheight = 0;
-
-        // Method to initialize and load sprites and configurations
         public static void Initialize()
         {
             LoadBackgroundSprite();
             LoadPortalBiomeTextures();
-            //InitializePortalLayers();
         }
 
         internal static void LoadBackgroundSprite()
@@ -229,19 +221,17 @@ namespace RareMagicPortalPlus.PortalScreens
 
         private static void LoadPortalBiomeTextures()
         {
-            // Load biome-specific sprites
             var files = Directory.GetFiles(MagicPortalFluid.BiomeTexturesFolder);
             foreach (Heightmap.Biome biome in Enum.GetValues(typeof(Heightmap.Biome)))
             {             
                 var path = Path.Combine(MagicPortalFluid.BiomeTexturesFolder, $"{biome}.png");
-                MagicPortalFluid.RareMagicPortal.LogWarning(" " + biome);
+                //MagicPortalFluid.RareMagicPortal.LogWarning(" " + biome);
                // MagicPortalFluid.RareMagicPortal.LogWarning("searching for " + biome + " path " + path + " vs file " + files[0]);
 
                 Texture2D texture = LoadTextureFromFile(path);
                 if (texture != null)
                 {
-                    MagicPortalFluid.RareMagicPortal.LogWarning("Found image " + biome);
-
+                   // MagicPortalFluid.RareMagicPortal.LogWarning("Found image " + biome);
                     Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
                     PortalBiomeTextures[biome] = sprite;
                 }
@@ -253,18 +243,10 @@ namespace RareMagicPortalPlus.PortalScreens
                 MagicPortalFluid.RareMagicPortal.LogWarning("Found mask");
 
                 // Load the texture data from the file
-                byte[] fileData = System.IO.File.ReadAllBytes(maskPath);
-                Texture2D tex = new Texture2D(2, 2); // Initial size doesn't matter as LoadImage will replace it
-                if (tex.LoadImage(fileData))
-                {
-                    // Successfully loaded texture data, now create a circular sprite
-                    Sprite sprite = SpriteTools.CreateCircularSprite(tex); // Make sure this method exists
-                    MaskSprite = sprite; // Assign the sprite to MaskSprite
-                }
-                else
-                {
-                    MagicPortalFluid.RareMagicPortal.LogWarning("Failed to load image data for mask.");
-                }
+                var tex = LoadTextureFromFile(maskPath);
+                Sprite sprite = SpriteTools.CreateCircularSprite(tex); // Make sure this method exists
+                MaskSprite = sprite; // Assign the sprite to MaskSprite
+                
             }
         }
 
