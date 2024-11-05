@@ -1386,7 +1386,7 @@ namespace RareMagicPortal
             EnableCrystalsforNewIfPossible = config(crystals, "Enable CrystalKey For New", Toggle.Off, "Enable CrystalKey option if the Default Mode supports it for new Portals");
 
 
-            string fluid = "1.PortalFluid-----------";
+            string fluid = "4.PortalFluid-----------";
 
             ConfigFluid = config(fluid, "Add PortalFluid to Wood Portal", false, "Add PortalFluid to Wood Portal?");
 
@@ -1400,7 +1400,7 @@ namespace RareMagicPortal
 
 
 
-            string portal = "2.Portal-----------";
+            string portal = "5.Portal-----------";
 
             ConfigCreator = config(portal, "Only Creator Can Deconstruct", true, "Only the Creator/Admin of the Portal can deconstruct it. It can still be destroyed");
                      
@@ -1419,27 +1419,27 @@ namespace RareMagicPortal
 
 
 
-            string wood_portal = "2.1 WoodPortal-----------";
+            string wood_portal = "5.1 WoodPortal-----------";
             ConfigTableWood = config(wood_portal, "Station Requirement Wood", DefaultTable, "Which CraftingStation is required nearby for Wood Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_workbench, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstation
             ConfigTableLvl = config(wood_portal, "Level of CraftingStation Req", 1, "What level of CraftingStation is required for placing Wood Portal?");
             ConfiglHealthWood = config(portal, "Portal Health Wood", 400f, "Health of Portal Wood");
 
-            string stone_portal = "2.2 StonePortal-----------";
+            string stone_portal = "5.2 StonePortal-----------";
             ConfiglHealthStone = config(stone_portal, "Portal Health Stone", 1000f, "Health of Portal Stone");
             ConfigTableStone = config(portal, "Station Requirement Stone", DefaultTableStone,
                 "Which CraftingStation is required nearby for Stone Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_stonecutter, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstationConfigTable = config(portal, "CraftingStation Requirement", DefaultTable,
              // configCraftingStation.SettingChanged += (s, e) => Fix(ZNetScene.instance);
 
-            string orginal_portal = "2.3 OrginalStonePortal-----------";
+            string orginal_portal = "5.3 OrginalStonePortal-----------";
             OrginalStonePortalconfigCraftingStation = config(orginal_portal, "Orginal Stone Crafting station", "piece_workbench", "Required crafting station.");
             OrginalStonePortalconfigRequirements = config(orginal_portal, "Orginal Stone Recipe", "GreydwarfEye:20,SurtlingCore:10,Obsidian:100,Thunderstone:10", "Recipe (id:amount,id:amount,...)");
 
-            string wacky1_portal = "2.4 wacky1Portal-----------";
+            string wacky1_portal = "5.4 wacky1Portal-----------";
 
             //configRequirements.SettingChanged += (s, e) => Fix(ZNetScene.instance);
 
 
-            string drink = "4.Drink-----------";
+            string drink = "6.Drink-----------";
             PortalDrinkTimer = config(drink, "Portal Drink Timer", 120, "How Long Odin's Drink lasts");
 
             PortalDrinkDeny = config(drink, "Portal Drink Wont Allow", "", "Deny list even with Portal Drink, 'Bronze,BlackMetal,BlackMetalScrap,Copper,CopperOre,CopperScrap,Tin,TinOre,IronOre,Iron,IronScrap,Silver,SilverOre,DragonEgg'");

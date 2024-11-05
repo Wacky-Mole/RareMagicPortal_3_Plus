@@ -196,32 +196,80 @@ namespace RareMagicPortal_3_Plus.Patches
                     return false;
                 }
 
-
-                if (portalData.AdditionalAllowItems != null && portalData.AdditionalAllowItems.Count > 0)
+                if (ZoneSystem.instance.GetGlobalKey(GlobalKeys.TeleportAll))
                 {
-                    if (ZoneSystem.instance.GetGlobalKey(GlobalKeys.TeleportAll))
+                    // If a global key allows teleport for all items, we can return true directly
+                    __result = true;
+                    return false;
+                }
+
+
+                if (portalZDO.CrystalActive || MagicPortalFluid.PreventColorChange.Value == MagicPortalFluid.Toggle.On || portalData.AdditionalAllowItems != null)
+                {
+                    List<string> additionalAllows = new List<string>();
+
+                    if (portalZDO.CrystalActive || MagicPortalFluid.PreventColorChange.Value == MagicPortalFluid.Toggle.On)
                     {
-                        // If a global key allows teleport for all items, we can return true directly
-                        __result = true;
-                        return false;
+                        // Determine additional allows based on the current portal color
+                        switch (currentColor.ToLower())
+                        {
+                            case "yellow":
+                                additionalAllows = MagicPortalFluid.ColorYELLOWAllows.Value.Split(',').Select(s => s.Trim()).ToList();
+                                break;
+                            case "blue":
+                                additionalAllows = MagicPortalFluid.ColorBLUEAllows.Value.Split(',').Select(s => s.Trim()).ToList();
+                                break;
+                            case "green":
+                                additionalAllows = MagicPortalFluid.ColorGREENAllows.Value.Split(',').Select(s => s.Trim()).ToList();
+                                break;
+                            case "purple":
+                                additionalAllows = MagicPortalFluid.ColorPURPLEAllows.Value.Split(',').Select(s => s.Trim()).ToList();
+                                break;
+                            case "tan":
+                                additionalAllows = MagicPortalFluid.ColorTANAllows.Value.Split(',').Select(s => s.Trim()).ToList();
+                                break;
+                            case "cyan":
+                                additionalAllows = MagicPortalFluid.ColorCYANAllows.Value.Split(',').Select(s => s.Trim()).ToList();
+                                break;
+                            case "orange":
+                                additionalAllows = MagicPortalFluid.ColorORANGEAllows.Value.Split(',').Select(s => s.Trim()).ToList();
+                                break;
+                            case "black":
+                                additionalAllows = MagicPortalFluid.ColorBLACKAllows.Value.Split(',').Select(s => s.Trim()).ToList();
+                                break;
+                            case "white":
+                                additionalAllows = MagicPortalFluid.ColorWHITEAllows.Value.Split(',').Select(s => s.Trim()).ToList();
+                                break;
+                            case "gold":
+                                additionalAllows = MagicPortalFluid.ColorGOLDAllows.Value.Split(',').Select(s => s.Trim()).ToList();
+                                break;
+                            default:
+                                break;
+                        }
                     }
 
-                    foreach (ItemDrop.ItemData item in __instance.m_inventory)
+                    // Merge additionalAllows with portalData's AdditionalAllowItems if present
+                    if (portalData.AdditionalAllowItems != null)
                     {
-                        // If an item is normally not teleportable
-                        if (!item.m_shared.m_teleportable)
-                        {
-                            if (portalData.AdditionalAllowItems.Contains(item.m_shared.m_name))
-                                continue;
+                        additionalAllows.AddRange(portalData.AdditionalAllowItems);
+                        additionalAllows = additionalAllows.Distinct().ToList(); // Remove duplicates
+                    }
 
+                    // Check if any non-teleportable items in inventory are allowed due to color or portal allows
+                    foreach (var item in __instance.m_inventory)
+                    {
+                        if (!item.m_shared.m_teleportable && !additionalAllows.Contains(item.m_shared.m_name))
+                        {
                             Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Cannot teleport due to item: " + item.m_shared.m_name);
                             __result = false;
                             return false;
                         }
                     }
+
                     __result = true;
                     return false;
                 }
+
                 return true;
             }
         }
