@@ -265,7 +265,7 @@ namespace RareMagicPortal
         public string message_eng_Crystal_Consumed = $"";
         public string message_eng_Odins_Kin = $"Only Odin's Kin are Allowed";
         public string message_only_Owner_Can_Change = $"Only the Owner Can change Name";
-
+        /*
         public static string CrystalMaster = "$item_PortalCrystalMaster";
         public static string CrystalRed = "$item_PortalCrystalRed";
         public static string CrystalGreen = "$item_PortalCrystalGreen";
@@ -289,6 +289,31 @@ namespace RareMagicPortal
         public static string PortalKeyWhite = "$item_PortalKeyWhite";
         public static string PortalKeyCyan = "$item_PortalKeyCyan";
         public static string PortalKeyOrange = "$item_PortalKeyOrange";
+        */
+
+        public static string CrystalMaster = "PortalCrystalMaster";
+        public static string CrystalRed = "PortalCrystalRed";
+        public static string CrystalGreen = "PortalCrystalGreen";
+        public static string CrystalBlue = "PortalCrystalBlue";
+        public static string CrystalPurple = "PortalCrystalPurple";
+        public static string CrystalTan = "PortalCrystalTan";
+        public static string CrystalYellow = "PortalCrystalYellow";
+        public static string CrystalWhite = "PortalCrystalWhite";
+        public static string CrystalCyan = "PortalCrystalCyan";
+        public static string CrystalBlack = "PortalCrystalBlack";
+        public static string CrystalOrange = "PortalCrystalOrange";
+
+        public static string PortalKeyGold = "PortalKeyGold";
+        public static string PortalKeyRed = "PortalKeyRed";
+        public static string PortalKeyGreen = "PortalKeyGreen";
+        public static string PortalKeyBlue = "PortalKeyBlue";
+        public static string PortalKeyPurple = "PortalKeyPurple";
+        public static string PortalKeyTan = "PortalKeyTan";
+        public static string PortalKeyYellow = "PortalKeyYellow";
+        public static string PortalKeyBlack = "PortalKeyBlack";
+        public static string PortalKeyWhite = "PortalKeyWhite";
+        public static string PortalKeyCyan = "PortalKeyCyan";
+        public static string PortalKeyOrange = "PortalKeyOrange";
 
         private SpriteTools IconColor = new SpriteTools();
 
@@ -1477,28 +1502,27 @@ namespace RareMagicPortal
 
             string crystal_selector = "8.CrystalSelector--------";
 
-            GemColorGold = config(crystal_selector, "Use for Crystal Gold", CrystalMaster, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorGold = config(crystal_selector, "Use for Crystal Gold", CrystalMaster, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
-            GemColorRed = config(crystal_selector, "Use for Crystal Red", CrystalRed, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorRed = config(crystal_selector, "Use for Crystal Red", CrystalRed, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
-            GemColorGreen = config(crystal_selector, "Use for Crystal Green", CrystalGreen, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorGreen = config(crystal_selector, "Use for Crystal Green", CrystalGreen, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
-            GemColorBlue = config(crystal_selector, "Use for Crystal Blue", CrystalBlue, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorBlue = config(crystal_selector, "Use for Crystal Blue", CrystalBlue, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
-            GemColorYellow = config(crystal_selector, "Use for Crystal Yellow", CrystalYellow, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorYellow = config(crystal_selector, "Use for Crystal Yellow", CrystalYellow, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
-            GemColorPurple = config(crystal_selector, "Use for Crystal Purple", CrystalPurple, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorPurple = config(crystal_selector, "Use for Crystal Purple", CrystalPurple, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
-            GemColorTan = config(crystal_selector, "Use for Crystal Tan", CrystalTan, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorTan = config(crystal_selector, "Use for Crystal Tan", CrystalTan, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
-            GemColorCyan = config(crystal_selector, "Use for Crystal Cyan", CrystalCyan, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorCyan = config(crystal_selector, "Use for Crystal Cyan", CrystalCyan, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
-            GemColorOrange = config(crystal_selector, "Use for Crystal Orange", CrystalOrange, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorOrange = config(crystal_selector, "Use for Crystal Orange", CrystalOrange, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
-            GemColorWhite = config(crystal_selector, "Use for Crystal White", CrystalWhite, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
+            GemColorWhite = config(crystal_selector, "Use for Crystal White", CrystalWhite, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
-            GemColorBlack = config(crystal_selector, "Use for Crystal Black", CrystalBlack, "You can use default or use an item like JewelCrafting crystal - $jc_shattered_orange_crystal, $jc_uncut_purple_stone, $jc_black_socket, $jc_adv_blue_socket, $jc_perfect_purple_socket, " + System.Environment.NewLine + " This is the ItemDrop.shared.m_name, the correct name might not be easy to guess. Annoy Odins discord or use UnityExplorer - must reboot game");
-
+            GemColorBlack = config(crystal_selector, "Use for Crystal Black", CrystalBlack, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
             string portal_images = "9.Portal Images--------";
             PortalImages = config(portal_images, "Activate Portal Images", Toggle.Off, "Portal Images during Teleport activated - Restart may be required");
@@ -1509,7 +1533,7 @@ namespace RareMagicPortal
 
         /*
 
-        [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
+        [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]  
         private static class InitCustomItemsClassFXRMP
         {
             private static void Postfix(ZNetScene __instance)
