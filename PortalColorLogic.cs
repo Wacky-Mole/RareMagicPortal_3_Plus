@@ -610,6 +610,7 @@ namespace RareMagicPortal
                     if (specialMode == PortalModeClass.PortalMode.TransportNetwork && MagicPortalFluid.hideTeleNetName.Value == MagicPortalFluid.Toggle.On)
                     {
                         hoverText = "";
+                        return;
                     }
 
 

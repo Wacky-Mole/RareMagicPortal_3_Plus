@@ -340,11 +340,11 @@ namespace RareMagicPortal_3_Plus.Patches
                     LastPortalTrigger = __instance.m_teleportWorld.m_nview.GetZDO().GetPosition();
                     LastPortalName = PortalName;
                     //currentMicListener.OnDestroy();
-                   // currentMicListener = null;
+                    // currentMicListener = null;
                     //currentMicListener = new MicListener();
                     //currentMicListener.StartListening();
-
-                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Warp to Location with /warp destination");
+                    if (MagicPortalFluid.shownetowrkhint.Value == MagicPortalFluid.Toggle.On)
+                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Warp to Location with /warp destination");
 
                 }
                // ZLog.LogWarning("CrystalKeyLogic");
