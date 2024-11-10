@@ -1088,12 +1088,9 @@ namespace RareMagicPortal
                 Dictionary<string, int> KeyCount = new();
 
                 CrystalCount[nameof(PortalColor.Gold)] = functions.CountItemsByPrefabName( MagicPortalFluid.GemColorGold.Value);
-
-
-
                 CrystalCount[nameof(PortalColor.Red)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorRed.Value);
                 CrystalCount[nameof(PortalColor.Green)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorGreen.Value);
-                CrystalCount[nameof(PortalColor.Blue)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorBlue.Value);
+                CrystalCount[nameof(PortalColor.Blue)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorBlue.Value);
                 CrystalCount[nameof(PortalColor.Purple)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorPurple.Value);
                 CrystalCount[nameof(PortalColor.Tan)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorTan.Value);
                 CrystalCount[nameof(PortalColor.Yellow)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorYellow.Value);
@@ -1125,14 +1122,13 @@ namespace RareMagicPortal
                         return true;
                     }else if (CrystalCount["Gold"] >= MagicPortalFluid.ConfigCrystalsConsumable.Value)
                     {
-
-                        player.m_inventory.RemoveItem(MagicPortalFluid.PortalKeyGold, MagicPortalFluid.ConfigCrystalsConsumable.Value);
+                        string mname = ObjectDB.instance.GetItemPrefab(MagicPortalFluid.PortalKeyGold).GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
+                        player.m_inventory.RemoveItem(mname, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                         player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} {Gold}");
                         return true;
                     }
                 }
 
-                
 
                 // Validate the player has either a crystal or key for the required color
                 bool hasCrystal = CrystalCount.ContainsKey(requiredColor) && CrystalCount[requiredColor] > 0;
@@ -1148,7 +1144,8 @@ namespace RareMagicPortal
                     if (hasCrystal && MagicPortalFluid.ConfigCrystalsConsumable.Value > 0)
                     {
                         string itemName = MagicPortalFluid.GetGemColorByName(requiredColor);
-                        player.m_inventory.RemoveItem(itemName, MagicPortalFluid.ConfigCrystalsConsumable.Value);
+                        string mname = ObjectDB.instance.GetItemPrefab(itemName).GetComponent<ItemDrop>().m_itemData.m_shared.m_name;
+                        player.m_inventory.RemoveItem(mname, MagicPortalFluid.ConfigCrystalsConsumable.Value);
                         player.Message(MessageHud.MessageType.TopLeft, $"$rmp_consumed {MagicPortalFluid.ConfigCrystalsConsumable.Value} {requiredColor}");
                         return true;
                     }
