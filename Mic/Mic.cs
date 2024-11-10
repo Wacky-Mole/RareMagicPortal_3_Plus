@@ -5,8 +5,10 @@ using RareMagicPortal_3_Plus.PortalMode;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Speech.Recognition;
 using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using YamlDotNet.Serialization;
@@ -124,6 +126,109 @@ public class MicListener : MonoBehaviour
 }
 
 */
+
+public class MicListener : MonoBehaviour
+{
+    public string whisperApiKey = "YOUR_WHISPER_API_KEY";
+    public string whisperApiUrl = "https://api.openai.com/v1/audio/transcriptions";
+
+    private AudioClip microphoneClip;
+    private bool isListening = false;
+
+    private void Start()
+    {
+        StartCoroutine(ContinuousListening());
+    }
+
+    private IEnumerator ContinuousListening()
+    {
+        while (true)
+        {
+            if (!isListening)
+            {
+                StartListening();
+                yield return new WaitForSeconds(5f);
+                StopListening();
+
+                byte[] audioData = GetAudioClipData();
+                if (audioData != null)
+                {
+                    Task.Run(() => SendToWhisperAPI(audioData));
+                }
+            }
+        }
+    }
+
+    private void StartListening()
+    {
+        if (Microphone.devices.Length > 0)
+        {
+            microphoneClip = Microphone.Start(null, true, 5, 44100);
+            isListening = true;
+        }
+        else
+        {
+            Debug.LogError("No microphone detected!");
+        }
+    }
+
+    private void StopListening()
+    {
+        if (isListening)
+        {
+            Microphone.End(null);
+            isListening = false;
+        }
+    }
+
+    private byte[] GetAudioClipData()
+    {
+        if (microphoneClip == null) return null;
+
+        float[] samples = new float[microphoneClip.samples];
+        microphoneClip.GetData(samples, 0);
+
+        byte[] audioData = new byte[samples.Length * sizeof(float)];
+        Buffer.BlockCopy(samples, 0, audioData, 0, audioData.Length);
+
+        return audioData;
+    }
+
+    private async Task SendToWhisperAPI(byte[] audioData)
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {whisperApiKey}");
+
+            MultipartFormDataContent form = new MultipartFormDataContent();
+            form.Add(new ByteArrayContent(audioData), "file", "audio.wav");
+            form.Add(new StringContent("whisper-1"), "model");
+
+            HttpResponseMessage response = await client.PostAsync(whisperApiUrl, form);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                Debug.Log($"Whisper Response: {responseContent}");
+                if (responseContent.Contains("Teleport"))
+                {
+                    Debug.Log("Teleport command detected!");
+                    TeleportPlayer();
+                }
+            }
+            else
+            {
+                Debug.LogError($"Error from Whisper API: {responseContent}");
+            }
+        }
+    }
+
+    private void TeleportPlayer()
+    {
+        // Your teleportation logic here
+        Debug.Log("Player teleported!");
+    }
+}
 
 public class ContinuousWhisperRecognition : MonoBehaviour
 {
