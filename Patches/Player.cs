@@ -136,8 +136,11 @@ namespace RareMagicPortal_3_Plus.Patches
                     return true; // ZDO not found or invalid
                 }
                 string currentColor = portalZDO.Color;
-
-               // MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 7");
+                if (portalZDO.BiomeColor != "" || portalZDO.BiomeColor != "skip")
+                {
+                    currentColor = portalZDO.BiomeColor;
+                }
+                    // MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 7");
                 if (portalData.TeleportAnything )
                 {
                     teleportAllowed = true;
@@ -203,73 +206,54 @@ namespace RareMagicPortal_3_Plus.Patches
                     return false;
                 }
 
-
                 if (portalZDO.CrystalActive || MagicPortalFluid.PreventColorChange.Value == MagicPortalFluid.Toggle.On || portalData.AdditionalAllowItems != null)
                 {
-                    List<string> additionalAllows = new List<string>();
-
-                    if (portalZDO.CrystalActive || MagicPortalFluid.PreventColorChange.Value == MagicPortalFluid.Toggle.On)
+                    // Define a dictionary mapping color names to configuration values as strings
+                    var colorAllowsConfig = new Dictionary<string, string>
                     {
-                        // Determine additional allows based on the current portal color
-                        switch (currentColor.ToLower())
-                        {
-                            case "yellow":
-                                additionalAllows = MagicPortalFluid.ColorYELLOWAllows.Value.Split(',').Select(s => s.Trim()).ToList();
-                                break;
-                            case "blue":
-                                additionalAllows = MagicPortalFluid.ColorBLUEAllows.Value.Split(',').Select(s => s.Trim()).ToList();
-                                break;
-                            case "green":
-                                additionalAllows = MagicPortalFluid.ColorGREENAllows.Value.Split(',').Select(s => s.Trim()).ToList();
-                                break;
-                            case "purple":
-                                additionalAllows = MagicPortalFluid.ColorPURPLEAllows.Value.Split(',').Select(s => s.Trim()).ToList();
-                                break;
-                            case "tan":
-                                additionalAllows = MagicPortalFluid.ColorTANAllows.Value.Split(',').Select(s => s.Trim()).ToList();
-                                break;
-                            case "cyan":
-                                additionalAllows = MagicPortalFluid.ColorCYANAllows.Value.Split(',').Select(s => s.Trim()).ToList();
-                                break;
-                            case "orange":
-                                additionalAllows = MagicPortalFluid.ColorORANGEAllows.Value.Split(',').Select(s => s.Trim()).ToList();
-                                break;
-                            case "black":
-                                additionalAllows = MagicPortalFluid.ColorBLACKAllows.Value.Split(',').Select(s => s.Trim()).ToList();
-                                break;
-                            case "white":
-                                additionalAllows = MagicPortalFluid.ColorWHITEAllows.Value.Split(',').Select(s => s.Trim()).ToList();
-                                break;
-                            case "gold":
-                                additionalAllows = MagicPortalFluid.ColorGOLDAllows.Value.Split(',').Select(s => s.Trim()).ToList();
-                                break;
-                            default:
-                                break;
-                        }
+                        { "yellow", MagicPortalFluid.ColorYELLOWAllows.Value },
+                        { "blue", MagicPortalFluid.ColorBLUEAllows.Value },
+                        { "green", MagicPortalFluid.ColorGREENAllows.Value },
+                        { "purple", MagicPortalFluid.ColorPURPLEAllows.Value },
+                        { "tan", MagicPortalFluid.ColorTANAllows.Value },
+                        { "cyan", MagicPortalFluid.ColorCYANAllows.Value },
+                        { "orange", MagicPortalFluid.ColorORANGEAllows.Value },
+                        { "black", MagicPortalFluid.ColorBLACKAllows.Value },
+                        { "white", MagicPortalFluid.ColorWHITEAllows.Value },
+                        { "gold", MagicPortalFluid.ColorGOLDAllows.Value }
+                    };
+
+                    // Start with the items from portalData.AdditionalAllowItems, if any
+                    List<string> additionalAllows = portalData.AdditionalAllowItems != null
+                        ? new List<string>(portalData.AdditionalAllowItems)
+                        : new List<string>();
+
+                    // Retrieve and split the color-specific allows, if applicable
+                    if (colorAllowsConfig.TryGetValue(currentColor.ToLower(), out var configValue))
+                    {
+                        var colorSpecificAllows = configValue.Split(',')
+                                                             .Select(s => s.Trim())  // Trim each item
+                                                             .Where(s => !string.IsNullOrEmpty(s))
+                                                             .ToList();
+                        additionalAllows.AddRange(colorSpecificAllows);
                     }
 
-                    // Merge additionalAllows with portalData's AdditionalAllowItems if present
-                    if (portalData.AdditionalAllowItems != null)
-                    {
-                        additionalAllows.AddRange(portalData.AdditionalAllowItems);
-                        additionalAllows = additionalAllows.Distinct().ToList(); // Remove duplicates
-                    }
-
-                    // Check if any non-teleportable items in inventory are allowed due to color or portal allows
+                    // Remove any duplicates
+                    additionalAllows = additionalAllows.Distinct().ToList();
+                   // MagicPortalFluid.RareMagicPortal.LogInfo("additionalAllows contains:" + string.Join(",", additionalAllows));
                     foreach (var item in __instance.m_inventory)
                     {
-                        if (!item.m_shared.m_teleportable && !additionalAllows.Contains(item.m_shared.m_name))
+                        if (!item.m_shared.m_teleportable && !additionalAllows.Contains(item.m_dropPrefab.name))
                         {
-                            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Cannot teleport due to item: " + item.m_shared.m_name);
-                            __result = false;
+                            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Cannot teleport due to item: " + item.m_dropPrefab.name);
+                           // MagicPortalFluid.RareMagicPortal.LogInfo("Cannot teleport:" + item.m_dropPrefab.name);
+                           __result = false;
                             return false;
                         }
                     }
-
                     __result = true;
                     return false;
                 }
-
                 return true;
             }
         }
@@ -302,10 +286,8 @@ namespace RareMagicPortal_3_Plus.Patches
         {
             private static void Postfix()
             {
-
                 // Coroutine coroutine = context.StartCoroutine(WaitforMe()); // maybe
             }
-
         }
 
         [HarmonyPatch(typeof(Game), "SpawnPlayer")]

@@ -147,6 +147,7 @@ namespace RareMagicPortal
         public static string DefaultTable = "$piece_workbench";
         public static string DefaultTableStone = "$piece_stonecutter";
         internal static string YMLCurrentFile = Path.Combine(YMLFULLFOLDER, Worldname + ".yml");
+        internal static string YMLCurrentFileBackup = Path.Combine(YMLFULLFOLDER, Worldname + "_backup.yml");
         internal static int JustWrote = 0;
         internal static bool JustWait = false;
         internal static int JustSent = 0;
@@ -826,6 +827,7 @@ namespace RareMagicPortal
             Worldname = ZNet.instance.GetWorldName();
             RareMagicPortal.LogInfo("WorldName " + Worldname);
             YMLCurrentFile = Path.Combine(YMLFULLFOLDER, Worldname + ".yml");
+            YMLCurrentFileBackup = Path.Combine(YMLFULLFOLDER, Worldname + "_backup.yml");
 
             if (!File.Exists(YMLCurrentFile))
             {
@@ -849,6 +851,10 @@ namespace RareMagicPortal
                 File.WriteAllText(YMLCurrentFile, WelcomeString + yaml); //overwrites
                 RareMagicPortal.LogInfo("Creating Portal_Name file " + Worldname);
                 JustWrote = 2;
+            }else
+            {
+                var temp = File.ReadAllText(YMLCurrentFile);
+                File.WriteAllText(YMLCurrentFileBackup, temp);
             }
         }
 
@@ -962,6 +968,7 @@ namespace RareMagicPortal
                if ( JustWrote == 0) // if local admin or ServerSync admin
                {
                     var yml = File.ReadAllText(YMLCurrentFile);
+                    
 
                     var deserializer = new DeserializerBuilder()
                         .Build();
@@ -1400,7 +1407,7 @@ namespace RareMagicPortal
 
 
 
-            string portal = "5.Portal-----------";
+            string portal = "5.0.Portal-----------";
 
             ConfigCreator = config(portal, "Only Creator Can Deconstruct", true, "Only the Creator/Admin of the Portal can deconstruct it. It can still be destroyed");
                      

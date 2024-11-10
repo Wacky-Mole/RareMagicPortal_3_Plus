@@ -1087,29 +1087,32 @@ namespace RareMagicPortal
                 Dictionary<string, int> CrystalCount = new();
                 Dictionary<string, int> KeyCount = new();
 
-                CrystalCount[nameof(PortalColor.Gold)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorGold.Value);
-                CrystalCount[nameof(PortalColor.Red)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorRed.Value);
-                CrystalCount[nameof(PortalColor.Green)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorGreen.Value);
-                CrystalCount[nameof(PortalColor.Blue)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorBlue.Value);
-                CrystalCount[nameof(PortalColor.Purple)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorPurple.Value);
-                CrystalCount[nameof(PortalColor.Tan)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorTan.Value);
-                CrystalCount[nameof(PortalColor.Yellow)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorYellow.Value);
-                CrystalCount[nameof(PortalColor.White)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorWhite.Value);
-                CrystalCount[nameof(PortalColor.Black)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorBlack.Value);
-                CrystalCount[nameof(PortalColor.Cyan)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorCyan.Value);
-                CrystalCount[nameof(PortalColor.Orange)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorOrange.Value);
+                CrystalCount[nameof(PortalColor.Gold)] = functions.CountItemsByPrefabName( MagicPortalFluid.GemColorGold.Value);
 
-                KeyCount[nameof(PortalColor.Gold)] = player.m_inventory.CountItems(MagicPortalFluid.PortalKeyGold);
-                KeyCount[nameof(PortalColor.Red)] = player.m_inventory.CountItems(MagicPortalFluid.PortalKeyRed);
-                KeyCount[nameof(PortalColor.Green)] = player.m_inventory.CountItems(MagicPortalFluid.PortalKeyGreen);
-                KeyCount[nameof(PortalColor.Blue)] = player.m_inventory.CountItems(MagicPortalFluid.PortalKeyBlue);
-                KeyCount[nameof(PortalColor.Purple)] = player.m_inventory.CountItems(MagicPortalFluid.PortalKeyPurple);
-                KeyCount[nameof(PortalColor.Tan)] = player.m_inventory.CountItems(MagicPortalFluid.PortalKeyTan);
-                KeyCount[nameof(PortalColor.White)] = player.m_inventory.CountItems(MagicPortalFluid.PortalKeyWhite);
-                KeyCount[nameof(PortalColor.Yellow)] = player.m_inventory.CountItems(MagicPortalFluid.PortalKeyYellow);
-                KeyCount[nameof(PortalColor.Black)] = player.m_inventory.CountItems(MagicPortalFluid.PortalKeyBlack);
-                KeyCount[nameof(PortalColor.Cyan)] = player.m_inventory.CountItems(MagicPortalFluid.PortalKeyCyan);
-                KeyCount[nameof(PortalColor.Orange)] = player.m_inventory.CountItems(MagicPortalFluid.PortalKeyOrange);
+
+
+                CrystalCount[nameof(PortalColor.Red)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorRed.Value);
+                CrystalCount[nameof(PortalColor.Green)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorGreen.Value);
+                CrystalCount[nameof(PortalColor.Blue)] = player.m_inventory.CountItems(MagicPortalFluid.GemColorBlue.Value);
+                CrystalCount[nameof(PortalColor.Purple)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorPurple.Value);
+                CrystalCount[nameof(PortalColor.Tan)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorTan.Value);
+                CrystalCount[nameof(PortalColor.Yellow)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorYellow.Value);
+                CrystalCount[nameof(PortalColor.White)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorWhite.Value);
+                CrystalCount[nameof(PortalColor.Black)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorBlack.Value);
+                CrystalCount[nameof(PortalColor.Cyan)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorCyan.Value);
+                CrystalCount[nameof(PortalColor.Orange)] = functions.CountItemsByPrefabName(MagicPortalFluid.GemColorOrange.Value);
+
+                KeyCount[nameof(PortalColor.Gold)] = functions.CountItemsByPrefabName(MagicPortalFluid.PortalKeyGold);
+                KeyCount[nameof(PortalColor.Red)] = functions.CountItemsByPrefabName(MagicPortalFluid.PortalKeyRed);
+                KeyCount[nameof(PortalColor.Green)] = functions.CountItemsByPrefabName(MagicPortalFluid.PortalKeyGreen);
+                KeyCount[nameof(PortalColor.Blue)] = functions.CountItemsByPrefabName(MagicPortalFluid.PortalKeyBlue);
+                KeyCount[nameof(PortalColor.Purple)] = functions.CountItemsByPrefabName(MagicPortalFluid.PortalKeyPurple);
+                KeyCount[nameof(PortalColor.Tan)] = functions.CountItemsByPrefabName(MagicPortalFluid.PortalKeyTan);
+                KeyCount[nameof(PortalColor.White)] = functions.CountItemsByPrefabName(MagicPortalFluid.PortalKeyWhite);
+                KeyCount[nameof(PortalColor.Yellow)] = functions.CountItemsByPrefabName(MagicPortalFluid.PortalKeyYellow);
+                KeyCount[nameof(PortalColor.Black)] = functions.CountItemsByPrefabName(MagicPortalFluid.PortalKeyBlack);
+                KeyCount[nameof(PortalColor.Cyan)] = functions.CountItemsByPrefabName(MagicPortalFluid.PortalKeyCyan);
+                KeyCount[nameof(PortalColor.Orange)] = functions.CountItemsByPrefabName(MagicPortalFluid.PortalKeyOrange);
 
 
 

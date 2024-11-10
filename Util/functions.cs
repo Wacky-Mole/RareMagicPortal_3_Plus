@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using YamlDotNet.Serialization;
+using static ClutterSystem;
 using static Heightmap;
 using static RareMagicPortal.PortalName;
 
@@ -187,6 +188,20 @@ namespace RareMagicPortal
                     }
                 }
             }
+        }
+
+        public static int CountItemsByPrefabName( string name)
+        {
+            int num = 0;
+            foreach (ItemDrop.ItemData item in Player.m_localPlayer.m_inventory.m_inventory)
+            {
+                if ((name == null || item.m_dropPrefab.name == name))
+                {
+                    num += item.m_stack;
+                }
+            }
+
+            return num;
         }
 
         public static void RPC_RequestServerAnnouncementRMPZDOFULL(long sender, ZPackage pkg) // MESSAGE RECIEVER
