@@ -222,8 +222,9 @@ namespace RareMagicPortal_3_Plus.Patches
 
 
 
-        private static Vector3 LastPortalTrigger = new Vector3();
+        public static Vector3 LastPortalTrigger = new Vector3();
         private static string LastPortalName = "";
+      //  private static MicListener currentMicListener = null;
 
         [HarmonyPatch(typeof(TeleportWorldTrigger), nameof(TeleportWorldTrigger.OnTriggerEnter))]
         internal class TeleportWorld_Teleport_CheckforCrystal
@@ -338,6 +339,11 @@ namespace RareMagicPortal_3_Plus.Patches
                 {
                     LastPortalTrigger = __instance.m_teleportWorld.m_nview.GetZDO().GetPosition();
                     LastPortalName = PortalName;
+                    //currentMicListener.OnDestroy();
+                   // currentMicListener = null;
+                    //currentMicListener = new MicListener();
+                    //currentMicListener.StartListening();
+
                     Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Warp to Location with /warp destination");
 
                 }
@@ -591,7 +597,7 @@ namespace RareMagicPortal_3_Plus.Patches
             
         }
 
-        private static void PerformTeleport(Vector3 targetCoords)
+        public static void PerformTeleport(Vector3 targetCoords)
         {
             Player player = Player.m_localPlayer;
 
