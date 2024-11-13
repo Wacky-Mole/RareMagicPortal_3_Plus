@@ -1433,6 +1433,35 @@ namespace RareMagicPortal
 
                 }
                 return;
+            }           
+            else if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow3")
+            {
+                ParticleSystem portalSystem = teleportWorldData?.BlueFlames[0]; // ERROR because empty
+                if (portalSystem != null)
+                {
+                   // RMP.LogInfo("got portal flames");
+                    var colorOverLifetime = portalSystem.colorOverLifetime;
+                    colorOverLifetime.enabled = true;
+
+                    var colorspeed = portalSystem.colorBySpeed;
+                    colorspeed.enabled = true;
+                    colorspeed.color = Color.white;
+                    colorspeed.range = new Vector2(1, 10);
+
+                    // Create the custom gradient
+                    Gradient customGradient = CreateCustomGradient();
+                    var Main = portalSystem.main;
+                    Main.startColor = new ParticleSystem.MinMaxGradient(customGradient);
+
+                    // Apply the gradient to the ColorOverLifetimeModule
+                    //colorOverLifetime.color = new ParticleSystem.MinMaxGradient(customGradient);
+
+                    // Assign material if needed
+                    portalSystem.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
+                    //RMP.LogInfo("Custom rainbow gradient applied to portal flames");
+    
+                }
+                return;
             }
 
             else
