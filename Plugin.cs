@@ -204,6 +204,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<Toggle>? hideTeleNetName;
         internal static ConfigEntry<Toggle>? hideTeleNetNameadmin;
         internal static ConfigEntry<Toggle>? shownetowrkhint;
+        internal static ConfigEntry<bool>? randomTeleActiveAlways;
         internal static ConfigEntry<int>? ConfigMaxWeight;
         internal static ConfigEntry<int>? MaxPortalsPerPerson;
         internal static ConfigEntry<Toggle>? AdminOnlyMakesPortals;
@@ -1353,11 +1354,7 @@ namespace RareMagicPortal
 
             portalRMPMODEKEY = config(general, "Modifier key for PortalMode", new KeyboardShortcut(KeyCode.LeftControl), "Modifier key that has to be pressed while hovering over Portal + E", false);
 
-
-
             //portalRMPCRYSTALKEY = config(general, "ON/OFF for Crystal Requirement", new KeyboardShortcut(KeyCode.LeftAlt), "Modifier key that has to be pressed while hovering over Portal + E", false); // remove
-
-
 
 
             string modes = "1.0 Portal Modes-----------";
@@ -1390,9 +1387,10 @@ namespace RareMagicPortal
             string rainbowmode = "1.9 Rainbow -----------";
             PortalDrinkColor = config(rainbowmode, "Portal Drink Color", "Rainbow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or Rainbow (Alternates between colors every second) are the available Colors that can be selected for the Portal Drink Mode for Portals - Only 1 can be set - Default is Rainbow ");
 
-            string randomTeleport = "1.9.1 RandomTeleport ";
+            string randomTeleport = "1.9.1 RandomTeleport";
+            randomTeleActiveAlways = config(randomTeleport, "Always Active?", true, "Glows and displays flames always, or just glow if off");
 
-            string adminonly = "1.9.3 Admin Only Mode ";
+            string adminonly = "1.9.3 Admin Only Mode";
             //AdminColor = config(adminonly, "Admin only Color", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or none are the available colors that can be selected for the Admin only portals - Only 1 can be set - Default is none");
 
 

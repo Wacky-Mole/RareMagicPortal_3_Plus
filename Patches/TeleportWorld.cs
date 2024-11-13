@@ -97,7 +97,14 @@ namespace RareMagicPortal_3_Plus.Patches
                         return false;
                     }
 
-                    if (portal.SpecialMode == PortalModeClass.PortalMode.AdminOnly && !MagicPortalFluid.isAdmin || portal.SpecialMode == PortalModeClass.PortalMode.RandomTeleport)// allowed users
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.RandomTeleport)
+                    {
+
+                        __result = MagicPortalFluid.randomTeleActiveAlways.Value;
+                        return false;
+                    }
+
+                    if (portal.SpecialMode == PortalModeClass.PortalMode.AdminOnly && !MagicPortalFluid.isAdmin )// allowed users
                     {
                         __result = false;
                         return false;

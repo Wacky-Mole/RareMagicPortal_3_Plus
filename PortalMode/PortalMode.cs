@@ -71,7 +71,6 @@ namespace RareMagicPortal_3_Plus.PortalMode
             }
 
 
-
             switch (selectedMode)
             {
                 case PortalMode.Normal:
@@ -261,6 +260,18 @@ namespace RareMagicPortal_3_Plus.PortalMode
 
         private static void SetCrystalKeyMode(ModeSelectionPopup PopInstance)
         {
+            /*
+            foreach (var port in PortalColorLogic.PortalN.Portals)
+            {
+                if (port.Key == PopInstance.portalName)
+                {
+                    foreach (var zdoEntry in port.Value.PortalZDOs)
+                    {
+                        zdoEntry.Value.SpecialMode = PortalMode.CrystalKeyMode;
+                    }
+                }
+            }*/
+
             SetMode(PortalMode.CrystalKeyMode, PopInstance.portalName, PopInstance.zdo);
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now in Crystal Key mode.");
         }

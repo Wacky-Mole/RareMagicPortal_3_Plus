@@ -36,7 +36,7 @@ namespace RareMagicPortal // Thank you Redseiko and Comfymods
         public List<Light> Lights { get; } = new List<Light>();
         public List<ParticleSystem> Systems { get; } = new List<ParticleSystem>();
         public List<ParticleSystem> Sucks { get; } = new List<ParticleSystem>();
-        public List<ParticleSystem> BlueFlames { get; } = new List<ParticleSystem>();
+        public List<ParticleSystem> BlueFlames { get; set; } = new List<ParticleSystem>();
         public List<Material> Materials { get; } = new List<Material>();
         public String Biome { get; set; }
         public String BiomeColor { get; set; }

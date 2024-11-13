@@ -220,8 +220,8 @@ namespace RareMagicPortal
                 if (!__instance|| !__instance.m_nview|| __instance.m_nview.m_zdo == null)
                      return;
                                   
-                try
-                {
+               try
+               {
                     bool isthistrue = MagicPortalFluid._teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData);
                     bool isplustrue = MagicPortalFluid._teleportWorldDataCacheDefault.TryGetValue(__instance, out ClassBase teleportWorldDataplus);
 
@@ -1329,8 +1329,34 @@ namespace RareMagicPortal
             ClientORServerYMLUpdate(wacky, PortalName, ZDOID, colorint, false );
         }
 
+        private static Gradient CreateCustomGradient()
+        {
+            Gradient gradient = new Gradient();
 
-        private static void HandleYippe(TeleportWorldDataRMP teleportWorldData)
+            // Define color keys based on your JSON data
+            GradientColorKey[] colorKeys = new GradientColorKey[]
+            {
+        new GradientColorKey(new Color(1.0f, 1.0f, 1.0f, 1.0f), 0.0f),      // key0
+        new GradientColorKey(new Color(1.0f, 0.0f, 0.0f, 1.0f), 0.17f),     // key1
+        new GradientColorKey(new Color(0.075f, 0.0f, 1.0f, 0.0f), 0.46f),   // key2
+        new GradientColorKey(new Color(0.0f, 1.0f, 0.131f, 0.0f), 0.78f),   // key3
+        new GradientColorKey(new Color(1.0f, 0.972f, 0.0f, 0.0f), 1.0f)     // key4
+            };
+
+            // Define alpha keys based on your JSON data
+            GradientAlphaKey[] alphaKeys = new GradientAlphaKey[]
+            {
+        new GradientAlphaKey(1.0f, 0.0f),    // atime0
+        new GradientAlphaKey(1.0f, 0.17f)    // atime1
+            };
+
+            // Set the gradient keys
+            gradient.SetKeys(colorKeys, alphaKeys);
+
+            return gradient;
+        }
+
+        private static void HandleYippe(TeleportWorldDataRMP teleportWorldData)//,// ref TeleportWorld instance)
         {
             // override color for teleportanything color
             if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow")
@@ -1355,50 +1381,67 @@ namespace RareMagicPortal
                     SetTeleportWorldColors(teleportWorldData, true);
                 }
             }
-            else if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow2") // Trying to copy Rainbow effect from cheatsword to portals, almost worked. ran out of time
+            else if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow2")
             {
                 if (CheatSwordColor == null)
                 {
                     RMP.LogInfo("Set cheatsword");
-                    var itemCS = ObjectDB.instance.GetItemPrefab("SwordCheat");// not used just for init
-                    CheatSwordColor = itemCS.GetComponentInChildren<ParticleSystem>(true);
-                    // Transform CheatswordColor = ObjectDB.instance.GetItemPrefab("WackyBox").transform.Find("wackyflames");//ObjectDB.instance.GetItemPrefab("SwordCheat").transform.Find("attach/equiped/Particle System");
+                    var itemCS = ObjectDB.instance.GetItemPrefab("SwordCheat");
+                    CheatSwordColor = itemCS?.GetComponentInChildren<ParticleSystem>(true);
+                   // RMP.LogInfo("Done with cheatsword");
                 }
+
                 if (CheatSwordColor == null)
-                    RMP.LogInfo("Cheatsword is null");
-
-                ParticleSystem.MinMaxGradient holdColor = CheatSwordColor.main.startColor;
-                //ParticleSystem.MainModule main = CheatswordColor.GetComponent<ParticleSystem.MainModule>();
-                //main.startColor = holdColor;
-                //holdColor = main.startColor;
-                //foreach (ParticleSystem system in CheatSwordColor)
-                //{
-                // ParticleSystem.MainModule main = system.main;
-                // holdColor = main.startColor;
-
-                //}
-
-                RMP.LogInfo("Set holdColor");
-
-                ParticleSystem system = teleportWorldData.BlueFlames[0];
                 {
-                    //system.GetComponent<Transform>().gameObject.SetActive(false);
-
-                    var main2 = system.GetComponent<ParticleSystem.MainModule>();
-                    var colover = system.GetComponent<ParticleSystem.ColorOverLifetimeModule>();
-                    //system = CheatswordColor.GetComponent<ParticleSystem>();
-                    //system.GetComponent<color>
-                    // main2.startColor = holdColor;
-                    colover.color = holdColor;
-                    //ParticleSystem.ColorOverLifetimeModule colorOverLifetime = system.colorOverLifetime;
-                    //colorOverLifetime.color = holdColor;
-                    //ParticleSystem.MainModule main2 = system.main;
-                    //main2.startColor = holdColor;
-
-                    system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
-                    //RMP.LogInfo("flame set");
+                    RMP.LogInfo("Cheatsword is null");
+                    return;
                 }
+                //RMP.LogInfo("get portal flames");
+
+
+                if (teleportWorldData.BlueFlames == null || teleportWorldData.BlueFlames.Count() == 0)
+                {
+                    if (teleportWorldData.BlueFlames == null)
+                    {
+                        teleportWorldData.BlueFlames = new List<ParticleSystem>();
+                    }
+                    else
+                    {
+                        teleportWorldData.BlueFlames.Clear();
+                    }
+                    RMP.LogInfo("blue flames are null or empty");
+                   // teleportWorldData.BlueFlames.AddRange(instance.GetComponentsInNamedChild<ParticleSystem>("blue flames"));
+                   // return;
+                }
+
+                ParticleSystem portalSystem = teleportWorldData?.BlueFlames[0]; // ERROR because empty
+                if (portalSystem != null)
+                {
+                    RMP.LogInfo("got portal flames");
+                    var colorOverLifetime = portalSystem.colorOverLifetime;
+                    colorOverLifetime.enabled = true;
+
+                    var colorspeed = portalSystem.colorBySpeed;
+                    colorspeed.enabled = true;
+                    colorspeed.color = Color.white;
+                    colorspeed.range = new Vector2(1, 10);
+
+                    // Create the custom gradient
+                    Gradient customGradient = CreateCustomGradient();
+
+                    // Apply the gradient to the ColorOverLifetimeModule
+                    colorOverLifetime.color = new ParticleSystem.MinMaxGradient(customGradient);
+
+                    // Assign material if needed
+                    portalSystem.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
+
+                    RMP.LogInfo("Custom rainbow gradient applied to portal flames");
+     
+
+                }
+                return;
             }
+
             else
             {
                 teleportWorldData.TargetColor = PortalColors[MagicPortalFluid.PortalDrinkColor.Value].HexName; // color update for yippe
