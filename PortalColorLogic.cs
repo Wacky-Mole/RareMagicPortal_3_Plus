@@ -219,59 +219,67 @@ namespace RareMagicPortal
             {
                 if (!__instance|| !__instance.m_nview|| __instance.m_nview.m_zdo == null)
                      return;
-                                  
-               try
-               {
+
+                // aDD A FREAKING TIMER TO THIS
+                try
+                {
                     bool isthistrue = MagicPortalFluid._teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData);
                     bool isplustrue = MagicPortalFluid._teleportWorldDataCacheDefault.TryGetValue(__instance, out ClassBase teleportWorldDataplus);
 
+                    bool isYippe = false;
                     if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
                     {
-                        if (isplustrue)
-                            HandleYippe(teleportWorldDataplus);
-                        else if (isthistrue)
-                            HandleYippe(teleportWorldData);
-                        
+                        isYippe = true;
+                    }
 
-                        return;
-                    } // end of yippe
-                    else
+                    string PortalName = __instance.m_nview.m_zdo.GetString("tag");
+                    string zdoName = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
+
+                    var portalData = PortalN.Portals[PortalName];
+                    var zdoData = portalData.PortalZDOs[zdoName];
+
+                    if(zdoData.SpecialMode == PortalModeClass.PortalMode.CordsPortal ||
+                        zdoData.SpecialMode == PortalModeClass.PortalMode.TransportNetwork ||
+                        zdoData.SpecialMode == PortalModeClass.PortalMode.RandomTeleport
+                        )
                     {
-                        //RMP.LogInfo("Hello you jerk");
-                        string PortalName = __instance.m_nview.m_zdo.GetString("tag");
-                        string zdoName = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
+                        __instance.m_hadTarget = true;
+                    }
+                    int colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance); // handles biomecolor now
 
-                        var portalData = PortalN.Portals[PortalName];
-                        var zdoData = portalData.PortalZDOs[zdoName];
-
-                        if(zdoData.SpecialMode == PortalModeClass.PortalMode.CordsPortal ||
-                            zdoData.SpecialMode == PortalModeClass.PortalMode.TransportNetwork ||
-                            zdoData.SpecialMode == PortalModeClass.PortalMode.RandomTeleport
-                            )
+                    if (isthistrue) {
+                        if (isYippe)
                         {
-                            __instance.m_hadTarget = true;
+                            HandleYippe(teleportWorldData);
+                            return;
                         }
-
-
-                        int colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance); // handles biomecolor now
-
-                        if (isthistrue) {
+                        else
+                        {
                             if (color != teleportWorldData.LinkColor || color != teleportWorldData.OldColor)
                             {  // don't waste resources
                                 teleportWorldData.TargetColor = color;
                                 teleportWorldData.LinkColor = color;
+                                // HandleYippe(teleportWorldData);
                                 SetTeleportWorldColors(teleportWorldData, true);
                             }
                         }
-                        if (isplustrue)
+                    }
+                    if (isplustrue)
+                    {
+                        if (isYippe)
+                        {
+                            HandleYippe(teleportWorldDataplus);
+                            return;
+                        }
+                        else
                         {
                             if (color != teleportWorldDataplus.GetTargetColor() || color != teleportWorldDataplus.GetOldColor())
                             {  // don't waste resources
-   
                                 teleportWorldDataplus.SetTeleportWorldColors(color, true);
                             }
                         }
-                    }
+                     }
+                    
                 }
                 catch { } // catches beginning errors
             }
@@ -1358,6 +1366,21 @@ namespace RareMagicPortal
 
         private static void HandleYippe(TeleportWorldDataRMP teleportWorldData)//,// ref TeleportWorld instance)
         {
+
+            if (CheatSwordColor == null)
+            {
+                RMP.LogInfo("Set cheatsword");
+                var itemCS = ObjectDB.instance.GetItemPrefab("SwordCheat");
+                CheatSwordColor = itemCS?.GetComponentInChildren<ParticleSystem>(true);
+                // RMP.LogInfo("Done with cheatsword");
+            }
+
+            if (CheatSwordColor == null)
+            {
+                RMP.LogInfo("Cheatsword is null");
+                return;
+            }
+
             // override color for teleportanything color
             if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow")
             {
@@ -1383,41 +1406,11 @@ namespace RareMagicPortal
             }
             else if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow2")
             {
-                if (CheatSwordColor == null)
-                {
-                    RMP.LogInfo("Set cheatsword");
-                    var itemCS = ObjectDB.instance.GetItemPrefab("SwordCheat");
-                    CheatSwordColor = itemCS?.GetComponentInChildren<ParticleSystem>(true);
-                   // RMP.LogInfo("Done with cheatsword");
-                }
-
-                if (CheatSwordColor == null)
-                {
-                    RMP.LogInfo("Cheatsword is null");
-                    return;
-                }
-                //RMP.LogInfo("get portal flames");
-
-
-                if (teleportWorldData.BlueFlames == null || teleportWorldData.BlueFlames.Count() == 0)
-                {
-                    if (teleportWorldData.BlueFlames == null)
-                    {
-                        teleportWorldData.BlueFlames = new List<ParticleSystem>();
-                    }
-                    else
-                    {
-                        teleportWorldData.BlueFlames.Clear();
-                    }
-                    RMP.LogInfo("blue flames are null or empty");
-                   // teleportWorldData.BlueFlames.AddRange(instance.GetComponentsInNamedChild<ParticleSystem>("blue flames"));
-                   // return;
-                }
 
                 ParticleSystem portalSystem = teleportWorldData?.BlueFlames[0]; // ERROR because empty
                 if (portalSystem != null)
                 {
-                    RMP.LogInfo("got portal flames");
+                   // RMP.LogInfo("got portal flames");
                     var colorOverLifetime = portalSystem.colorOverLifetime;
                     colorOverLifetime.enabled = true;
 
@@ -1435,7 +1428,7 @@ namespace RareMagicPortal
                     // Assign material if needed
                     portalSystem.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
 
-                    RMP.LogInfo("Custom rainbow gradient applied to portal flames");
+                    //RMP.LogInfo("Custom rainbow gradient applied to portal flames");
      
 
                 }
