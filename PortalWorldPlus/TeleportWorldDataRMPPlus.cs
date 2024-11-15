@@ -206,6 +206,7 @@ static class SetInitialPortalModeRMP
 		public abstract void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false);
 		public abstract Color GetOldColor();
 		public abstract Color GetTargetColor();
+		public abstract void Raindbow();
 
 		/*
 		public static ClassBase Create(ClassTypes classtypes)

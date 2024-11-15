@@ -247,10 +247,9 @@ namespace RareMagicPortal
                     int colorint = CrystalandKeyLogicColor(out string currentcolor, out Color color, out string nextcolor, PortalName, "", __instance); // handles biomecolor now
 
                     if (isthistrue) {
-                        if (isYippe)
+                        if (isYippe || zdoData.SpecialMode == PortalModeClass.PortalMode.Rainbow)
                         {      
-                            //teleportWorldData.OldColor = Color.clear;
-                            //SetTeleportWorldColors(teleportWorldData, false,false);
+
                             HandleYippe(teleportWorldData);
                             if (teleportWorldData.LinkColor != Color.gray)
                                 SetTeleportWorldColors(teleportWorldData, false, false);
@@ -271,9 +270,8 @@ namespace RareMagicPortal
                     }
                     if (isplustrue)
                     {
-                        if (isYippe)
+                        if (isYippe || zdoData.SpecialMode == PortalModeClass.PortalMode.Rainbow)
                         {
-                            teleportWorldData.OldColor = Color.clear;
                             HandleYippe(teleportWorldDataplus);
                             return;
                         }
@@ -1430,80 +1428,7 @@ namespace RareMagicPortal
         }        
         private static void HandleYippe(ClassBase teleportWorldData)
         {
-            /*
-            // override color for teleportanything color
-            if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow")
-            {
-                Color newCol = Color.yellow;// default
-                Random rnd = new Random();
-                PortalColor currentC = (PortalColor)Enum.Parse(typeof(PortalColor), currentRainbow);
-                int pickcolor = rnd.Next(1, 12);
-                var colorna = currentC.Next();
-                for (int i = 1; i < pickcolor; i++)
-                {
-                    colorna.Next();
-                }
-                currentRainbow = colorna.ToString();
-                //RMP.LogInfo("rainbow currently is " + colorna.ToString());
-                newCol = PortalColors[colorna.ToString()].HexName;
-                rainbowWait = 0;
-
-                if (newCol != teleportWorldData.OldColor)
-                {  // don't waste resources
-                    teleportWorldData.TargetColor = newCol;
-                    SetTeleportWorldColors(teleportWorldData, true);
-                }
-            }
-            else if (MagicPortalFluid.PortalDrinkColor.Value == "Rainbow2") // Trying to copy Rainbow effect from cheatsword to portals, almost worked. ran out of time
-            {
-                if (CheatSwordColor == null)
-                {
-                    RMP.LogInfo("Set cheatsword");
-                    var itemCS = ObjectDB.instance.GetItemPrefab("SwordCheat");// not used just for init
-                    CheatSwordColor = itemCS.GetComponentInChildren<ParticleSystem>(true);
-                    // Transform CheatswordColor = ObjectDB.instance.GetItemPrefab("WackyBox").transform.Find("wackyflames");//ObjectDB.instance.GetItemPrefab("SwordCheat").transform.Find("attach/equiped/Particle System");
-                }
-                if (CheatSwordColor == null)
-                    RMP.LogInfo("Cheatsword is null");
-
-                ParticleSystem.MinMaxGradient holdColor = CheatSwordColor.main.startColor;
-                //ParticleSystem.MainModule main = CheatswordColor.GetComponent<ParticleSystem.MainModule>();
-                //main.startColor = holdColor;
-                //holdColor = main.startColor;
-                //foreach (ParticleSystem system in CheatSwordColor)
-                //{
-                // ParticleSystem.MainModule main = system.main;
-                // holdColor = main.startColor;
-
-                //}
-
-                RMP.LogInfo("Set holdColor");
-
-                ParticleSystem system = teleportWorldData.BlueFlames[0];
-                {
-                    //system.GetComponent<Transform>().gameObject.SetActive(false);
-
-                    var main2 = system.GetComponent<ParticleSystem.MainModule>();
-                    var colover = system.GetComponent<ParticleSystem.ColorOverLifetimeModule>();
-                    //system = CheatswordColor.GetComponent<ParticleSystem>();
-                    //system.GetComponent<color>
-                    // main2.startColor = holdColor;
-                    colover.color = holdColor;
-                    //ParticleSystem.ColorOverLifetimeModule colorOverLifetime = system.colorOverLifetime;
-                    //colorOverLifetime.color = holdColor;
-                    //ParticleSystem.MainModule main2 = system.main;
-                    //main2.startColor = holdColor;
-
-                    system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
-                    //RMP.LogInfo("flame set");
-                }
-            }
-            else
-            {
-                teleportWorldData.TargetColor = PortalColors[MagicPortalFluid.PortalDrinkColor.Value].HexName; // color update for yippe
-                SetTeleportWorldColors(teleportWorldData, false, false);
-            }
-            */
+            teleportWorldData.Raindbow();
         }
 
         private static  bool CanChangePortalColor( bool isAdmin, bool isCreator, ZDOP portalData)
