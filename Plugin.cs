@@ -215,7 +215,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<string>? FreePassageColor;
         internal static ConfigEntry<Toggle>? EnableCrystalsforNewIfPossible;
        // internal static ConfigEntry<string>? AdminColor;
-        internal static ConfigEntry<string>? PortalDrinkColor;
+        internal static ConfigEntry<Toggle>? PortalDrinkColor;
         internal static ConfigEntry<Toggle>? PreventColorChange;
         //internal static ConfigEntry<string>? TelePortAnythingColor;
         internal static ConfigEntry<string>? GemColorGold;
@@ -1385,7 +1385,7 @@ namespace RareMagicPortal
             string coordsportal = "1.8 Coordinates Portal-----------";
 
             string rainbowmode = "1.9 Rainbow -----------";
-            PortalDrinkColor = config(rainbowmode, "Portal Drink Color", "Rainbow", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or Rainbow (Alternates between colors every second) are the available Colors that can be selected for the Portal Drink Mode for Portals - Only 1 can be set - Default is Rainbow ");
+            PortalDrinkColor = config(rainbowmode, "Portal Drink Color Alt", Toggle.Off, "Default is Rainbow, Alt is more like SwordCheat");
 
             string randomTeleport = "1.9.1 RandomTeleport";
             randomTeleActiveAlways = config(randomTeleport, "Always Active?", true, "Glows and displays flames always, or just glow if off");
