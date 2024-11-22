@@ -60,6 +60,7 @@ using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using YamlDotNet.Serialization;
 using static Interpolate;
+using static PlayerProfile;
 using static RareMagicPortal.PortalColorLogic;
 
 namespace RareMagicPortal
@@ -206,7 +207,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<Toggle>? shownetowrkhint;
         internal static ConfigEntry<bool>? randomTeleActiveAlways;
         internal static ConfigEntry<int>? ConfigMaxWeight;
-        internal static ConfigEntry<int>? MaxPortalsPerPerson;
+        //internal static ConfigEntry<int>? MaxPortalsPerPerson;
         internal static ConfigEntry<Toggle>? AdminOnlyMakesPortals;
         internal static ConfigEntry<Toggle>? ConfigUseBiomeColors;
         internal static ConfigEntry<Toggle>? ConfigPreventCreatorsToChangeBiomeColor;
@@ -507,6 +508,99 @@ namespace RareMagicPortal
                     Icons.Add(col.Key, IconColor.CreateSprite(tex, true));
                 }
             }
+        }
+
+        private enum PlayerStatus
+        {
+            VIP,
+            User
+        }
+
+        private static PlayerStatus GetPlayerStatus(string id)
+        {
+            return ZNet.instance.ListContainsId(VIPplayersList, id) ? PlayerStatus.VIP : PlayerStatus.User;
+        }
+
+        private class PortalManager
+        {
+            private readonly string _path;
+            public readonly Dictionary<string, int> PlayersPortalData = new();
+
+
+            public PortalManager(string path)
+            {
+                _path = path;
+                if (!File.Exists(_path))
+                {
+                    File.Create(_path).Dispose();
+                }
+                else
+                {
+                    string data = File.ReadAllText(_path);
+                    if (!string.IsNullOrEmpty(data))
+                    {
+                        var deserializer = new DeserializerBuilder().Build();
+                        PlayersPortalData = deserializer.Deserialize<Dictionary<string, int>>(data);
+
+                    }
+                }
+            }
+
+            public bool CanBuildWard(string id)
+            {
+                if (!PlayersPortalData.ContainsKey(id)) return true;
+                return GetPlayerStatus(id) switch
+                {
+                    PlayerStatus.VIP => PlayersPortalData[id] < MaxAmountOfPortals_VIP.Value,
+                    PlayerStatus.User => PlayersPortalData[id] < MaxAmountOfPortals.Value,
+                    _ => false
+                };
+            }
+
+            public void Save()
+            {
+
+                var serializer = new SerializerBuilder().Build();
+                File.WriteAllText(_path, serializer.Serialize(PlayersPortalData));
+            }
+        }
+
+        private static SyncedList VIPplayersList;
+        private static PortalManager _portalManager;
+        private static ConfigEntry<int> MaxAmountOfPortals;
+        private static ConfigEntry<int> MaxAmountOfPortals_VIP;
+        private static FileSystemWatcher fsw;
+
+
+        private void ServerSidePortalInit()
+        {
+            string folder = Path.Combine(Paths.ConfigPath, "WackyWard");
+            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+            _portalManager = new PortalManager(Path.Combine(folder, "WardData.json"));
+            VIPplayersList = new SyncedList(Path.Combine(folder, "VIPplayers.txt"), "");
+
+
+
+            fsw = new FileSystemWatcher(Paths.ConfigPath)
+            {
+                Filter = Path.GetFileName(Config.ConfigFilePath),
+                EnableRaisingEvents = true,
+                IncludeSubdirectories = true,
+                SynchronizingObject = ThreadingHelper.SynchronizingObject
+            };
+            fsw.Changed += ConfigChanged;
+        }
+
+        private void ConfigChanged(object sender, FileSystemEventArgs e)
+        {
+            print($"[RareMagic Portal] RMP Portal Count changed...");
+            context.StartCoroutine(DelayReloadConfigFile(Config));
+        }
+
+        private static IEnumerator DelayReloadConfigFile(ConfigFile file)
+        {
+            yield return new WaitForSecondsRealtime(2.5f);
+            file.Reload();
         }
 
         internal static void CheckCreateImgs()
@@ -1453,9 +1547,13 @@ namespace RareMagicPortal
 
             ConfigMaxWeight = config(portal, "Max Weight Allowed for new Portals", 0, "This affects all new/renamed portals - Enter the max weight that can transit through a portal at a time. Value of 0 disables the check");
 
-            MaxPortalsPerPerson = config(portal, "Max Portals Per Player", 0, "The YML keeps track of creator of Portals, a Value of 0 disables the check");
+           // MaxPortalsPerPerson = config(portal, "Max Portals Per Player", 0, "The YML keeps track of creator of Portals, a Value of 0 disables the check");
 
-            AdminOnlyMakesPortals = config(portal, "Only Admin Can Build", Toggle.Off, "Only The Admins Can Build Portals");              
+            AdminOnlyMakesPortals = config(portal, "Only Admin Can Build", Toggle.Off, "Only The Admins Can Build Portals");
+
+            MaxAmountOfPortals = config(portal, "MaxAmountOfPortals", 0, "Max amount of portals, a Value of 0 disables the check");
+
+            MaxAmountOfPortals_VIP = config(portal, "MaxAmountOfPortals_VIP", 0, "Max amount of portals for VIP, a Value of 0 disables the check");
 
 
 
