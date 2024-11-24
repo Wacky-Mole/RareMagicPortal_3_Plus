@@ -566,7 +566,7 @@ namespace RareMagicPortal
         }
 
         private static SyncedList VIPplayersList;
-        private static PortalManager _portalManager;
+       // private static PortalManager _portalManager;
         private static ConfigEntry<int> MaxAmountOfPortals;
         private static ConfigEntry<int> MaxAmountOfPortals_VIP;
         private static FileSystemWatcher fsw;
@@ -574,10 +574,9 @@ namespace RareMagicPortal
 
         private void ServerSidePortalInit()
         {
-            string folder = Path.Combine(Paths.ConfigPath, "WackyWard");
-            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
-            _portalManager = new PortalManager(Path.Combine(folder, "WardData.json"));
-            VIPplayersList = new SyncedList(Path.Combine(folder, "VIPplayers.txt"), "");
+            if (!Directory.Exists(YMLFULLFOLDER)) Directory.CreateDirectory(YMLFULLFOLDER);
+            //_portalManager = new PortalManager(Path.Combine(YMLFULLFOLDER, Worldname +"_PortalData.json"));
+            VIPplayersList = new SyncedList(Path.Combine(YMLFULLFOLDER, Worldname +"_VIPplayers.txt"), "");
 
 
 
