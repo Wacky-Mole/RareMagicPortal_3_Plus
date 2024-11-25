@@ -259,6 +259,9 @@ namespace RareMagicPortal
         internal static ConfigEntry<Toggle> PortalImages;
         internal static ConfigEntry<Toggle> PortalImagesFullScreenOnly;
 
+        internal static ConfigEntry<int> MaxAmountOfPortals;
+        internal static ConfigEntry<int> MaxAmountOfPortals_VIP;
+
 
 
         public static string crystalcolorre = ""; // need to reset everytime maybe?
@@ -391,6 +394,10 @@ namespace RareMagicPortal
         private static readonly KeyboardShortcut _portalRMPsacrifceKEY = new(KeyCode.E, KeyCode.LeftControl);
 
         public static Dictionary<string, string> GemColorMappings = new Dictionary<string, string>();
+        internal static bool isServer => SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
+
+        internal static List<string> PortalNames = new List<string>();
+        internal static bool _canPlacePortal;
 
         public enum Toggle
         {
@@ -510,97 +517,8 @@ namespace RareMagicPortal
             }
         }
 
-        private enum PlayerStatus
-        {
-            VIP,
-            User
-        }
-
-        private static PlayerStatus GetPlayerStatus(string id)
-        {
-            return ZNet.instance.ListContainsId(VIPplayersList, id) ? PlayerStatus.VIP : PlayerStatus.User;
-        }
-
-        private class PortalManager
-        {
-            private readonly string _path;
-            public readonly Dictionary<string, int> PlayersPortalData = new();
 
 
-            public PortalManager(string path)
-            {
-                _path = path;
-                if (!File.Exists(_path))
-                {
-                    File.Create(_path).Dispose();
-                }
-                else
-                {
-                    string data = File.ReadAllText(_path);
-                    if (!string.IsNullOrEmpty(data))
-                    {
-                        var deserializer = new DeserializerBuilder().Build();
-                        PlayersPortalData = deserializer.Deserialize<Dictionary<string, int>>(data);
-
-                    }
-                }
-            }
-
-            public bool CanBuildWard(string id)
-            {
-                if (!PlayersPortalData.ContainsKey(id)) return true;
-                return GetPlayerStatus(id) switch
-                {
-                    PlayerStatus.VIP => PlayersPortalData[id] < MaxAmountOfPortals_VIP.Value,
-                    PlayerStatus.User => PlayersPortalData[id] < MaxAmountOfPortals.Value,
-                    _ => false
-                };
-            }
-
-            public void Save()
-            {
-
-                var serializer = new SerializerBuilder().Build();
-                File.WriteAllText(_path, serializer.Serialize(PlayersPortalData));
-            }
-        }
-
-        private static SyncedList VIPplayersList;
-       // private static PortalManager _portalManager;
-        private static ConfigEntry<int> MaxAmountOfPortals;
-        private static ConfigEntry<int> MaxAmountOfPortals_VIP;
-        private static FileSystemWatcher fsw;
-
-
-        private void ServerSidePortalInit()
-        {
-            if (!Directory.Exists(YMLFULLFOLDER)) Directory.CreateDirectory(YMLFULLFOLDER);
-            //_portalManager = new PortalManager(Path.Combine(YMLFULLFOLDER, Worldname +"_PortalData.json"));
-            VIPplayersList = new SyncedList(Path.Combine(YMLFULLFOLDER, Worldname +"_VIPplayers.txt"), "");
-
-
-
-            fsw = new FileSystemWatcher(Paths.ConfigPath)
-            {
-                Filter = Path.GetFileName(Config.ConfigFilePath),
-                EnableRaisingEvents = true,
-                IncludeSubdirectories = true,
-                SynchronizingObject = ThreadingHelper.SynchronizingObject
-            };
-            fsw.Changed += ConfigChanged;
-        }
-
-        private void ConfigChanged(object sender, FileSystemEventArgs e)
-        {
-            print($"[RareMagic Portal] RMP Portal Count changed...");
-            context.StartCoroutine(DelayReloadConfigFile(Config));
-        }
-
-        private static IEnumerator DelayReloadConfigFile(ConfigFile file)
-        {
-            yield return new WaitForSecondsRealtime(2.5f);
-            file.Reload();
-        }
 
         internal static void CheckCreateImgs()
         {
@@ -824,6 +742,18 @@ namespace RareMagicPortal
 
         private void LoadPortals()
         {
+            PortalNames.Add("wacky_portal1");
+            PortalNames.Add("wacky_portal2");
+            PortalNames.Add("wacky_portal3");
+            PortalNames.Add("wacky_portal4");
+            PortalNames.Add("wacky_portal5");
+            PortalNames.Add("wacky_portal6");
+            PortalNames.Add("wacky_portal8");
+            PortalNames.Add("wood_portal");
+            PortalNames.Add("portal");
+            PortalNames.Add("stone_portal");
+
+
 
             BuildPiece portal1 = new("wackyportals", "wacky_portal1", "assets");
             portal1.Name.English("Aetherstone Gateway"); 

@@ -285,7 +285,12 @@ static class SetInitialPortalModeRMP
 		{
 			return this.TargetColor;
 		}
-		public override void SetTeleportWorldColors(Color newcolor,  bool SetcolorTarget = false, bool SetMaterial = false)
+
+        public override void Raindbow()
+        {
+            
+        }
+        public override void SetTeleportWorldColors(Color newcolor,  bool SetcolorTarget = false, bool SetMaterial = false)
 		{
 			this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
@@ -430,7 +435,12 @@ static class SetInitialPortalModeRMP
 		{
 			return this.TargetColor;
 		}
-		public override void SetTeleportWorldColors(Color newcolor,bool SetcolorTarget = false, bool SetMaterial = false)
+
+        public override void Raindbow()
+        {
+
+        }
+        public override void SetTeleportWorldColors(Color newcolor,bool SetcolorTarget = false, bool SetMaterial = false)
         {
 			this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
@@ -541,7 +551,12 @@ static class SetInitialPortalModeRMP
 		{
 			return this.TargetColor;
 		}
-		public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
+
+        public override void Raindbow()
+        {
+
+        }
+        public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
 		{
 			this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
@@ -638,7 +653,12 @@ static class SetInitialPortalModeRMP
 			return this.TargetColor;
 		}
 
-		public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
+        public override void Raindbow()
+        {
+
+        }
+
+        public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
 		{
 			this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
@@ -721,7 +741,12 @@ static class SetInitialPortalModeRMP
 		{
 			return this.TargetColor;
 		}
-		public override void SetTeleportWorldColors(Color newcolor,bool SetcolorTarget = false, bool SetMaterial = false)
+
+        public override void Raindbow()
+        {
+
+        }
+        public override void SetTeleportWorldColors(Color newcolor,bool SetcolorTarget = false, bool SetMaterial = false)
 		{
 			this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
@@ -820,6 +845,11 @@ static class SetInitialPortalModeRMP
         {
             return this.TargetColor;
         }
+
+        public override void Raindbow()
+        {
+
+        }
         public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
         {
             this.OldColor = this.TargetColor;
@@ -915,6 +945,11 @@ static class SetInitialPortalModeRMP
         public override Color GetTargetColor()
         {
             return this.TargetColor;
+        }
+
+        public override void Raindbow()
+        {
+
         }
         public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
         {

@@ -172,6 +172,7 @@
     <Compile Include="PieceManager\PieceManager.cs" />
     <Compile Include="PieceManager\SnapPointMaker.cs" />
     <Compile Include="PortalColorLogic.cs" />
+    <Compile Include="PortalLimit.cs" />
     <Compile Include="PortalMode\BasePopup.cs" />
     <Compile Include="PortalMode\PortalMode.cs" />
     <Compile Include="PortalScreens\portalscreens.cs" />
