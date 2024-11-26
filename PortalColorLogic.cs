@@ -193,29 +193,7 @@ namespace RareMagicPortal
                 {
                     MagicPortalFluid._teleportWorldDataCache[__instance] = new TeleportWorldDataRMP(__instance);
                 }             
-                
-                
-                /*
-                // Stone 'portal' prefab does not set this property.
-                if (!__instance.m_proximityRoot)
-                {
-                    __instance.m_proximityRoot = __instance.transform;
-                }
-
-                // Stone 'portal' prefab does not set this property.
-                if (!__instance.m_target_found)
-                {
-                    // The prefab does not have '_target_found_red' but instead '_target_found'.
-                    GameObject targetFoundObject = __instance.gameObject.transform.Find("_target_found").gameObject;
-
-                    // Disable the GameObject first, as adding component EffectFade calls its Awake() before being attached.
-                    targetFoundObject.SetActive(false);
-                    __instance.m_target_found = targetFoundObject.AddComponent<EffectFade>();
-                    targetFoundObject.SetActive(true);
-                }
-                //RareMagicPortal.LogInfo("Adding Portal Awake for all Portals");
-                */
-
+                            
             }
 
 
