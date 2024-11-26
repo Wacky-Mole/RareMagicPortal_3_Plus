@@ -14,6 +14,8 @@ using static RareMagicPortal.PortalName;
 
 namespace RareMagicPortal.PortalWorld
 {
+
+
     [HarmonyPatch(typeof(Game),nameof(Game.Awake))]
 
     class TeleportWorldPatchRMPPLUSAdd
@@ -287,8 +289,39 @@ static class SetInitialPortalModeRMP
 		}
 
         public override void Raindbow()
-        {
-            
+        {          
+            bool useme = false;
+            if (MagicPortalFluid.PortalDrinkColor.Value == MagicPortalFluid.Toggle.On)
+                useme = true;
+
+			foreach (ParticleSystem system in this.Systems)
+			{
+				RareMagicPortal.MagicPortalFluid.RareMagicPortal.LogWarning("Rain bow Rock");
+				var colorOverLifetime = system.colorOverLifetime;
+				colorOverLifetime.enabled = true;
+				Gradient customGradient = PortalColorLogic.CreateCustomGradient();
+				var mat = system.GetComponent<ParticleSystemRenderer>().material;
+				if (mat != MagicPortalFluid.originalMaterials["flame"])
+                    system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
+				var Main = system.main;
+				Main.duration = 10;
+
+				if (!useme)
+				{
+					var colorspeed = system.colorBySpeed;
+					colorspeed.enabled = true;
+					colorspeed.color = Color.white;
+					colorspeed.range = new Vector2(1, 10);
+					Main.startColor = new ParticleSystem.MinMaxGradient(customGradient);
+					return;
+				}
+				else if (useme)
+				{
+					colorOverLifetime.color = new ParticleSystem.MinMaxGradient(customGradient);
+					return;
+				}
+			}
+
         }
         public override void SetTeleportWorldColors(Color newcolor,  bool SetcolorTarget = false, bool SetMaterial = false)
 		{
@@ -414,7 +447,7 @@ static class SetInitialPortalModeRMP
 		}
 	}
 
-	class TeleportWorldDataRMPModel1 : ClassBase
+	class TeleportWorldDataRMPModel1 : ClassBase // RockRing
 	{
 		public new Color TargetColor = Color.clear;
 		public new Color OldColor = Color.clear;
@@ -438,7 +471,37 @@ static class SetInitialPortalModeRMP
 
         public override void Raindbow()
         {
+            bool useme = false;
+            if (MagicPortalFluid.PortalDrinkColor.Value == MagicPortalFluid.Toggle.On)
+                useme = true;
 
+			foreach (ParticleSystem system in this.Systems)
+			{
+
+				var colorOverLifetime = system.colorOverLifetime;
+				colorOverLifetime.enabled = true;
+				Gradient customGradient = PortalColorLogic.CreateCustomGradient();
+				var mat = system.GetComponent<ParticleSystemRenderer>().material;
+				if (mat != MagicPortalFluid.originalMaterials["flame"])
+                    system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
+				var Main = system.main;
+				Main.duration = 10;
+
+				if (!useme)
+				{
+					var colorspeed = system.colorBySpeed;
+					colorspeed.enabled = true;
+					colorspeed.color = Color.white;
+					colorspeed.range = new Vector2(1, 10);
+					Main.startColor = new ParticleSystem.MinMaxGradient(customGradient);
+					return;
+				}
+				else if (useme)
+				{
+					colorOverLifetime.color = new ParticleSystem.MinMaxGradient(customGradient);
+					return;
+				}
+			}
         }
         public override void SetTeleportWorldColors(Color newcolor,bool SetcolorTarget = false, bool SetMaterial = false)
         {
@@ -554,7 +617,38 @@ static class SetInitialPortalModeRMP
 
         public override void Raindbow()
         {
+            bool useme = false;
+            if (MagicPortalFluid.PortalDrinkColor.Value == MagicPortalFluid.Toggle.On)
+                useme = true;
 
+
+			foreach (ParticleSystem system in this.Systems)
+			{
+
+				var colorOverLifetime = system.colorOverLifetime;
+				colorOverLifetime.enabled = true;
+				Gradient customGradient = PortalColorLogic.CreateCustomGradient();
+				var mat = system.GetComponent<ParticleSystemRenderer>().material;
+				if (mat != MagicPortalFluid.originalMaterials["flame"])
+                    system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
+				var Main = system.main;
+				Main.duration = 10;
+
+				if (!useme)
+				{
+					var colorspeed = system.colorBySpeed;
+					colorspeed.enabled = true;
+					colorspeed.color = Color.white;
+					colorspeed.range = new Vector2(1, 10);
+					Main.startColor = new ParticleSystem.MinMaxGradient(customGradient);
+					return;
+				}
+				else if (useme)
+				{
+					colorOverLifetime.color = new ParticleSystem.MinMaxGradient(customGradient);
+					return;
+				}
+			}
         }
         public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
 		{
@@ -635,7 +729,7 @@ static class SetInitialPortalModeRMP
 
 	}
 
-	class TeleportWorldDataRMPModel3 : ClassBase
+	class TeleportWorldDataRMPModel3 : ClassBase // Gates
 	{
 		public new Color TargetColor = Color.clear;
 		public new Color OldColor = Color.clear;
@@ -720,7 +814,7 @@ static class SetInitialPortalModeRMP
 
 	}
 
-	class TeleportWorldDataRMPModel4 : ClassBase
+	class TeleportWorldDataRMPModel4 : ClassBase // quad portal
 	{
 		public new Color TargetColor = Color.clear;
 		public new Color OldColor = Color.clear;
@@ -822,7 +916,7 @@ static class SetInitialPortalModeRMP
 
 	}
 
-    class TeleportWorldDataRMPModel5 : ClassBase
+    class TeleportWorldDataRMPModel5 : ClassBase // Ground Portal Platform
     {
         public new Color TargetColor = Color.clear;
         public new Color OldColor = Color.clear;
@@ -876,6 +970,8 @@ static class SetInitialPortalModeRMP
                     //red.material.SetColor("_EmissionColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
                     red.material.SetColor("_TintColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
                     red.material = RareMagicPortal.Globals.originalMaterials["silver_necklace"];
+				
+				
                    // CenterAdmin.gameObject.SetActive(true);
                 }
                 else
@@ -923,14 +1019,13 @@ static class SetInitialPortalModeRMP
             TeleportW = teleportWorld;
         }
 
-    }    class TeleportWorldDataRMPModel6 : ClassBase
+    }    class TeleportWorldDataRMPModel6 : ClassBase // Orginal Stoneish Portal
     {
         public new Color TargetColor = Color.clear;
         public new Color OldColor = Color.clear;
         public List<Light> Lights { get; } = new List<Light>();
         public List<Material> Materials { get; } = new List<Material>();
         private Material DefaultMaterials { get; }
-        private Material Platform { get; }
 
         private Transform CenterAdmin { get; set; }
         public List<Material> Materials2 { get; } = new List<Material>();
@@ -949,6 +1044,7 @@ static class SetInitialPortalModeRMP
 
         public override void Raindbow()
         {
+
 
         }
         public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)

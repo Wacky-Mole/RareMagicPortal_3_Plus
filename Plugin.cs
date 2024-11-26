@@ -45,6 +45,7 @@ using LocalizationManager;
 using PieceManager;
 using RareMagicPortal.PortalWorld;
 using RareMagicPortal_3_Plus.PortalMode;
+using RareMagicPortalPlus.limit;
 using ServerSync;
 using StatusEffectManager;
 using System;
@@ -481,6 +482,8 @@ namespace RareMagicPortal
                 GuildsLoaded = true;
             }
 
+            
+
             RareMagicPortal.LogInfo($"MagicPortalFluid loaded start assets");
 
 
@@ -554,7 +557,8 @@ namespace RareMagicPortal
             setupYMLFile();
             ReadYMLValuesBoring();
             PortalColorLogic.reloadcolors();
-            
+            PortalLimit.ServerSidePortalInit();
+
         }
 
         // end startup

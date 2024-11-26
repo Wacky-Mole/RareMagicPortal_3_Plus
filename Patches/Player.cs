@@ -56,6 +56,7 @@ namespace RareMagicPortal_3_Plus.Patches
 
                 MagicPortalFluid.NoMoreLoading = true;
                 MagicPortalFluid.JustWaitforInventory = true;
+                PortalColorLogic.startupwait = 0;
 
                 if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated() && MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.On)
                 {

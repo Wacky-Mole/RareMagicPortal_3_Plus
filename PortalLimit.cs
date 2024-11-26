@@ -14,7 +14,7 @@ using YamlDotNet.Serialization;
 using RareMagicPortal;
 using UnityEngine.Rendering;
 
-namespace RareMagicPortalPlus
+namespace RareMagicPortalPlus.limit
 {
     internal class PortalLimit
     {
@@ -31,7 +31,7 @@ namespace RareMagicPortalPlus
             private static void Postfix(ZNetScene __instance)
             {
 
-                if (MagicPortalFluid.isServer)
+                if (ZNet.instance.IsServer())
                 {
                     ZRoutedRpc.instance.Register("WackyPortal Portalplaced", PortalPlaced);
                     return;
@@ -129,7 +129,7 @@ namespace RareMagicPortalPlus
 
                 if (MagicPortalFluid.PortalNames.Contains(piece.name))
                 {
-                    if (!MagicPortalFluid._canPlacePortal && !Player.m_debugMode)
+                    if (!MagicPortalFluid._canPlacePortal && !Player.m_debugMode && !ZNet.instance.IsServer())
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
                             "<color=red>Ward Limit</color>");
@@ -143,29 +143,33 @@ namespace RareMagicPortalPlus
         [HarmonyPatch(typeof(Player), nameof(Player.PlacePiece))]
         static class PlacePiece_PatchPortalPost
         {
-            private static void Postfix(ref Player __instance, ref Piece piece, Vector3 pos, Quaternion rot, bool doAttack, bool __result)
+            private static void Postfix(ref Player __instance, ref Piece piece, Vector3 pos, Quaternion rot, bool doAttack)
             {
-                if (__result)
+                if (MagicPortalFluid.PortalNames.Contains(piece.name))
                 {
-                    if (MagicPortalFluid.PortalNames.Contains(piece.name))
-                    {
-                        MagicPortalFluid._canPlacePortal = false;
-
-                        var name = Game.instance.GetPlayerProfile().GetName();
-                        var id = ZNet.m_onlineBackend == OnlineBackendType.Steamworks
-                             ? PrivilegeManager.GetNetworkUserId().Split('_')[1]: PrivilegeManager.GetNetworkUserId();
-
-                       var _znet =  piece.GetComponent<ZNetView>();
+                   // PortalColorLogic.RMP.LogInfo(" Checking Place 1");
+                    var name = Game.instance.GetPlayerProfile().GetName();
+                    var id = ZNet.m_onlineBackend == OnlineBackendType.Steamworks
+                            ? PrivilegeManager.GetNetworkUserId().Split('_')[1]: PrivilegeManager.GetNetworkUserId();
 
 
-                        _znet.m_zdo.Set("creatorName", name);
-                        _znet.m_zdo.Set("WackyPortal_id", id);
+                    name  = Player.m_localPlayer.GetPlayerName();
+                    //var _znet =  piece.gameObject.GetComponent<ZNetView>();
+                   var _znet = piece.m_nview;
 
-                        if (ZNet.instance.GetServerPeer() != null)
-                            ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "WackyPortal Portalplaced",
-                                new object[] { null });
-                    }
+                    _znet.GetZDO()?.Set("creatorName", name);
+                    //_znet.GetZDO()?.Set("WackyPortal_id", id);
+
+                    if (ZNet.instance.IsServer())
+                        return;
+
+                    MagicPortalFluid._canPlacePortal = false;
+
+                    if (ZNet.instance.GetServerPeer() != null)
+                        ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "WackyPortal Portalplaced",
+                            new object[] { null });
                 }
+                
             }
         }
 
@@ -225,7 +229,7 @@ namespace RareMagicPortalPlus
         }
 
 
-        private void ServerSidePortalInit()
+        internal static void ServerSidePortalInit()
         {
             if (!Directory.Exists(MagicPortalFluid.YMLFULLFOLDER)) Directory.CreateDirectory(MagicPortalFluid.YMLFULLFOLDER);
             pathPortalData = Path.Combine(MagicPortalFluid.YMLFULLFOLDER, MagicPortalFluid.Worldname + "_PlayerPortals.json");
@@ -233,7 +237,7 @@ namespace RareMagicPortalPlus
             var VIPPath = Path.Combine(MagicPortalFluid.YMLFULLFOLDER, "VIPplayers.txt");
             VIPplayersList = new SyncedList(VIPPath, "");
 
-
+            /*
 
             fsw = new FileSystemWatcher(pathPortalData)
             {
@@ -243,6 +247,8 @@ namespace RareMagicPortalPlus
                 SynchronizingObject = ThreadingHelper.SynchronizingObject
             };
             //fsw.Changed += ConfigChanged;
+
+            */
         }
 
         private void ConfigChanged(object sender, FileSystemEventArgs e)

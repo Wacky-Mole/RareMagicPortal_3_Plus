@@ -169,6 +169,12 @@ namespace RareMagicPortal
             }
         }
 
+        internal static int startupwait = 0;
+        private static IEnumerator DelayUpdatesForStartup()
+        {
+            yield return new WaitForSecondsRealtime(10f);
+            startupwait = 2;
+        }
 
         #region Patches
 
@@ -211,17 +217,31 @@ namespace RareMagicPortal
                 */
 
             }
+
+
             [HarmonyPostfix]
             [HarmonyPriority(Priority.Low)]
-            [HarmonyPatch(nameof(TeleportWorld.UpdatePortal))]
+            [HarmonyPatch(nameof(TeleportWorld.UpdatePortal))]  
             private static void TeleportWorldUpdatePortalPostfixRMP(ref TeleportWorld __instance)
             {
                 if (!__instance|| !__instance.m_nview|| __instance.m_nview.m_zdo == null)
                      return;
 
-                // aDD A FREAKING TIMER TO THIS
-                try
+                if (startupwait == 0)
                 {
+                    RareMagicPortal.MagicPortalFluid.context.StartCoroutine(DelayUpdatesForStartup());
+                    startupwait = 1;
+                    return;
+                }
+
+                if (startupwait == 1)
+                {
+                    return;
+                }
+
+                //try
+                {
+
                     bool isthistrue = MagicPortalFluid._teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData);
                     bool isplustrue = MagicPortalFluid._teleportWorldDataCacheDefault.TryGetValue(__instance, out ClassBase teleportWorldDataplus);
 
@@ -252,7 +272,12 @@ namespace RareMagicPortal
 
                             HandleYippe(teleportWorldData);
                             if (teleportWorldData.LinkColor != Color.gray)
+                            {
+                                var tempC = teleportWorldData.TargetColor;
+                                teleportWorldData.TargetColor = Tan;
                                 SetTeleportWorldColors(teleportWorldData, false, false);
+                                teleportWorldData.TargetColor = tempC;
+                            }
                             teleportWorldData.LinkColor = Color.gray;
 
                             return;
@@ -272,6 +297,11 @@ namespace RareMagicPortal
                     {
                         if (isYippe || zdoData.SpecialMode == PortalModeClass.PortalMode.Rainbow)
                         {
+                          
+                            if (teleportWorldDataplus.GetOldColor() != Color.gray)
+                            {
+                                teleportWorldDataplus.SetTeleportWorldColors(Color.gray, true);
+                            }
                             HandleYippe(teleportWorldDataplus);
                             return;
                         }
@@ -285,7 +315,7 @@ namespace RareMagicPortal
                      }
                     
                 }
-                catch { } // catches beginning errors
+                //catch { } // catches beginning errors
             }
         }
 
@@ -472,16 +502,17 @@ namespace RareMagicPortal
                 Player closestPlayer = Player.m_localPlayer;
                 bool isCreator = portal.m_creator == closestPlayer.GetPlayerID();
                 string portalName = __instance.m_nview.GetZDO().GetString("tag");
+                var creator = portal.m_nview.GetZDO().GetString("creatorName");
+                if (creator != "")
+                {
+                    PortalColorLogic.RMP.LogInfo(" Portal creator name is " + creator);
+                }
 
                 string zdoName = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
                 if (zdoName == "")
                 {
                     zdoName = CreatePortalID(portalName);
                     __instance.m_nview.GetZDO().Set(MagicPortalFluid._portalID, zdoName );
-                    string ply = Player.GetPlayer(portal.m_creator)?.m_name;
-                    if (ply == null)
-                        ply = "";
-                    PortalColorLogic.RMP.LogInfo(" Portal creator name is " + ply);
 
                     if (!PortalN.Portals.ContainsKey(portalName))
                     {
@@ -490,7 +521,7 @@ namespace RareMagicPortal
 
                     if (!PortalN.Portals[portalName].PortalZDOs.ContainsKey(zdoName))
                     {
-                        WritetoYML(portalName, zdoName, "", true, __instance, ply);
+                        WritetoYML(portalName, zdoName, "", true, __instance, creator);
                     }
                     return; // a little delay to give rpc calls time
                 }
@@ -1341,7 +1372,7 @@ namespace RareMagicPortal
             ClientORServerYMLUpdate(wacky, PortalName, ZDOID, colorint, false );
         }
 
-        private static Gradient CreateCustomGradient()
+        internal static Gradient CreateCustomGradient()
         {
             Gradient gradient = new Gradient();
 
@@ -1428,6 +1459,16 @@ namespace RareMagicPortal
         }        
         private static void HandleYippe(ClassBase teleportWorldData)
         {
+            if (PortalColorLogic.CheatSwordColor == null)
+            {
+                var itemCS = ObjectDB.instance.GetItemPrefab("SwordCheat");
+                PortalColorLogic.CheatSwordColor = itemCS?.GetComponentInChildren<ParticleSystem>(true);
+            }
+            if (PortalColorLogic.CheatSwordColor == null)
+                return;
+
+            RMP.LogWarning("yipp plus");
+
             teleportWorldData.Raindbow();
         }
 
