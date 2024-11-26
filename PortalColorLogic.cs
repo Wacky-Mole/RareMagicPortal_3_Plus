@@ -231,8 +231,13 @@ namespace RareMagicPortal
 
                     string PortalName = __instance.m_nview.m_zdo.GetString("tag");
                     string zdoName = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
-
+                    if (!PortalN.Portals.TryGetValue(PortalName, out var Port1))
+                        return;
                     var portalData = PortalN.Portals[PortalName];
+
+                    if (!portalData.PortalZDOs.TryGetValue(zdoName, out var Port2))
+                        return;
+                   
                     var zdoData = portalData.PortalZDOs[zdoName];
 
                     if(zdoData.SpecialMode == PortalModeClass.PortalMode.CordsPortal ||
