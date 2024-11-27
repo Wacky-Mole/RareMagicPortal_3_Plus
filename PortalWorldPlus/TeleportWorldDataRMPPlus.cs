@@ -655,12 +655,13 @@ static class SetInitialPortalModeRMP
 			this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
 
-			foreach (Light light in this.Lights)
+
+            foreach (Light light in this.Lights)
 			{
 					light.color = this.TargetColor;
 			}
 
-			foreach (ParticleSystem system in this.Systems)
+            foreach (ParticleSystem system in this.Systems)
 			{
 				ParticleSystem.ColorOverLifetimeModule colorOverLifetime = system.colorOverLifetime;
 
@@ -670,14 +671,12 @@ static class SetInitialPortalModeRMP
 				ParticleSystem.MainModule main = system.main;
 				main.startColor = this.TargetColor;
 			}
-
-			if (SetcolorTarget)
+            if (SetcolorTarget)
 			{
 				this.TeleportW.m_colorTargetfound = this.TargetColor * 7;
 			}
-
-			//Material mat = RareMagicPortal.Globals.originalMaterials["portal_small"];
-			foreach (Renderer red in this.MeshRend)
+            //Material mat = RareMagicPortal.Globals.originalMaterials["portal_small"];
+            foreach (Renderer red in this.MeshRend)
 			{
 				red.material.color = this.TargetColor; // hue of ring
 				if (this.TargetColor == Color.black)
@@ -691,14 +690,19 @@ static class SetInitialPortalModeRMP
 					red.material = DefaultMaterials;
 				}
 			}
-
-			foreach (Material material in this.Materials)
+			if (this.TargetColor == Color.black)
 			{
-					material.color = this.TargetColor;
-					material.SetColor("_TintColor", this.TargetColor*2); // actual tint
-			}
 
-		}
+			}
+			else
+			{
+				foreach (Material material in this.Materials)
+				{
+					material.color = this.TargetColor;
+					material.SetColor("_TintColor", this.TargetColor * 2); // actual tint	
+				}
+			}
+        }
 
 		public TeleportWorldDataRMPModel2(TeleportWorld teleportWorld)
 		{
@@ -842,6 +846,7 @@ static class SetInitialPortalModeRMP
         }
         public override void SetTeleportWorldColors(Color newcolor,bool SetcolorTarget = false, bool SetMaterial = false)
 		{
+		
 			this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
 

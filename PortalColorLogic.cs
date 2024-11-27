@@ -189,10 +189,14 @@ namespace RareMagicPortal
                 {
                     return;
                 }
-                if (!MagicPortalFluid._teleportWorldDataCache.ContainsKey(__instance))
+               // RMP.LogWarning("portal model name " + __instance.m_model.name);
+                if (__instance.m_model.name == "small_portal" )//|| __instance.m_model.name == "model")
                 {
-                    MagicPortalFluid._teleportWorldDataCache[__instance] = new TeleportWorldDataRMP(__instance);
-                }             
+                    if (!MagicPortalFluid._teleportWorldDataCache.ContainsKey(__instance))
+                    {
+                        MagicPortalFluid._teleportWorldDataCache[__instance] = new TeleportWorldDataRMP(__instance);
+                    }
+                }
                             
             }
 
@@ -202,9 +206,6 @@ namespace RareMagicPortal
             [HarmonyPatch(nameof(TeleportWorld.UpdatePortal))]  
             private static void TeleportWorldUpdatePortalPostfixRMP(ref TeleportWorld __instance)
             {
-                if (!__instance|| !__instance.m_nview|| __instance.m_nview.m_zdo == null)
-                     return;
-
                 if (startupwait == 0)
                 {
                     RareMagicPortal.MagicPortalFluid.context.StartCoroutine(DelayUpdatesForStartup());
@@ -217,11 +218,15 @@ namespace RareMagicPortal
                     return;
                 }
 
+                if (!__instance || !__instance.m_nview || __instance.m_nview.m_zdo == null)
+                    return;
+
                 //try
                 {
 
                     bool isthistrue = MagicPortalFluid._teleportWorldDataCache.TryGetValue(__instance, out TeleportWorldDataRMP teleportWorldData);
                     bool isplustrue = MagicPortalFluid._teleportWorldDataCacheDefault.TryGetValue(__instance, out ClassBase teleportWorldDataplus);
+                   
 
                     bool isYippe = false;
                     if (Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode()))
@@ -275,6 +280,7 @@ namespace RareMagicPortal
                                 SetTeleportWorldColors(teleportWorldData, true);
                             }
                         }
+                        return;
                     }
                     if (isplustrue)
                     {
