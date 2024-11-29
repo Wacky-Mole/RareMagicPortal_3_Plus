@@ -273,12 +273,20 @@ namespace RareMagicPortalPlus.limit
             public bool CanBuildPortal(string id)
             {
                 if (!PlayersPortalData.ContainsKey(id)) return true;
-                return GetPlayerStatus(id) switch
+                 var hello = GetPlayerStatus(id) switch
                 {
                     PlayerStatus.VIP => PlayersPortalData[id] < MagicPortalFluid.MaxAmountOfPortals_VIP.Value,
                     PlayerStatus.User => PlayersPortalData[id] < MagicPortalFluid.MaxAmountOfPortals.Value,
                     _ => false
                 };
+                if (MagicPortalFluid.MaxAmountOfPortals.Value == 0)
+                    return true;
+
+                if (MagicPortalFluid.MaxAmountOfPortals_VIP.Value == 0 && GetPlayerStatus(id) == PlayerStatus.VIP )
+                    return true;
+
+                return hello;
+
             }
 
             public void Save()
