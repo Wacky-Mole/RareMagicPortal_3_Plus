@@ -915,7 +915,7 @@ static class SetInitialPortalModeRMP
             foreach (var system in this.Systems)
             {
                 var colorOverLifetime = system.colorOverLifetime;
-                colorOverLifetime.enabled = false;
+                colorOverLifetime.enabled = true;
                 colorOverLifetime.color = this.TargetColor;
             }
 

@@ -979,6 +979,8 @@ namespace RareMagicPortal
             var serializer = new SerializerBuilder().Build();
             var serializedPortal = portalName + MagicPortalFluid.StringSeparator + serializer.Serialize(PortalN.Portals[portalName]);
             //var serializedPortal =  serializer.Serialize(PortalN.Portals[portalName]);
+            if(MagicPortalFluid.ConfigEnableYMLLogs.Value == MagicPortalFluid.Toggle.On)
+                RMP.LogInfo("Sending THIS TO Server " + serializedPortal);
 
             // Construct full YAML
             string fullYml = MagicPortalFluid.WelcomeString + Environment.NewLine + serializer.Serialize(PortalN);

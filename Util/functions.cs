@@ -105,7 +105,7 @@ namespace RareMagicPortal
             {
                 ZPackage pkg = new ZPackage(); // Create ZPackage
 
-                pkg.Write(Portalname + ","  + PortUpdate);
+                pkg.Write(Portalname + "^"  + PortUpdate);
                 MagicPortalFluid.RareMagicPortal.LogInfo($"Sending the Server a FULL ZDO update for {Portalname} with ZDO {ZDOID}");
 
                 MagicPortalFluid.JustSent = 1;
@@ -215,7 +215,7 @@ namespace RareMagicPortal
                     { // Confirm the peer exists
                         string playername = peer.m_playerName;// playername
                         string msg = pkg.ReadString();
-                        string[] msgArray = msg.Split(',');
+                        string[] msgArray = msg.Split('^');
                         string PortalName = msgArray[0];
                         string portalUpdate = msgArray[1];
 
