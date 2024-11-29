@@ -63,6 +63,7 @@ using YamlDotNet.Serialization;
 using static Interpolate;
 using static PlayerProfile;
 using static RareMagicPortal.PortalColorLogic;
+using KeyManager;
 
 namespace RareMagicPortal
 {
@@ -85,6 +86,7 @@ namespace RareMagicPortal
     }
 
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
+    [KeyManager.VerifyKey(Author + "/" + ModName, LicenseMode.DedicatedServer)]
     [BepInDependency("org.bepinex.plugins.targetportal", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("org.bepinex.plugins.guilds", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("org.bepinex.plugins.jewelcrafting", BepInDependency.DependencyFlags.SoftDependency)]  // it loads before this mod// not really required, but whatever
