@@ -39,7 +39,7 @@ namespace RareMagicPortal
         public static Color flamesend = new Color(1f, 0, 0, 1f);
         public static Color Gold = new Color(1f, 215f / 255f, 0, 1f);
         public static Color Purple = new Color(107f / 255f, 63f / 255f, 160f / 255f, 1f);
-        public static Color Tan = new Color(210f / 255f, 180f / 255f, 140f / 255f, 1f);
+        public static Color Tan = new Color(112f / 255f, 128f / 255f, 144f / 255f, 1f);
         public static Color Brown = new Color(193f / 255f, 69f / 255f, 19f / 255f, 1f);
         public static Color Orange = new Color(204f / 255f, 85f / 255f, 0f, 1f);
         public static Color Cornsilk = new Color(1f, 248f / 255f, 220f / 255f, 1f);
@@ -493,10 +493,17 @@ namespace RareMagicPortal
                 Player closestPlayer = Player.m_localPlayer;
                 bool isCreator = portal.m_creator == closestPlayer.GetPlayerID();
                 string portalName = __instance.m_nview.GetZDO().GetString("tag");
-                var creator = portal.m_nview.GetZDO().GetString("creatorName");
+                var creator = portal.m_nview.GetZDO().GetString(MagicPortalFluid._portalCreatorHashCode);
                 if (creator != "")
                 {
-                    PortalColorLogic.RMP.LogInfo(" Portal creator name is " + creator);
+                   // PortalColorLogic.RMP.LogInfo(" Portal creator name is " + creator);
+                }else
+                {
+                    if (isCreator)
+                    {
+                        portal.m_nview.GetZDO().Set(MagicPortalFluid._portalCreatorHashCode, closestPlayer.GetHoverName());
+                        creator = closestPlayer.GetHoverName();
+                    }
                 }
 
                 string zdoName = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);

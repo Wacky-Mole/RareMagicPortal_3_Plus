@@ -38,21 +38,18 @@ namespace RareMagicPortal_3_Plus.Patches
             }
         }
 
-        [HarmonyPatch(typeof(global::Player), "PlacePiece")]
+        [HarmonyPatch(typeof(global::Player), "TryPlacePiece")]
         internal static class Player_MessageforPortal_PatchRMP
         {
             [HarmonyPrefix]
-            private static bool Prefix(ref Player __instance, ref Piece piece, Vector3 pos, Quaternion rot, bool doAttack)
-
+            private static bool Prefix(ref Player __instance, ref Piece piece)
             {
-                if (piece == null || __instance == null) return true;
+                if (piece == null || __instance == null) 
+                    return true;
+
 
                 if (MagicPortalFluid.PiecetoLookFor.Contains(piece.name) && !__instance.m_noPlacementCost) // wood_portal and stone_portal/ might remove this
                 {
-                    if (__instance.transform.position != null)
-                        MagicPortalFluid.tempvalue = __instance.transform.position; // save position //must be assigned
-                    else
-                        MagicPortalFluid.tempvalue = new Vector3(0, 0, 0); // shouldn't ever be called
 
                     var paulstation = CraftingStation.HaveBuildStationInRange(piece.m_craftingStation.m_name, MagicPortalFluid.tempvalue);
                     if (paulstation == null && !__instance.m_noPlacementCost)

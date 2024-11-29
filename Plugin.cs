@@ -406,40 +406,6 @@ namespace RareMagicPortal
             Off = 0,
         }
 
-        internal static IEnumerator RemovedDestroyedTeleportWorldsCoroutine()
-        {
-            WaitForSeconds waitThirtySeconds = new(seconds: 30f);
-            List<KeyValuePair<TeleportWorld, TeleportWorldDataRMP>> existingPortals = new();
-            int portalCount = 0;
-
-            while (true)
-            {
-                yield return waitThirtySeconds;
-                portalCount = _teleportWorldDataCache.Count;
-
-                existingPortals.AddRange(_teleportWorldDataCache.Where(entry => entry.Key));
-                _teleportWorldDataCache.Clear();
-
-                foreach (KeyValuePair<TeleportWorld, TeleportWorldDataRMP> entry in existingPortals)
-                {
-                    _teleportWorldDataCache[entry.Key] = entry.Value;
-                }
-
-                existingPortals.Clear();
-
-                if ((portalCount - _teleportWorldDataCache.Count) > 0)
-                {
-                    RareMagicPortal.LogInfo($"Removed {portalCount - _teleportWorldDataCache.Count}/{portalCount} portal references.");
-                }
-            }
-        }
-
-        internal IEnumerable WaitforMe()
-        {
-            yield return new WaitForSeconds(10);
-            MagicPortalFluid.WaitSomeMore = false;
-            yield break;
-        }
 
         public void Awake()
         {
@@ -449,6 +415,7 @@ namespace RareMagicPortal
             CreateConfigValues();
             ReadAndWriteConfigValues();
             Localizer.Load();
+
 
             LoadAssets();
             LoadPortals();
@@ -587,6 +554,7 @@ namespace RareMagicPortal
         {
 
             Item portalmagicfluid = new("portalmagicfluid", "portalmagicfluid", "assets");
+            
             portalmagicfluid.Name.English("Magical Portal Fluid");
             portalmagicfluid.Description.English("Once a mythical essence, now made real with Odin's blessing");
             portalmagicfluid.DropsFrom.Add("gd_king", 1f, 1, 2); // Elder drop 100% 1-2 portalFluids
@@ -753,14 +721,14 @@ namespace RareMagicPortal
             PortalNames.Add("wacky_portal5");
             PortalNames.Add("wacky_portal6");
             PortalNames.Add("wacky_portal8");
-            PortalNames.Add("wood_portal");
+            PortalNames.Add("portal_wood");
             PortalNames.Add("portal");
-            PortalNames.Add("stone_portal");
+            PortalNames.Add("portal_stone");
 
 
 
             BuildPiece portal1 = new("wackyportals", "wacky_portal1", "assets");
-            portal1.Name.English("Aetherstone Gateway"); 
+            portal1.Name.English("5.4 Aetherstone Gateway"); 
             portal1.Description.English("rocky, mystical portal that hovers");
             portal1.RequiredItems.Add("FineWood", 20, true); 
             portal1.RequiredItems.Add("SurtlingCore", 4, true);
@@ -773,7 +741,7 @@ namespace RareMagicPortal
 
             
             BuildPiece portal2 = new("wackyportals", "wacky_portal2", "assets");
-            portal2.Name.English("Runeveil Nexus"); 
+            portal2.Name.English("5.5 Runeveil Nexus"); 
             portal2.Description.English("Portal that has runes and hints at a mystical, otherworldly connection.");
             portal2.RequiredItems.Add("FineWood", 20, true);
             portal2.RequiredItems.Add("SurtlingCore", 4, true);
@@ -786,7 +754,7 @@ namespace RareMagicPortal
   
 
             BuildPiece portal3 = new("wackyportals", "wacky_portal3", "assets");
-            portal3.Name.English("Arcspire Gate Large");
+            portal3.Name.English("5.6 Arcspire Gate Large");
             portal3.Description.English("Archway with a sense of grandeur and mystical energy. - Large Version");
             portal3.RequiredItems.Add("FineWood", 20, true);
             portal3.RequiredItems.Add("SurtlingCore", 4, true);
@@ -798,8 +766,32 @@ namespace RareMagicPortal
             portal3G = portal3.Prefab;
 
 
+            BuildPiece portal5 = new("wackyportals", "wacky_portal5", "assets");
+            portal5.Name.English("5.6 Arcspire Gate Small");
+            portal5.Description.English("Archway with a sense of grandeur and mystical energy. - Small Version");
+            portal5.RequiredItems.Add("FineWood", 20, true);
+            portal5.RequiredItems.Add("SurtlingCore", 4, true);
+            portal5.RequiredItems.Add("PortalMagicFluid", 2, true);
+            portal5.RequiredItems.Add("SwordCheat", 1, false);
+            portal5.Category.Set("Portals");
+            portal5.Crafting.Set(PieceManager.CraftingTable.Workbench);
+            // portal5.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
+            portal5G = portal5.Prefab;
+
+            BuildPiece portal6 = new("wackyportals", "wacky_portal6", "assets");
+            portal6.Name.English("5.7 Quadraframe Portal Small");
+            portal6.Description.English("Square shape, structured, mystical gateway. - Small Version");
+            portal6.RequiredItems.Add("FineWood", 20, true);
+            portal6.RequiredItems.Add("SurtlingCore", 4, true);
+            portal6.RequiredItems.Add("PortalMagicFluid", 2, true);
+            portal6.RequiredItems.Add("SwordCheat", 1, false);
+            portal6.Category.Set("Portals");
+            portal6.Crafting.Set(PieceManager.CraftingTable.Workbench);
+            //portal6.SpecialProperties = new SpecialProperties() { AdminOnly = true };   
+            portal6G = portal6.Prefab;
+
             BuildPiece portal4 = new("wackyportals", "wacky_portal4", "assets");
-            portal4.Name.English("Quadraframe Portal Large"); 
+            portal4.Name.English("5.7 Quadraframe Portal Large"); 
             portal4.Description.English("Square shape, structured, mystical gateway. - Large Version");
             portal4.RequiredItems.Add("FineWood", 20, true);
             portal4.RequiredItems.Add("SurtlingCore", 4, true);
@@ -809,36 +801,11 @@ namespace RareMagicPortal
             portal4.Crafting.Set(PieceManager.CraftingTable.Workbench); //
            // portal4.SpecialProperties = new SpecialProperties() { AdminOnly = true }; /     
             portal4G = portal4.Prefab;
-
-
-            BuildPiece portal5 = new("wackyportals", "wacky_portal5", "assets");
-            portal5.Name.English("Arcspire Gate Small"); 
-            portal5.Description.English("Archway with a sense of grandeur and mystical energy. - Small Version");
-            portal5.RequiredItems.Add("FineWood", 20, true);
-            portal5.RequiredItems.Add("SurtlingCore", 4, true);
-            portal5.RequiredItems.Add("PortalMagicFluid", 2, true);
-            portal5.RequiredItems.Add("SwordCheat", 1, false);
-            portal5.Category.Set("Portals");
-            portal5.Crafting.Set(PieceManager.CraftingTable.Workbench); 
-           // portal5.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
-            portal5G = portal5.Prefab;
-    
-
-            BuildPiece portal6 = new("wackyportals", "wacky_portal6", "assets");
-            portal6.Name.English("Quadraframe Portal Small"); 
-            portal6.Description.English("Square shape, structured, mystical gateway. - Small Version");
-            portal6.RequiredItems.Add("FineWood", 20, true);
-            portal6.RequiredItems.Add("SurtlingCore", 4, true);
-            portal6.RequiredItems.Add("PortalMagicFluid", 2, true);
-            portal6.RequiredItems.Add("SwordCheat", 1, false);
-            portal6.Category.Set("Portals"); 
-            portal6.Crafting.Set(PieceManager.CraftingTable.Workbench); 
-            //portal6.SpecialProperties = new SpecialProperties() { AdminOnly = true };   
-            portal6G = portal6.Prefab;
+  
 
 
             BuildPiece portal8 = new("wackyportals", "wacky_portal8", "assets");
-            portal8.Name.English("Luminis Circle"); 
+            portal8.Name.English("5.8 Luminis Circle"); 
             portal8.Description.English("Glowing, mystical circular portal on the ground. ");
             portal8.RequiredItems.Add("FineWood", 20, true);
             portal8.RequiredItems.Add("SurtlingCore", 4, true);
@@ -1433,7 +1400,7 @@ namespace RareMagicPortal
 
             ConfigUseBiomeColors = config(colors, "Use Biome Colors by Default", Toggle.On, "Overrides the default color to use specific biome-related colors. If an admin/owner changes it, the selected color will persist.");
 
-            ConfigPreventCreatorsToChangeBiomeColor = config(colors, "Prevent Portal Creators from Changing Biome Color", Toggle.On, "If 'Use Biome Colors by Default' is enabled, this allows portal creators to change portal colors for portals they created.");
+            ConfigPreventCreatorsToChangeBiomeColor = config(colors, "Prevent Portal Creators from Changing Biome Color", Toggle.On, "If 'Use Biome Colors by Default' is enabled, this prevents portal creators from changing portal colors for portals they created. This only applies if Biome Colors are active");
 
             BiomeRepColors = config(colors, "Biome Colors", "Meadows:Tan,BlackForest:Blue,Swamp:Green,Mountain:Black,Plains:Orange,Mistlands:Purple,DeepNorth:Cyan,AshLands:Red,Ocean:Blue", "Biomes and their related Colors. - No spaces");
 

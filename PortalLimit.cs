@@ -138,14 +138,21 @@ namespace RareMagicPortalPlus.limit
         }
         */
 
-        [HarmonyPatch(typeof(Player), nameof(Player.PlacePiece))]
+        [HarmonyPatch(typeof(Player), nameof(Player.TryPlacePiece))]
         static class PlacePiece_PatchRMPPre
         {
-            private static bool Prefix(ref Player __instance, ref Piece piece, Vector3 pos, Quaternion rot, bool doAttack)
+            private static bool Prefix(ref Player __instance, ref Piece piece)
             {
 
                 if (MagicPortalFluid.PortalNames.Contains(piece.name))
                 {
+                    if (MagicPortalFluid.AdminOnlyMakesPortals.Value == MagicPortalFluid.Toggle.On && !MagicPortalFluid.isAdmin )
+                    {
+                        MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
+                            "<color=red>Only Admin Can build Portals</color>");
+                        return false;
+                    }
+
                     if (Player.m_debugMode)
                         return true;
 
@@ -202,15 +209,20 @@ namespace RareMagicPortalPlus.limit
         [HarmonyPatch(typeof(Player), nameof(Player.CheckCanRemovePiece))]
         static class RemovePiece_PatchPortalPost
         {
-            private static void Postfix(ref Player __instance, ref Piece piece, bool __result)
+            private static void Postfix(ref Player __instance, ref Piece piece, ref bool __result)
             {
-                if (!__result)
+               if (!__result)
                     return;
 
                 if (ZNet.instance.IsServer())
                     return;
 
-                if (MagicPortalFluid.PortalNames.Contains(piece.name))
+                //MagicPortalFluid.RareMagicPortal.LogWarning("Checking Remove:"+ piece.name);
+
+                var searchname = piece.name;
+                searchname = searchname.Replace("(Clone)", "").Trim();
+
+                if (MagicPortalFluid.PortalNames.Contains(searchname))
                 {
                     MagicPortalFluid.RareMagicPortal.LogWarning("Portal Creator " + piece.GetCreator() + " Me " + __instance.GetPlayerID());
                     if (ZNet.instance.GetServerPeer() != null)
