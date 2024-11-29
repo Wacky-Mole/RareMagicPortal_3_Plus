@@ -1,1 +1,1 @@
-Rare Magic Portal Plus
+Rare Magic Portal Plus 3.0

@@ -172,16 +172,13 @@
     <Compile Include="Patches\stoneportal.cs" />
     <Compile Include="Patches\TargetPortalPatches.cs" />
     <Compile Include="Patches\TeleportWorld.cs" />
-    <Compile Include="PieceManager\MaterialReplacer.cs" />
     <Compile Include="PieceManager\PieceManager.cs" />
-    <Compile Include="PieceManager\SnapPointMaker.cs" />
     <Compile Include="PortalColorLogic.cs" />
     <Compile Include="PortalLimit.cs" />
     <Compile Include="PortalMode\BasePopup.cs" />
     <Compile Include="PortalMode\PortalMode.cs" />
     <Compile Include="PortalScreens\portalscreens.cs" />
     <Compile Include="PortalScreens\ps_patches.cs" />
-    <Compile Include="Scripts\DragControl.cs" />
     <Compile Include="Scripts\PortalFX_AxisRotateByTime.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
@@ -233,19 +230,18 @@
     <EmbeddedResource Include="Img\background1.png" />
     <EmbeddedResource Include="Img\background2.png" />
     <EmbeddedResource Include="Img\background3.png" />
+    <Content Include="KeyManager.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Libs\GuildsAPI.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Libs\ItemManager.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Libs\KeyManager.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Libs\LocalizationManager.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Libs\PieceManager.dll" />
     <Content Include="Libs\ServerSync.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -285,11 +281,11 @@
     <Target Name="AfterBuild">
     </Target>
     -->
-	<UsingTask AssemblyFile="KeyManager.dll" TaskName="KeyManager.Seal" Condition="'$(AfterTargets)' == 'KeyManager'" />
-	<Target Name="KeyManager" AfterTargets="ILRepack" Condition="'$(AfterTargets)' == 'KeyManager'">
+  <UsingTask AssemblyFile="KeyManager.dll" TaskName="KeyManager.Seal" />
+  <Target Name="KeyManager" AfterTargets="ILRepack">
     <Seal DLL="$(TargetPath)" />
   </Target>
-  <Target Name="GetAssemblyVersion" AfterTargets="$(AfterTargets)">
+  <Target Name="GetAssemblyVersion" AfterTargets="KeyManager">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="Targets" />
     </GetAssemblyIdentity>
@@ -319,6 +315,12 @@
     <WriteLinesToFile File="README.md" Lines="Default Readme file from one of Azumatt's Templates. Replace this with actual content." Overwrite="false" Condition="!Exists('README.md')" />
     <Copy SourceFiles="README.md" DestinationFolder="$(PackageDir)" OverwriteReadOnlyFiles="true" />
     <Copy SourceFiles="README.md" DestinationFolder="$(ProjectDir)\Thunderstore" OverwriteReadOnlyFiles="true" />
+  </Target>
+  <Target Name="CopyReadMeToLegacyFolder" AfterTargets="CopyOutputDLL" Condition=" ('$(Configuration)|$(Platform)' == 'Release|AnyCPU') And ('$(OS)' == 'Windows_NT') ">
+    <Warning Text="README.md not found in project directory. A default README.md file will be created for the Thunderstore package" Condition="!Exists('README.md')" />
+    <WriteLinesToFile File="README.md" Lines="Default Readme file from one of Azumatt's Templates. Replace this with actual content." Overwrite="false" Condition="!Exists('README.md')" />
+    <Copy SourceFiles="README.md" DestinationFolder="$(PackageDir)" OverwriteReadOnlyFiles="true" />
+    <Copy SourceFiles="README.md" DestinationFolder="$(ProjectDir)\LegacyWard" OverwriteReadOnlyFiles="true" />
   </Target>
   <UsingTask TaskName="WriteManifestFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
     <ParameterGroup>
@@ -351,6 +353,12 @@ System.IO.File.WriteAllText(ManifestFile, content);
     <Message Text="ManifestFile is @(ManifestFile)" />
     <Message Text="Updating version number in Thunderstore\manifest.json" Condition="Exists(@(ManifestFile))" />
     <Exec Command="powershell.exe -ExecutionPolicy Bypass -Command &quot;&amp; { &amp; '$(ProjectDir)UpdateManifest.ps1' -manifestFile '@(ManifestFile)' -versionString '$(PackageVersion)' }&quot;" />
+  </Target>
+  <Target Name="CopyManifestandChangelog" AfterTargets="UpdateManifestVersion" Condition=" ('$(Configuration)|$(Platform)' == 'Release|AnyCPU') And ('$(OS)' == 'Windows_NT') ">
+    <Warning Text="README.md not found in project directory. A default README.md file will be created for the Thunderstore package" Condition="!Exists('README.md')" />
+    <WriteLinesToFile File="README.md" Lines="Default Readme file from one of Azumatt's Templates. Replace this with actual content." Overwrite="false" Condition="!Exists('README.md')" />
+    <Copy SourceFiles="$(ProjectDir)\Thunderstore\CHANGELOG.md" DestinationFolder="$(PackageDir)\LegacyWard" OverwriteReadOnlyFiles="true" />
+    <Copy SourceFiles="$(ProjectDir)\Thunderstore\manifest.json" DestinationFolder="$(ProjectDir)\LegacyWard" OverwriteReadOnlyFiles="true" />
   </Target>
   <Target Name="MakeThunderstorePackage" AfterTargets="UpdateManifestVersion" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Error Text="manifest.json not found in Thunderstore directory." Condition="!Exists('$(ProjectDir)\Thunderstore\manifest.json')" />

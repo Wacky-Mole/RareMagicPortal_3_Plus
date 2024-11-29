@@ -96,7 +96,7 @@ namespace RareMagicPortal
         public const string PluginGUID = "WackyMole.RareMagicPortalPlus";
         public const string PluginName = "RareMagicPortalPlus";
         public const string PluginVersion = "3.0.0";
-
+//
         internal const string ModName = PluginName;
         internal const string ModVersion = PluginVersion;
         internal const string Author = "WackyMole";
