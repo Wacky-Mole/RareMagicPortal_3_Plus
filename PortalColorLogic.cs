@@ -554,7 +554,6 @@ namespace RareMagicPortal
                 // Update hover text
                 Color color = currentColorHex;
                 
-
                 if (portalName == "" && currentColor != MagicPortalFluid.DefaultColor.Value && MagicPortalFluid.JustSent == 0)
                 {
                     colorIndex = PortalColorLogic.PortalColors.ContainsKey(MagicPortalFluid.DefaultColor.Value)
@@ -566,12 +565,12 @@ namespace RareMagicPortal
                 {
                     string biome = closestPlayer.GetCurrentBiome().ToString();
                     portalZDO.Biome = biome;
-                    if ( MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
+                    if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
                     {
                         portalZDO.BiomeColor = functions.GetBiomeColor(biome);
                         colorIndex = PortalColors[portalZDO.BiomeColor].Pos;
-
-                    } else
+                    }
+                    else
                     {
                         //PortalN.Portals[portalName].PortalZDOs[zdoName].BiomeColor = "skip"; // They only should get skip if they have been changed after the fact while in BiomeColor Mode
                     }
@@ -580,11 +579,7 @@ namespace RareMagicPortal
                     __instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeHashCode, biome);
 
                     PortalColorLogic.RMP.LogInfo("Setting ZDO Biome Data For First Time");
-
-                   // if (portalName == "")
-                   //     PortalColorLogic.updateYmltoColorChange("", colorIndex, zdoName);
-                  //  else
-                        ClientORServerYMLUpdate(portaL, portalName, zdoName, colorIndex);
+                    ClientORServerYMLUpdate(portaL, portalName, zdoName, colorIndex);
                 }
 
                 bool tagisset = portalZDO.ShowName; // PopUp Hover Text 
@@ -802,8 +797,12 @@ namespace RareMagicPortal
                 nextcolor = PortalColors[currentColor].NextColor;
                 Pos = PortalColors[currentColor].Pos;
             }
+        }
 
+        internal static void FirstTimeBiomeCheck()
+        {
 
+           
         }
 
         internal static int CrystalandKeyLogicColor(out string currentColor, out Color currentColorHex, out string nextColor, string portalName, string zdoName = "", TeleportWorld instance = null, int overrideInt = 0)
@@ -1351,8 +1350,25 @@ namespace RareMagicPortal
                         PortalN.Portals[PortalName].Color = MagicPortalFluid.DefaultColor.Value;
                     }
 
+                    
+
                 }
-             
+                /****** Reducing Network Cost HERE *****/
+
+                if (instance != null)
+                {
+                    string biome = Player.m_localPlayer.GetCurrentBiome().ToString();
+                    PortalN.Portals[PortalName].PortalZDOs[ZDOID].Biome = biome;
+                    if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
+                    {
+                        PortalN.Portals[PortalName].PortalZDOs[ZDOID].BiomeColor = functions.GetBiomeColor(biome);
+                    }
+
+                    instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeHashCode, biome);
+
+                    PortalColorLogic.RMP.LogInfo("Setting ZDO Biome Data in New YML");
+                }
+
                 if (MagicPortalFluid.DefaultColor.Value == "None" || MagicPortalFluid.DefaultColor.Value == "none")
                 {
                     colorint = 1; // yellow

@@ -162,11 +162,23 @@ namespace RareMagicPortalPlus.limit
                             "<color=red>Ward Limit</color>");
                         return false;
                     }
+
+                    if (ZNet.instance.IsServer())
+                        return true;
+
+                    MagicPortalFluid._canPlacePortal = false;
+
+                    if (ZNet.instance.GetServerPeer() != null)
+                        ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "WackyPortal Portalplaced",
+                            new object[] { null });
+
                 }
                 return true;
             }
         }
-        internal static string lastPortalNamer = null;
+
+
+      /*
         [HarmonyPatch(typeof(Player), nameof(Player.PlacePiece))]
         static class PlacePiece_PatchPortalPost
         {
@@ -174,24 +186,6 @@ namespace RareMagicPortalPlus.limit
             {
                 if (MagicPortalFluid.PortalNames.Contains(piece.name))
                 {
-                    //PortalColorLogic.RMP.LogInfo(" Checking Place 1");
-                  //  var name = Game.instance.GetPlayerProfile().GetName();
-                   // var id = ZNet.m_onlineBackend == OnlineBackendType.Steamworks
-                         //   ? PrivilegeManager.GetNetworkUserId().Split('_')[1]: PrivilegeManager.GetNetworkUserId();
-
-                    //PortalColorLogic.RMP.LogInfo(" Checking Place 2");
-                   // name  = Player.m_localPlayer.GetPlayerName();
-                   // lastPortalNamer = name;
-                    //var _znet =  piece.gameObject.GetComponent<ZNetView>();
-                    // var _znet = piece.gameObject.GetComponent<ZNetView>();
-
-                    // PortalColorLogic.RMP.LogInfo(" Checking Place 2.5");
-                    //_znet.GetZDO().Set("creatorName", name);
-                    //_znet.GetZDO()?.Set("WackyPortal_id", id);
-                    // PortalColorLogic.RMP.LogInfo(" Checking Place 3");
-                   // var znet = piece.m_nview;
-                    //znet.GetZDO().Set("creatorName".GetHashCode(), name);
-                    //znet.GetZDO().Set("WackyPortal_id".GetHashCode(), id);
 
                     if (ZNet.instance.IsServer())
                         return;
@@ -204,7 +198,7 @@ namespace RareMagicPortalPlus.limit
                 }
                 
             }
-        }
+        } */
 
         [HarmonyPatch(typeof(Player), nameof(Player.CheckCanRemovePiece))]
         static class RemovePiece_PatchPortalPost

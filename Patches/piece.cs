@@ -22,7 +22,7 @@ namespace RareMagicPortal_3_Plus.Patches
 
                 if (MagicPortalFluid.PortalNames.Contains(piece.name) && !__instance.m_noPlacementCost && MagicPortalFluid.ConfigCreator.Value) // portal and Configonly
                 {
-                    MagicPortalFluid.RareMagicPortal.LogInfo("Creator " + piece.GetCreator() + " Me " + __instance.GetPlayerID());
+                    __instance.Message(MessageHud.MessageType.Center, "$rmp_youarenotcreator");
                     bool bool2 = piece.IsCreator();// nice
                     if (bool2)
                     { // can remove because is creator or creator only mode is On
@@ -37,19 +37,21 @@ namespace RareMagicPortal_3_Plus.Patches
                 return true;    
             }
         }
-
+        
         [HarmonyPatch(typeof(global::Player), "TryPlacePiece")]
         internal static class Player_MessageforPortal_PatchRMP
         {
             [HarmonyPrefix]
             private static bool Prefix(ref Player __instance, ref Piece piece)
             {
-                if (piece == null || __instance == null) 
-                    return true;
-
+                if (piece == null || __instance == null) return true;
 
                 if (MagicPortalFluid.PiecetoLookFor.Contains(piece.name) && !__instance.m_noPlacementCost) // wood_portal and stone_portal/ might remove this
                 {
+                    if (__instance.transform.position != null)
+                        MagicPortalFluid.tempvalue = __instance.transform.position; // save position //must be assigned
+                    else
+                        MagicPortalFluid.tempvalue = new Vector3(0, 0, 0); 
 
                     var paulstation = CraftingStation.HaveBuildStationInRange(piece.m_craftingStation.m_name, MagicPortalFluid.tempvalue);
                     if (paulstation == null && !__instance.m_noPlacementCost)
