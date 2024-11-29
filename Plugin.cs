@@ -132,7 +132,7 @@ namespace RareMagicPortal
         internal static string assetPath;
         internal static string assetPathyml;
         public static List<string> PiecetoLookFor = new List<string> { "portal_wood", "portal_stone" }; //name
-        public static List<string> PieceTokenLookFor = new List<string> { "$piece_portal", "$piece_stone" }; //m_name
+        //public static List<string> PieceTokenLookFor = new List<string> { "$piece_portal", "$piece_stone" }; //m_name
         public static Vector3 tempvalue;
         public static bool loadfilesonce = false;
         public static Dictionary<string, int> Ind_Portal_Consumption;

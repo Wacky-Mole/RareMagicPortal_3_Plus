@@ -26,7 +26,7 @@ namespace RareMagicPortalPlus.limit
         
 
         [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
-        private static class ZNetScene_Awake_Patch
+        private static class ZNetScene_Awake_PatchRMPExtra
         {
             private static void Postfix(ZNetScene __instance)
             {
@@ -34,15 +34,11 @@ namespace RareMagicPortalPlus.limit
                 if (ZNet.instance.IsServer())
                 {
                     ZRoutedRpc.instance.Register("WackyPortal Portalplaced", PortalPlaced);
+                    ZRoutedRpc.instance.Register("WackyPortal Portalremoved", PortalRemoved);
                     return;
                 }
 
                 ZRoutedRpc.instance.Register("RMPportal Data", new Action<long, bool>(ReceiveData_RMPPortals));
-
-                List<GameObject> hammer = __instance.GetPrefab("Hammer").GetComponent<ItemDrop>().m_itemData.m_shared
-                    .m_buildPieces
-                    .m_pieces;
-
 
             }
 
@@ -58,6 +54,26 @@ namespace RareMagicPortalPlus.limit
                 else
                 {
                     _portalManager.PlayersPortalData[id] = 1;
+                }
+
+                _portalManager.Save();
+                ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, "RMPportal Data", _portalManager.CanBuildPortal(id));
+            }
+
+            private static void PortalRemoved(long sender)
+            {
+                ZNetPeer peer = ZNet.instance.GetPeer(sender);
+                if (peer == null) return;
+                var id = peer.m_socket.GetHostName();
+                if (_portalManager.PlayersPortalData.ContainsKey(id))
+                {
+                    _portalManager.PlayersPortalData[id]--;
+                    if (_portalManager.PlayersPortalData[id] < 0)
+                        _portalManager.PlayersPortalData[id] = 0;
+                }
+                else
+                {
+                    _portalManager.PlayersPortalData[id] = 0;
                 }
 
                 _portalManager.Save();
@@ -93,7 +109,7 @@ namespace RareMagicPortalPlus.limit
             }
         }
 
-
+        /*
         [HarmonyPatch(typeof(ZDOMan), nameof(ZDOMan.HandleDestroyedZDO))]
         static class ZDOMan_Patch
         {
@@ -120,6 +136,7 @@ namespace RareMagicPortalPlus.limit
                 _portalManager.Save();
             }
         }
+        */
 
         [HarmonyPatch(typeof(Player), nameof(Player.PlacePiece))]
         static class PlacePiece_PatchRMPPre
@@ -129,7 +146,10 @@ namespace RareMagicPortalPlus.limit
 
                 if (MagicPortalFluid.PortalNames.Contains(piece.name))
                 {
-                    if (!MagicPortalFluid._canPlacePortal && !Player.m_debugMode && !ZNet.instance.IsServer())
+                    if (Player.m_debugMode)
+                        return true;
+
+                    if (!MagicPortalFluid._canPlacePortal)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
                             "<color=red>Ward Limit</color>");
@@ -139,7 +159,7 @@ namespace RareMagicPortalPlus.limit
                 return true;
             }
         }
-
+        internal static string lastPortalNamer = null;
         [HarmonyPatch(typeof(Player), nameof(Player.PlacePiece))]
         static class PlacePiece_PatchPortalPost
         {
@@ -147,18 +167,24 @@ namespace RareMagicPortalPlus.limit
             {
                 if (MagicPortalFluid.PortalNames.Contains(piece.name))
                 {
-                   // PortalColorLogic.RMP.LogInfo(" Checking Place 1");
-                    var name = Game.instance.GetPlayerProfile().GetName();
-                    var id = ZNet.m_onlineBackend == OnlineBackendType.Steamworks
-                            ? PrivilegeManager.GetNetworkUserId().Split('_')[1]: PrivilegeManager.GetNetworkUserId();
+                    //PortalColorLogic.RMP.LogInfo(" Checking Place 1");
+                  //  var name = Game.instance.GetPlayerProfile().GetName();
+                   // var id = ZNet.m_onlineBackend == OnlineBackendType.Steamworks
+                         //   ? PrivilegeManager.GetNetworkUserId().Split('_')[1]: PrivilegeManager.GetNetworkUserId();
 
-
-                    name  = Player.m_localPlayer.GetPlayerName();
+                    //PortalColorLogic.RMP.LogInfo(" Checking Place 2");
+                   // name  = Player.m_localPlayer.GetPlayerName();
+                   // lastPortalNamer = name;
                     //var _znet =  piece.gameObject.GetComponent<ZNetView>();
-                   var _znet = piece.m_nview;
+                    // var _znet = piece.gameObject.GetComponent<ZNetView>();
 
-                    _znet.GetZDO()?.Set("creatorName", name);
+                    // PortalColorLogic.RMP.LogInfo(" Checking Place 2.5");
+                    //_znet.GetZDO().Set("creatorName", name);
                     //_znet.GetZDO()?.Set("WackyPortal_id", id);
+                    // PortalColorLogic.RMP.LogInfo(" Checking Place 3");
+                   // var znet = piece.m_nview;
+                    //znet.GetZDO().Set("creatorName".GetHashCode(), name);
+                    //znet.GetZDO().Set("WackyPortal_id".GetHashCode(), id);
 
                     if (ZNet.instance.IsServer())
                         return;
@@ -172,6 +198,29 @@ namespace RareMagicPortalPlus.limit
                 
             }
         }
+
+        [HarmonyPatch(typeof(Player), nameof(Player.CheckCanRemovePiece))]
+        static class RemovePiece_PatchPortalPost
+        {
+            private static void Postfix(ref Player __instance, ref Piece piece, bool __result)
+            {
+                if (!__result)
+                    return;
+
+                if (ZNet.instance.IsServer())
+                    return;
+
+                if (MagicPortalFluid.PortalNames.Contains(piece.name))
+                {
+                    MagicPortalFluid.RareMagicPortal.LogWarning("Portal Creator " + piece.GetCreator() + " Me " + __instance.GetPlayerID());
+                    if (ZNet.instance.GetServerPeer() != null)
+                        ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "WackyPortal Portalremoved",
+                            new object[] { null });
+                }
+
+            }
+        }
+
 
         private enum PlayerStatus
         {

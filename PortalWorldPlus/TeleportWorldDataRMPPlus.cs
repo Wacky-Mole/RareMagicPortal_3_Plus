@@ -66,7 +66,8 @@ static class SetInitialPortalModeRMP
 		public static string Model3 = "Gates";
 		public static string Model4 = "QuadPortal";
 		public static string Model5 = "Quad";
-		public static string Model6 = "stonemodel";
+		//public static string Model6 = "stonemodel";
+		public static string Model6 = "model";
 
 		static internal TeleportWorldDataCreator ClassDefault = new TeleportWorldDataCreatorA();
 		static internal TeleportWorldDataCreator ClassModel1 = new TeleportWorldDataCreatorB();
@@ -93,8 +94,8 @@ static class SetInitialPortalModeRMP
             }
 			//MagicPortalFluid.RareMagicPortal.LogWarning("Model name " + __instance.m_model.name);
 			
-            if (__instance.m_model.name == PLUS.ModelDefault)  //  hopefully a better way can be found
-                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassDefault.FactoryMethod(__instance));
+           // if (__instance.m_model.name == PLUS.ModelDefault)  //  hopefully a better way can be found
+                //MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassDefault.FactoryMethod(__instance));
             else if (__instance.m_model.name == PLUS.Model1)
                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel1.FactoryMethod(__instance));
             else if (__instance.m_model.name == PLUS.Model2)
@@ -208,6 +209,7 @@ static class SetInitialPortalModeRMP
 		public abstract void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false);
 		public abstract Color GetOldColor();
 		public abstract Color GetTargetColor();
+		public abstract bool RainbowActive();
 		public abstract void Raindbow();
 
 		/*
@@ -247,7 +249,7 @@ static class SetInitialPortalModeRMP
 
 	}
 
-	class TeleportWorldDataRMPPlus : ClassBase
+	class TeleportWorldDataRMPPlus : ClassBase // Not used
     {
         public List<Light> Lights { get; } = new List<Light>();
         public List<ParticleSystem> Systems { get; } = new List<ParticleSystem>();
@@ -257,6 +259,7 @@ static class SetInitialPortalModeRMP
 		public List<Renderer> MeshRend { get; } = new List<Renderer>();
         public String MaterialPortName { get; set; }
         public  TeleportWorld TeleportW { get; set; }
+		public bool RainbowBool { get; set; } = false;
 
 
 
@@ -288,21 +291,27 @@ static class SetInitialPortalModeRMP
 			return this.TargetColor;
 		}
 
+        public override bool RainbowActive()
+		{
+			return this.RainbowBool;
+        }
+
         public override void Raindbow()
-        {          
+        {
+            this.RainbowBool = true;
             bool useme = false;
             if (MagicPortalFluid.PortalDrinkColor.Value == MagicPortalFluid.Toggle.On)
                 useme = true;
 
 			foreach (ParticleSystem system in this.Systems)
 			{
-				RareMagicPortal.MagicPortalFluid.RareMagicPortal.LogWarning("Rain bow Rock");
+				//RareMagicPortal.MagicPortalFluid.RareMagicPortal.LogWarning("Rain bow Rock");
 				var colorOverLifetime = system.colorOverLifetime;
 				colorOverLifetime.enabled = true;
 				Gradient customGradient = PortalColorLogic.CreateCustomGradient();
 				var mat = system.GetComponent<ParticleSystemRenderer>().material;
-				if (mat != MagicPortalFluid.originalMaterials["flame"])
-                    system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
+				//if (mat != MagicPortalFluid.originalMaterials["flame"])
+                   // system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
 				var Main = system.main;
 				Main.duration = 10;
 
@@ -310,7 +319,7 @@ static class SetInitialPortalModeRMP
 				{
 					var colorspeed = system.colorBySpeed;
 					colorspeed.enabled = true;
-					colorspeed.color = Color.white;
+					//colorspeed.color = Color.white;
 					colorspeed.range = new Vector2(1, 10);
 					Main.startColor = new ParticleSystem.MinMaxGradient(customGradient);
 					return;
@@ -325,7 +334,8 @@ static class SetInitialPortalModeRMP
         }
         public override void SetTeleportWorldColors(Color newcolor,  bool SetcolorTarget = false, bool SetMaterial = false)
 		{
-			this.OldColor = this.TargetColor;
+			this.RainbowBool = false;
+            this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
 			//MagicPortalFluid.RareMagicPortal.LogInfo($"InsideTel color {this.TargetColor}");
 			
@@ -459,6 +469,7 @@ static class SetInitialPortalModeRMP
 		public List<Material> ParticleMaterials { get; } = new List<Material>();
 		public List <Renderer> MeshRend { get; }  = new List<Renderer> ();
 		public new TeleportWorld TeleportW { get; }
+		public bool RainbowBool { get; set; } = false;
 
 		public override Color GetOldColor()
 		{
@@ -468,9 +479,14 @@ static class SetInitialPortalModeRMP
 		{
 			return this.TargetColor;
 		}
+        public override bool RainbowActive()
+        {
+            return this.RainbowBool;
+        }
 
         public override void Raindbow()
         {
+			this.RainbowBool = true;
             bool useme = false;
             if (MagicPortalFluid.PortalDrinkColor.Value == MagicPortalFluid.Toggle.On)
                 useme = true;
@@ -482,8 +498,8 @@ static class SetInitialPortalModeRMP
 				colorOverLifetime.enabled = true;
 				Gradient customGradient = PortalColorLogic.CreateCustomGradient();
 				var mat = system.GetComponent<ParticleSystemRenderer>().material;
-				if (mat != MagicPortalFluid.originalMaterials["flame"])
-                    system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
+				//if (mat != MagicPortalFluid.originalMaterials["flame"])
+                   // system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
 				var Main = system.main;
 				Main.duration = 10;
 
@@ -494,18 +510,17 @@ static class SetInitialPortalModeRMP
 					colorspeed.color = Color.white;
 					colorspeed.range = new Vector2(1, 10);
 					Main.startColor = new ParticleSystem.MinMaxGradient(customGradient);
-					return;
 				}
 				else if (useme)
 				{
 					colorOverLifetime.color = new ParticleSystem.MinMaxGradient(customGradient);
-					return;
 				}
 			}
         }
         public override void SetTeleportWorldColors(Color newcolor,bool SetcolorTarget = false, bool SetMaterial = false)
         {
-			this.OldColor = this.TargetColor;
+            this.RainbowBool = false;
+            this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
 
 			foreach (Light light in this.Lights)
@@ -520,10 +535,12 @@ static class SetInitialPortalModeRMP
 
 			foreach (ParticleSystem system in this.Systems)
 			{
-
-				ParticleSystem.MainModule main = system.main;
+                var colorOverLifetime = system.colorOverLifetime;
+                colorOverLifetime.color = this.TargetColor;
+                ParticleSystem.MainModule main = system.main;
 				main.startColor = this.TargetColor;
-			}
+                
+            }
 
 			int i = 0;
 			foreach (var material in this.MeshRend)
@@ -537,7 +554,7 @@ static class SetInitialPortalModeRMP
 				if (material.material.name == "Stone pattern 01 (Instance)" && this.TargetColor == Color.black)
                 {
 					i++;
-					material.material = RareMagicPortal.Globals.originalMaterials["surtlingcore"];
+					//material.material = RareMagicPortal.Globals.originalMaterials["surtlingcore"];
 
 				}
 					
@@ -605,6 +622,8 @@ static class SetInitialPortalModeRMP
 		public List<Renderer> MeshRend { get; } = new List<Renderer>();
 		public new TeleportWorld TeleportW { get; }
 
+		public bool RainbowBool { get; set; } = false;
+
 
 		public override Color GetOldColor()
 		{
@@ -615,8 +634,14 @@ static class SetInitialPortalModeRMP
 			return this.TargetColor;
 		}
 
+        public override bool RainbowActive()
+        {
+            return this.RainbowBool;
+        }
+
         public override void Raindbow()
         {
+            this.RainbowBool = true;
             bool useme = false;
             if (MagicPortalFluid.PortalDrinkColor.Value == MagicPortalFluid.Toggle.On)
                 useme = true;
@@ -629,8 +654,8 @@ static class SetInitialPortalModeRMP
 				colorOverLifetime.enabled = true;
 				Gradient customGradient = PortalColorLogic.CreateCustomGradient();
 				var mat = system.GetComponent<ParticleSystemRenderer>().material;
-				if (mat != MagicPortalFluid.originalMaterials["flame"])
-                    system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
+				//if (mat != MagicPortalFluid.originalMaterials["flame"])
+                    //system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
 				var Main = system.main;
 				Main.duration = 10;
 
@@ -641,18 +666,17 @@ static class SetInitialPortalModeRMP
 					colorspeed.color = Color.white;
 					colorspeed.range = new Vector2(1, 10);
 					Main.startColor = new ParticleSystem.MinMaxGradient(customGradient);
-					return;
 				}
 				else if (useme)
 				{
 					colorOverLifetime.color = new ParticleSystem.MinMaxGradient(customGradient);
-					return;
 				}
 			}
         }
         public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
 		{
-			this.OldColor = this.TargetColor;
+			this.RainbowBool = false;
+            this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
 
 
@@ -681,8 +705,8 @@ static class SetInitialPortalModeRMP
 				red.material.color = this.TargetColor; // hue of ring
 				if (this.TargetColor == Color.black)
 				{
-					red.material.SetColor("_EmissionColor", Color.white * 2);
-					red.material = RareMagicPortal.Globals.originalMaterials["surtlingcore"];
+				//	red.material.SetColor("_EmissionColor", Color.white * 2); // ERRORS
+					//red.material = RareMagicPortal.Globals.originalMaterials["surtlingcore"];
 				}
 				else
 				{
@@ -739,8 +763,10 @@ static class SetInitialPortalModeRMP
 		public new Color OldColor = Color.clear;
 		public List<Light> Lights { get; } = new List<Light>();
 		public List<Material> Materials { get; } = new List<Material>();
+		public List<ParticleSystem> Systems { get; } = new List<ParticleSystem>();
 		public List<Renderer> MeshRend { get; } = new List<Renderer>();
 		public new TeleportWorld TeleportW { get; }
+		public bool RainbowBool { get; set; } = false;
 
 		public override Color GetOldColor()
 		{
@@ -750,23 +776,41 @@ static class SetInitialPortalModeRMP
 		{
 			return this.TargetColor;
 		}
+        public override bool RainbowActive()
+        {
+            return this.RainbowBool;
+        }
 
         public override void Raindbow()
         {
-
+            this.RainbowBool = true;
+            foreach (var system in this.Systems)
+            {
+                var colorOverLifetime = system.colorOverLifetime;
+                colorOverLifetime.enabled = true;
+                Gradient customGradient = PortalColorLogic.CreateCustomGradient();
+                colorOverLifetime.color = new ParticleSystem.MinMaxGradient(customGradient);
+            }
         }
 
         public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
 		{
-			this.OldColor = this.TargetColor;
+			this.RainbowBool = false;
+            this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
 
 			foreach (Light light in this.Lights)
 			{
 				light.color = this.TargetColor;
 			}
+            foreach (var system in this.Systems)
+            {
+                var colorOverLifetime = system.colorOverLifetime;
+                colorOverLifetime.enabled = false;
+				colorOverLifetime.color = this.TargetColor;
+            }
 
-			if (SetcolorTarget)
+            if (SetcolorTarget)
 			{
 				Color Mod = newcolor;
 				Mod = Mod * .4f;
@@ -801,7 +845,9 @@ static class SetInitialPortalModeRMP
 		{
 			TeleportW = teleportWorld;
 
-			Materials.AddRange(
+            Systems.AddRange(teleportWorld.GetComponentsInNamedChild<ParticleSystem>("Particle System"));
+
+            Materials.AddRange(
 			teleportWorld.GetComponentsInNamedChild<ParticleSystemRenderer>("Particle System") // in tint
 				.Where(psr => psr.material != null)
 				.Select(psr => psr.material));
@@ -825,11 +871,13 @@ static class SetInitialPortalModeRMP
 		public List<Light> Lights { get; } = new List<Light>();
 		public List<Material> Materials { get; } = new List<Material>();
 		private Material DefaultMaterials { get; }
-
-		private Transform CenterAdmin { get; set; }
+        public List<ParticleSystem> Systems { get; } = new List<ParticleSystem>();
+        private Transform CenterAdmin { get; set; }
 		public List<Material> Materials2 { get; } = new List<Material>();
 		public List<Renderer> MeshRend { get; } = new List<Renderer>();
 		public new TeleportWorld TeleportW { get; }
+
+		public bool RainbowBool { get; set; } = false;
 
 		public override Color GetOldColor()
 		{
@@ -840,17 +888,38 @@ static class SetInitialPortalModeRMP
 			return this.TargetColor;
 		}
 
-        public override void Raindbow()
+        public override bool RainbowActive()
         {
+            return this.RainbowBool;
+        }
 
+        public override void Raindbow()
+        {          
+            this.RainbowBool = true;
+            foreach (var system in this.Systems)
+            {
+
+                var colorOverLifetime = system.colorOverLifetime;
+                colorOverLifetime.enabled = true;
+                Gradient customGradient = PortalColorLogic.CreateCustomGradient();
+                colorOverLifetime.color = new ParticleSystem.MinMaxGradient(customGradient);
+                    
+            }
         }
         public override void SetTeleportWorldColors(Color newcolor,bool SetcolorTarget = false, bool SetMaterial = false)
 		{
-		
-			this.OldColor = this.TargetColor;
+			this.RainbowBool = false;
+            this.OldColor = this.TargetColor;
 			this.TargetColor = newcolor;
 
-			foreach (Light light in this.Lights)
+            foreach (var system in this.Systems)
+            {
+                var colorOverLifetime = system.colorOverLifetime;
+                colorOverLifetime.enabled = false;
+                colorOverLifetime.color = this.TargetColor;
+            }
+
+            foreach (Light light in this.Lights)
 			{
 				light.color = this.TargetColor;
 			}
@@ -869,13 +938,14 @@ static class SetInitialPortalModeRMP
 				if (this.TargetColor == Color.black)
 				{
 					//red.material.SetColor("_EmissionColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
-					red.material.SetColor("_TintColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
-					red.material = RareMagicPortal.Globals.originalMaterials["silver_necklace"];
+					//red.material.SetColor("_TintColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
+					//red.material = RareMagicPortal.Globals.originalMaterials["silver_necklace"];
 					CenterAdmin.gameObject.SetActive(true);
 				}
 				else
 				{
-					red.material = DefaultMaterials;
+                    CenterAdmin.gameObject.SetActive(false);
+                    red.material = DefaultMaterials;
 					//red.material.SetColor("_EmissionColor", this.TargetColor); // actual emission
 					red.material.SetColor("_TintColor", this.TargetColor); // actual emission
 				}
@@ -886,10 +956,11 @@ static class SetInitialPortalModeRMP
 				material.color = this.TargetColor;
 				material.SetColor("_TintColor", this.TargetColor); // actual tint
 			}
+			
 			foreach (Material material in this.Materials2)
             {
                 Color Col2 = this.TargetColor;
-				Col2.r = +.3f;
+				//Col2.r = +.3f;
 				material.color = Col2;
 				material.SetColor("_TintColor", Col2 ); // actual tint
 			}
@@ -897,9 +968,10 @@ static class SetInitialPortalModeRMP
 
 		public TeleportWorldDataRMPModel4(TeleportWorld teleportWorld)
 		{
+            Systems.AddRange(teleportWorld.GetComponentsInNamedChild<ParticleSystem>("Particle System1"));
+            Systems.AddRange(teleportWorld.GetComponentsInNamedChild<ParticleSystem>("Particle System2"));
 
-
-			Materials.AddRange(
+            Materials.AddRange(
 			teleportWorld.GetComponentsInNamedChild<ParticleSystemRenderer>("Particle System1") // in tint
 				.Where(psr => psr.material != null)
 				.Select(psr => psr.material));
@@ -927,6 +999,7 @@ static class SetInitialPortalModeRMP
         public new Color OldColor = Color.clear;
         public List<Light> Lights { get; } = new List<Light>();
         public List<Material> Materials { get; } = new List<Material>();
+        public List<ParticleSystem> Systems { get; } = new List<ParticleSystem>();
         private Material DefaultMaterials { get; }
         private Material Platform { get; }
 
@@ -935,6 +1008,7 @@ static class SetInitialPortalModeRMP
         public List<Renderer> MeshRend { get; } = new List<Renderer>();
         public List<Renderer> MeshRendPlatform { get; } = new List<Renderer>();
         public new TeleportWorld TeleportW { get; }
+		public bool RainbowBool { get; set; } = false;
 
         public override Color GetOldColor()
         {
@@ -944,19 +1018,60 @@ static class SetInitialPortalModeRMP
         {
             return this.TargetColor;
         }
-
+        public override bool RainbowActive()
+        {
+            return this.RainbowBool;
+        }
         public override void Raindbow()
         {
+            this.RainbowBool = true;
+            bool useme = false;
+            if (MagicPortalFluid.PortalDrinkColor.Value == MagicPortalFluid.Toggle.On)
+                useme = true;
 
+
+            foreach (var system in this.Systems)
+            {
+			
+                var colorOverLifetime = system.colorOverLifetime;
+                colorOverLifetime.enabled = true;
+                Gradient customGradient = PortalColorLogic.CreateCustomGradient();
+                var mat = system.GetComponent<ParticleSystemRenderer>().material;
+                //if (mat != MagicPortalFluid.originalMaterials["flame"])
+                //system.GetComponent<ParticleSystemRenderer>().material = MagicPortalFluid.originalMaterials["flame"];
+                var Main = system.main;
+                Main.duration = 10;
+
+                if (!useme)
+                {
+                    var colorspeed = system.colorBySpeed;
+                    colorspeed.enabled = true;
+                    colorspeed.color = Color.white;
+                    colorspeed.range = new Vector2(1, 10);
+                    Main.startColor = new ParticleSystem.MinMaxGradient(customGradient);
+                }
+                else if (useme)
+                {
+                    colorOverLifetime.color = new ParticleSystem.MinMaxGradient(customGradient);
+                }
+            }
         }
         public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
         {
+			this.RainbowBool = false;
             this.OldColor = this.TargetColor;
             this.TargetColor = newcolor;
 
             foreach (Light light in this.Lights)
             {
                 light.color = this.TargetColor;
+            }
+
+            foreach (var system in this.Systems)
+            {
+                var colorOverLifetime = system.colorOverLifetime;
+                colorOverLifetime.enabled = false;
+                colorOverLifetime.color = this.TargetColor;
             }
 
             if (SetcolorTarget)
@@ -973,11 +1088,13 @@ static class SetInitialPortalModeRMP
                 if (this.TargetColor == Color.black)
                 {
                     //red.material.SetColor("_EmissionColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
-                    red.material.SetColor("_TintColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
-                    red.material = RareMagicPortal.Globals.originalMaterials["silver_necklace"];
-				
-				
-                   // CenterAdmin.gameObject.SetActive(true);
+                    // red.material.SetColor("_TintColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
+                    // red.material = RareMagicPortal.Globals.originalMaterials["silver_necklace"];
+                    red.material.SetColor("_EmissionColor", Color.white); // actual emission
+                    red.material.SetColor("_TintColor", Color.white); // a
+
+
+                    // CenterAdmin.gameObject.SetActive(true);
                 }
                 else
                 {
@@ -997,6 +1114,18 @@ static class SetInitialPortalModeRMP
             {
                 material.color = this.TargetColor;
                 material.SetColor("_TintColor", this.TargetColor); // actual tint
+
+                if (this.TargetColor == Color.black)
+				{
+					material.color = Color.white;
+                    material.SetColor("_TintColor", Color.white); // actual tint
+                }
+
+                if (this.TargetColor == PortalColorLogic.Tan)
+                {
+                    material.color = Color.gray;
+                    material.SetColor("_TintColor", Color.gray); // actual tint
+                }
             }
         }
 
@@ -1015,6 +1144,8 @@ static class SetInitialPortalModeRMP
             MeshRend.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("Quad"));
             MeshRendPlatform.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("PlatformCircle"));
 
+            Systems.AddRange(teleportWorld.GetComponentsInNamedChild<ParticleSystem>("Particle System"));
+
             DefaultMaterials = teleportWorld.GetComponentsInNamedChild<Renderer>("Quad").Last().material;
 
             Platform = teleportWorld.GetComponentsInNamedChild<Renderer>("PlatformCircle").Last().material;
@@ -1024,7 +1155,8 @@ static class SetInitialPortalModeRMP
             TeleportW = teleportWorld;
         }
 
-    }    class TeleportWorldDataRMPModel6 : ClassBase // Orginal Stoneish Portal
+    }    
+	class TeleportWorldDataRMPModel6 : ClassBase // Orginal Stoneish Portal
     {
         public new Color TargetColor = Color.clear;
         public new Color OldColor = Color.clear;
@@ -1032,11 +1164,12 @@ static class SetInitialPortalModeRMP
         public List<Material> Materials { get; } = new List<Material>();
         private Material DefaultMaterials { get; }
 
-        private Transform CenterAdmin { get; set; }
-        public List<Material> Materials2 { get; } = new List<Material>();
+        public List<ParticleSystem> Systems { get; } = new List<ParticleSystem>();
+
         public List<Renderer> MeshRend { get; } = new List<Renderer>();
         public List<Renderer> MeshRendPlatform { get; } = new List<Renderer>();
         public new TeleportWorld TeleportW { get; }
+		public bool RainbowBool { get; set; } = false;
 
         public override Color GetOldColor()
         {
@@ -1046,27 +1179,71 @@ static class SetInitialPortalModeRMP
         {
             return this.TargetColor;
         }
-
+        public override bool RainbowActive()
+        {
+            return this.RainbowBool;
+        }
         public override void Raindbow()
         {
+			this.RainbowBool = true;
+            bool useme = false;
+            if (MagicPortalFluid.PortalDrinkColor.Value == MagicPortalFluid.Toggle.On)
+                useme = true;
 
+			foreach (ParticleSystem system in this.Systems)
+			{
+				var colorOverLifetime = system.colorOverLifetime;
+				colorOverLifetime.enabled = true;
+				Gradient customGradient = PortalColorLogic.CreateCustomGradient();
+				var Main = system.main;
+				Main.duration = 10;
+
+				if (!useme)
+				{
+					var colorspeed = system.colorBySpeed;
+					colorspeed.enabled = true;
+					colorspeed.color = Color.white;
+					colorspeed.range = new Vector2(1, 10);
+					Main.startColor = new ParticleSystem.MinMaxGradient(customGradient);
+					return;
+				}
+				else if (useme)
+				{
+					colorOverLifetime.color = new ParticleSystem.MinMaxGradient(customGradient);
+					return;
+				}
+			}
+            
 
         }
         public override void SetTeleportWorldColors(Color newcolor, bool SetcolorTarget = false, bool SetMaterial = false)
         {
+			this.RainbowBool = false;
             this.OldColor = this.TargetColor;
             this.TargetColor = newcolor;
 
-            foreach (Light light in this.Lights)
-            {
-                light.color = this.TargetColor;
-            }
 
             if (SetcolorTarget)
             {
-                Color Mod = newcolor;
+                Color Mod = newcolor*7;
                 Mod = Mod * .6f;
                 this.TeleportW.m_colorTargetfound = Mod;
+            }
+
+            Color FlamePurple = new Color(191f / 255f, 0f, 191f / 255f, 1);
+            foreach (ParticleSystem system in this.Systems)
+            {
+                ParticleSystem.ColorOverLifetimeModule colorOverLifetime = system.colorOverLifetime;
+
+                ParticleSystem.MainModule main = system.main;
+                main.startColor = this.TargetColor;
+				colorOverLifetime.color = this.TargetColor;
+            }
+
+			/*           
+			 *           foreach (Light light in this.Lights)
+            {
+                light.color = this.TargetColor;
             }
 
             //Material mat = RareMagicPortal.Globals.originalMaterials["portal_small"];
@@ -1096,21 +1273,23 @@ static class SetInitialPortalModeRMP
 
             foreach (Material material in this.Materials)
             {
-                material.color = this.TargetColor;
-                material.SetColor("_TintColor", this.TargetColor); // actual tint
+                material.color = this.TargetColor ;
+                material.SetColor("_TintColor", this.TargetColor ); // actual tint
             }
+			*/
+
         }
 
         public TeleportWorldDataRMPModel6(TeleportWorld teleportWorld)
         {
 
-			/*
+            /*
             Materials.AddRange(
             teleportWorld.GetComponentsInNamedChild<ParticleSystemRenderer>("Particle System") // in tint
                 .Where(psr => psr.material != null)
                 .Select(psr => psr.material));
 
-
+			Systems.AddRange(teleportWorld.GetComponentsInNamedChild<ParticleSystem>("suck particles"));
             Lights.AddRange(teleportWorld.GetComponentsInNamedChild<Light>("Point light"));
 
             MeshRend.AddRange(teleportWorld.GetComponentsInNamedChild<Renderer>("Quad"));
@@ -1122,6 +1301,11 @@ static class SetInitialPortalModeRMP
 
            // CenterAdmin = teleportWorld.GetComponentsInNamedChild<Transform>("CenterAdmin").First();
 			*/
+            DefaultMaterials = teleportWorld.GetComponentsInNamedChild<Renderer>("flames (1)").Last().material;
+
+
+            Systems.AddRange(teleportWorld.GetComponentsInNamedChild<ParticleSystem>("flames (1)"));
+            Systems.AddRange(teleportWorld.GetComponentsInNamedChild<ParticleSystem>("Particle System (1)"));
             TeleportW = teleportWorld; 
         }
 

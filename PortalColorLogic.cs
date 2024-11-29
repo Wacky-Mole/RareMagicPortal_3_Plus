@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using RareMagicPortal.PortalWorld;
 using RareMagicPortal_3_Plus.PortalMode;
+using RareMagicPortalPlus.limit;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -189,6 +190,7 @@ namespace RareMagicPortal
                 {
                     return;
                 }
+
                // RMP.LogWarning("portal model name " + __instance.m_model.name);
                 if (__instance.m_model.name == "small_portal" )//|| __instance.m_model.name == "model")
                 {
@@ -1456,9 +1458,15 @@ namespace RareMagicPortal
             if (PortalColorLogic.CheatSwordColor == null)
                 return;
 
-            RMP.LogWarning("yipp plus");
-
-            teleportWorldData.Raindbow();
+            if (teleportWorldData.RainbowActive())
+            {
+               // RMP.LogWarning("Rainbow Active");
+            }
+            else
+            {
+               // RMP.LogWarning("yipp plus");
+                teleportWorldData.Raindbow();
+            }
         }
 
         private static  bool CanChangePortalColor( bool isAdmin, bool isCreator, ZDOP portalData)

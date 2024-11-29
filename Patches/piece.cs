@@ -18,8 +18,9 @@ namespace RareMagicPortal_3_Plus.Patches
             {
                 if (piece == null)
                     return true;
+                
 
-                if (MagicPortalFluid.PiecetoLookFor.Contains(piece.name + "(Clone)") && !__instance.m_noPlacementCost && MagicPortalFluid.ConfigCreator.Value) // portal and Configonly
+                if (MagicPortalFluid.PortalNames.Contains(piece.name) && !__instance.m_noPlacementCost && MagicPortalFluid.ConfigCreator.Value) // portal and Configonly
                 {
                     MagicPortalFluid.RareMagicPortal.LogInfo("Creator " + piece.GetCreator() + " Me " + __instance.GetPlayerID());
                     bool bool2 = piece.IsCreator();// nice
@@ -30,10 +31,10 @@ namespace RareMagicPortal_3_Plus.Patches
                     else
                     {
                         __instance.Message(MessageHud.MessageType.Center, "$rmp_youarenotcreator");
-                        return false;
+                        return false;   
                     }
                 }
-                return true;
+                return true;    
             }
         }
 
@@ -46,7 +47,7 @@ namespace RareMagicPortal_3_Plus.Patches
             {
                 if (piece == null || __instance == null) return true;
 
-                if (MagicPortalFluid.PiecetoLookFor.Contains(piece.name) && !__instance.m_noPlacementCost) // portal
+                if (MagicPortalFluid.PiecetoLookFor.Contains(piece.name) && !__instance.m_noPlacementCost) // wood_portal and stone_portal/ might remove this
                 {
                     if (__instance.transform.position != null)
                         MagicPortalFluid.tempvalue = __instance.transform.position; // save position //must be assigned
