@@ -173,7 +173,7 @@ namespace RareMagicPortal
         internal static int startupwait = 0;
         private static IEnumerator DelayUpdatesForStartup()
         {
-            yield return new WaitForSecondsRealtime(10f);
+            yield return new WaitForSecondsRealtime(5f);
             startupwait = 2;
         }
 
