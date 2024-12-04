@@ -1,7 +1,3 @@
-Here’s the readme with all the config options included for full customization:
-
----
-
 # Rare Magic Portal Plus
 
 **Support Me!**  
@@ -25,23 +21,19 @@ If you're tired of the default portal mechanics and want more flexibility and co
 - Fluid scarcity limits the number of portals players can build, creating a more thoughtful and cooperative multiplayer experience.  
 - **Fully Configurable**: Adjust drop rates, crafting requirements, and more.  
 
+</br>
+
 ### **2. Crystal and Key Economy**
 This system adds a layer of strategy and progression to portal use.
 
 - **Crystals** are consumed upon entering portals, making their use a calculated decision.
 - **Keys** grant one-time or permanent access to specific portals without consumption.
 
-#### **Crystal and Key Colors:**
-- 11 unique colors: **Yellow, Red, Green, Blue, Purple, Tan, Cyan, Orange, White, Black, and Gold.**
-- **Color-Tiered System:** Each color corresponds to specific portal types or uses:
-  - **Gold**: The Master Key and Master Crystal allow endgame portal travel.
-  - **White**: Special portals for rare, limited-access uses.
-  - **Rainbow Mode**: Activated with the Portal Drink for unrestricted teleportation.
+Prefab IDs (Crystals):  
+- `PortalCrystalRed`, `PortalCrystalGold`, `PortalCrystalTan`, `PortalCrystalGreen`, `PortalCrystalBlue`, `PortalCrystalPurple`, `PortalCrystalCyan`, `PortalCrystalOrange`, `PortalCrystalBlack`, `PortalCrystalWhite`, `PortalCrystalYellow`
 
-#### **Advanced Use Cases:**
-- **Team-Only Portals:** Restrict access to specific players or groups.
-- **Toll Portals:** Charge Crystals for access to strategic locations or boss areas.
-- **Interactive Economy:** Promote resource trading, competition, or cooperation through server events and marketplace integration.
+Prefab IDs (Keys):  
+- `PortalKeyGold`, `PortalKeyRed`, `PortalKeyTan`, `PortalKeyGreen`, `PortalKeyBlue`, `PortalKeyPurple`, `PortalKeyCyan`, `PortalKeyOrange`, `PortalKeyBlack`, `PortalKeyWhite`, `PortalKeyYellow`
 
 ---
 
@@ -114,37 +106,141 @@ A game-changing potion that allows **unrestricted teleportation** for a limited 
 ## **Configuration Options**
 Rare Magic Portal Plus offers a robust set of configuration options through the `RareMagicPortal.cfg` file. Here's a comprehensive list:
 
-### **General Settings**
-| **Config Option**                | **Default** | **Description**                                                                                  |
-|-----------------------------------|-------------|--------------------------------------------------------------------------------------------------|
-| Force Server Config              | `true`      | Ensures server settings are enforced globally.                                                  |
-| YML Portal Logs                  | `false`     | Enables logging of YAML updates for portals.                                                    |
-| Risky Server Save                | `false`     | Delays YAML updates until server shutdown for better performance.                               |
-| Max Portals Per Player           | `0`         | Limits the number of portals a player can build. 0 disables the limit.                          |
-| Only Admin Can Build Portals     | `false`     | Restricts portal construction to server admins.                                                 |
-
-### **Portal Fluid Settings**
-| **Config Option**             | **Default** | **Description**                                                                                  |
-|--------------------------------|-------------|--------------------------------------------------------------------------------------------------|
-| Add Portal Fluid (Wood)       | `false`     | Adds Portal Fluid as a crafting requirement for wood portals.                                   |
-| Add Portal Fluid (Stone)      | `false`     | Adds Portal Fluid as a crafting requirement for stone portals.                                  |
-| Fluid Per Wood Portal         | `1`         | Amount of fluid required for wood portals.                                                      |
-| Fluid Per Stone Portal        | `2`         | Amount of fluid required for stone portals.                                                     |
-
-### **Portal Colors**
-| **Config Option**                 | **Default** | **Description**                                                                                  |
-|------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
-| Default Portal Color              | `Yellow`    | Sets the default color for new portals.                                                         |
-| Enabled Portal Colors             | `All`       | Specifies which portal colors are available for use.                                            |
-| Biome Colors                      | `true`      | Enables biome-based portal colors.                                                              |
-
-### **Crystal and Key Settings**
-| **Config Option**                 | **Default** | **Description**                                                                                  |
-|------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
-| Use Gold as Portal Master         | `true`      | Makes Gold Crystals and Keys the "master" resource for portal travel.                           |
-| Crystal Consumption Per Transit   | `1`         | Number of Crystals consumed per portal use.                                                     |
+Here's the updated README with all your configuration sections and options integrated.
 
 ---
+
+# Rare Magic Portal Plus
+
+**Support Me!**  
+If you enjoy this mod and want to support its continued development, you can **[Buy Me a Coffee on Ko-Fi](https://ko-fi.com)**! Every bit of support helps keep the portals running smoothly!
+
+---
+
+## **Overview**
+**Rare Magic Portal Plus** is a feature-rich mod designed to overhaul how portals function in Valheim. It offers extensive customization and management options, allowing you to create dynamic and immersive teleportation mechanics.
+
+---
+
+## **Key Features**
+- **Portal Modes:** Normal, TargetPortal, Rainbow, Password Lock, One-Way, and more.
+- **Dynamic Portal Colors:** Match biomes, server events, or player preferences.
+- **Portal Economy:** Introduces Magical Portal Fluid, Crystals, and Keys for strategic teleportation.
+- **Player Management:** Limit the number of portals per player, enforce restrictions, or enable admin-only settings.
+- **YAML Configuration Support:** Easily manage portal-specific settings like colors, access, and behavior.
+
+---
+
+## **Configuration Options**
+
+Rare Magic Portal Plus includes numerous configuration options categorized by their functionality. Below is a detailed list.
+
+---
+
+### **General Settings**
+| **Option**                      | **Default** | **Description**                                                                                  |
+|----------------------------------|-------------|--------------------------------------------------------------------------------------------------|
+| `Force Server Config`           | `true`      | Forces server settings to be applied globally.                                                  |
+| `YML Portal Logs`               | `Off`       | Enables detailed YAML portal logging.                                                           |
+| `Risky Server Save`             | `Off`       | Saves YAML updates only during server shutdown.                                                 |
+| `Use Small Server Updates`      | `On`        | Sends only small parts of the YAML to clients.                                                  |
+| `Clients Save Data`             | `Off`       | Allows clients to save YAML data locally.                                                       |
+| `Modifier key for Color`        | `CapsLock`  | Sets the modifier key for changing portal colors.                                               |
+| `Modifier key for PortalMode`   | `LeftCtrl`  | Sets the modifier key for changing portal modes.                                                |
+
+---
+
+### **Portal Modes**
+| **Option**                       | **Default**           | **Description**                                                                                  |
+|-----------------------------------|-----------------------|--------------------------------------------------------------------------------------------------|
+| `Default Mode for New Portals`   | `Normal`              | Sets the default portal mode for newly placed portals.                                           |
+| `Prevent Target Portal Change`   | `On`                 | Disallows non-creators from changing TargetPortal mode.                                          |
+| `Prevent Creator of TargetPortalChange` | `Off`        | Restricts changes to TargetPortal mode to admins only.                                           |
+| `Force Portal Animation`         | `Off`                | Forces portal animation for TargetPortal mode.                                                  |
+
+---
+
+### **Teleportation Enhancements**
+| **Option**                       | **Default** | **Description**                                                                                  |
+|-----------------------------------|-------------|--------------------------------------------------------------------------------------------------|
+| `Fly on Warp`                    | `On`        | Enables flight during teleportation to avoid fall damage.                                        |
+| `Hide Name`                      | `On`        | Hides the name of portals.                                                                      |
+| `Show Warp Hint Left`            | `On`        | Displays teleportation hints on the left-hand side.                                             |
+
+---
+
+### **Portal Colors**
+| **Option**                        | **Default** | **Description**                                                                                  |
+|------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
+| `Enabled Colors for Portals`      | All Colors  | Defines available portal colors: Yellow, Red, Green, Blue, etc.                                 |
+| `Default Color`                   | `Yellow`    | Sets the default color for new portals.                                                         |
+| `Prevent Color Changing`          | `Off`       | Prevents users from changing portal colors (Admins/Owners override).                            |
+| `Use Biome Colors by Default`     | `On`        | Overrides default color with biome-related colors.                                              |
+| `Prevent Portal Creators from Changing Biome Color` | `On` | Prevents creators from changing portal colors if biome colors are active.                       |
+| `Biome Colors`                    | `Meadows:Tan,BlackForest:Blue,Swamp:Green,...` | Maps biomes to specific colors.                                                                |
+
+---
+
+### **Portal Fluid Settings**
+| **Option**                         | **Default** | **Description**                                                                                  |
+|-------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
+| `Add PortalFluid to Wood Portal`   | `Off`       | Requires PortalFluid for crafting wood portals.                                                 |
+| `Add PortalFluid to Stone Portal`  | `Off`       | Requires PortalFluid for crafting stone portals.                                                |
+| `Fluid Per Wood Portal`            | `1`         | Sets the fluid requirement for wood portals.                                                    |
+| `Fluid Per Stone Portal`           | `2`         | Sets the fluid requirement for stone portals.                                                   |
+| `Portal Magic Fluid Spawn`         | `0`         | Defines the starting quantity of PortalFluid for new players.                                   |
+
+---
+
+### **Crystal and Key Settings**
+| **Option**                         | **Default** | **Description**                                                                                  |
+|-------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
+| `Use Gold as Portal Master`        | `On`        | Enables Gold Crystals/Keys as master teleportation resources.                                   |
+| `Crystal Consume Per Transit`      | `1`         | Sets the number of crystals consumed per portal use.                                            |
+| `Use Top Left Message`             | `Off`       | Displays portal tags/messages in the top-left corner instead of center.                         |
+| `Free Passage Color`               | `None`      | Specifies the color for portals allowing free passage.                                          |
+
+---
+
+### **Player and Admin Controls**
+| **Option**                         | **Default** | **Description**                                                                                  |
+|-------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
+| `Only Creator Can Deconstruct`     | `true`      | Restricts portal deconstruction to creators and admins.                                         |
+| `Max Weight Allowed for Portals`   | `0`         | Limits the maximum weight of items transported through portals.                                 |
+| `Only Admin Can Build`             | `Off`       | Restricts portal construction to admins.                                                        |
+| `MaxAmountOfPortals`               | `0`         | Limits the total number of portals per player.                                                  |
+| `MaxAmountOfPortals_VIP`           | `0`         | Sets a higher portal limit for VIP players.                                                     |
+
+---
+
+### **Portal Drink**
+| **Option**                         | **Default** | **Description**                                                                                  |
+|-------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
+| `Portal Drink Timer`               | `120`       | Sets the duration of the Portal Drink effect in seconds.                                        |
+| `Portal Drink Wont Allow`          | `None`      | Specifies items disallowed even with Portal Drink.                                              |
+
+---
+
+### **Portal Images**
+| **Option**                         | **Default** | **Description**                                                                                  |
+|-------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
+| `Activate Portal Images`           | `Off`       | Enables animated portal images during teleportation.                                            |
+| `Full Screen Image Only`           | `Off`       | Displays random full-screen images instead of animations.                                       |
+
+---
+
+### **Crystal Selector**
+| **Option**                         | **Default**          | **Description**                                                                                  |
+|-------------------------------------|----------------------|--------------------------------------------------------------------------------------------------|
+| `Use for Crystal Gold`             | `PortalCrystalGold`  | Assigns item prefabs for Gold Crystals.                                                         |
+| `Use for Crystal Red`              | `PortalCrystalRed`   | Assigns item prefabs for Red Crystals.                                                          |
+| `Use for Crystal Green`            | `PortalCrystalGreen` | Assigns item prefabs for Green Crystals.                                                        |
+| `Use for Crystal Blue`             | `PortalCrystalBlue`  | Assigns item prefabs for Blue Crystals.                                                         |
+| `Use for Crystal Purple`           | `PortalCrystalPurple`| Assigns item prefabs for Purple Crystals.                                                       |
+
+---
+
+Let me know if additional details or adjustments are needed!
 
 ## **Prefab IDs**
 Use these prefab IDs for custom configurations or integrations with other mods:
