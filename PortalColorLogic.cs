@@ -1270,7 +1270,12 @@ namespace RareMagicPortal
             PortalN.Portals[PortalName].PortalZDOs.Add(ZDOID, zdoid);
             if (instance != null)
             { }
-
+            
+            if (creator != "")
+            {
+                PortalN.Portals[PortalName].PortalZDOs[ZDOID].Creator = creator;
+            }
+            
             if (oldname != "")
             {
                 PortalN.Portals[PortalName].PortalZDOs[ZDOID] = PortalN.Portals[oldname].PortalZDOs[ZDOID].Clone(); // copy from another if just changed portal name // maybe config?
@@ -1285,11 +1290,6 @@ namespace RareMagicPortal
                 PortalN.Portals[PortalName].AdditionalAllowItems = PortalN.Portals[oldname].AdditionalAllowItems;
                 PortalN.Portals[PortalName].AdditionalProhibitItems = PortalN.Portals[oldname].AdditionalProhibitItems;
 
-            }
-
-            if (creator != "")
-            {
-                PortalN.Portals[PortalName].PortalZDOs[ZDOID].Creator = creator;
             }
 
             if (!cloneoverride)

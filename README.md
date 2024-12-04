@@ -51,7 +51,7 @@ Portals don’t have to be dull anymore! Customize portals with **vibrant colors**
 #### **Default Colors by Biome:**
 - **Meadows**: Tan
 - **Black Forest**: Blue
-- **Swamp**: Green
+- **Swamp**: Green****
 - **Plains**: Orange
 - **Mistlands**: Purple
 - **Deep North**: Cyan

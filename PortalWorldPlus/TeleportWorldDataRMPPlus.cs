@@ -920,7 +920,7 @@ static class SetInitialPortalModeRMP
                 main.startColor = this.TargetColor;
                 colorOverLifetime.color = this.TargetColor;
             }
-            Systems[1].gameObject.SetActive((false));
+            //Systems[1].gameObject.SetActive((false));
 
             foreach (Light light in this.Lights)
 			{
