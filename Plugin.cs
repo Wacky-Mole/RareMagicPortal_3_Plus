@@ -1534,8 +1534,8 @@ namespace RareMagicPortal
             GemColorBlack = config(crystal_selector, "Use for Crystal Black", CrystalBlack, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
             string portal_images = "9.Portal Images--------";
-            PortalImages = config(portal_images, "Activate Portal Images", Toggle.Off, "Portal Images during Teleport activated - Restart required");
-            PortalImagesFullScreenOnly = config(portal_images, "Full Screen Image Only", Toggle.Off, "Random Full Screen Image Only, disables Biome images and swirl. - Restart required");
+            PortalImages = config(portal_images, "Activate Portal Images", Toggle.Off, "Portal Images during Teleport activated - Restart required - You may lose sleep messages");
+            PortalImagesFullScreenOnly = config(portal_images, "Full Screen Image Only", Toggle.Off, "Random Full Screen Image Only, disables Biome images and swirl. - Restart required - You may lose sleep messages");
         }
 
 

@@ -245,6 +245,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 {
                     throw new SkipPortalException();
                 }
+               // MagicPortalFluid.RareMagicPortal.LogWarning("Start Trigger");
                // ZLog.LogWarning("Start Trigger");
                 string PortalName = __instance.m_teleportWorld.m_nview.m_zdo.GetString("tag");
                 var zdoname = __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);  
@@ -252,6 +253,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 var portalZDO = portal.PortalZDOs[zdoname];
                 MagicPortalFluid.TeleportingforWeight = 1;// what?
                 MagicPortalFluid.LastTeleportFast = portalZDO.FastTeleport;
+               // MagicPortalFluid.RareMagicPortal.LogWarning(" Trigger Init done");
                 //MagicPortalFluid.m_hadTarget = __instance.m_teleportWorld.m_hadTarget;
                 if (!portalZDO.Active) // skip all
                 {
@@ -354,8 +356,9 @@ namespace RareMagicPortal_3_Plus.Patches
                         Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Warp to Location with /warp destination");
 
                 }
-               // ZLog.LogWarning("CrystalKeyLogic");
+                // ZLog.LogWarning("CrystalKeyLogic");
                 // Check crystal and key logic
+               // MagicPortalFluid.RareMagicPortal.LogWarning("Crystal and Key Trigger");
                 if (PortalColorLogic.CrystalandKeyLogic(PortalName, __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID))) // for some of these need to skip til success in other areas.
                 {
                    // ZLog.LogWarning("After CrystalKeyLogic");
@@ -448,6 +451,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 }
                 else
                 {
+                    //MagicPortalFluid.RareMagicPortal.LogWarning(" Trigger crystal false");
                     MagicPortalFluid.Teleporting = false;
 
                     if (MagicPortalFluid.TargetPortalLoaded)
@@ -466,6 +470,7 @@ namespace RareMagicPortal_3_Plus.Patches
             [HarmonyPriority(Priority.Low)]
             internal static void Postfix(TeleportWorldTrigger __instance)
             {
+               // MagicPortalFluid.RareMagicPortal.LogWarning("try updating icons");
                 if (MagicPortalFluid.Teleporting && MagicPortalFluid.TargetPortalLoaded)
                 {
                     UpdatePortalIcons();

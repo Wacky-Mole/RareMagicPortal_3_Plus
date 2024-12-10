@@ -98,6 +98,16 @@ namespace RareMagicPortalPlus.PortalScreens
                 if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
                     return;
 
+                if (privBKG == null || defaultblack == null)
+                {
+                    privBKG = GameObject.Find("_GameMain").transform.Find("LoadingGUI/PixelFix/IngameGui/HUD/LoadingBlack/Bkg").gameObject;
+                    if (privBKG != null)
+                    {
+                        Image img2 = privBKG.GetComponent<Image>();
+                        defaultblack = img2.sprite;
+                    }
+                }
+
                 Image img = privBKG.GetComponent<Image>();
                 PortalImage.LoadBackgroundSprite();
                 img.sprite = PortalImage.BackgroundSprite;
@@ -153,35 +163,38 @@ namespace RareMagicPortalPlus.PortalScreens
                 }
 
                 Heightmap.Biome biome = WorldGenerator.instance.GetBiome(pos);
-
-                var biomeLayer = PortalImage.PortalLayers[4]; // ACTUAL 5
-                biomeLayer.LayerType = ScreenType.BiomeImage;
-                if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
+                try
                 {
-                    MagicPortalFluid.RareMagicPortal.LogInfo("Setting circle image to " + biome);
-                    // biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
-
-                    Image imageComponent = orginal5.GetComponent<Image>();
-                    imageComponent.sprite = PortalImage.MaskSprite;//PortalImage.PortalBiomeTextures[biome];
-                    //imageComponent.rectTransform.sizeDelta = new Vector2(PortalImage.maskwidth, PortalImage.maskheight);
-                    orginal5.SetActive(true);
-                    biomeLayer.RotationSpeed = 0;
-
-                    if (!orginal5.TryGetComponent(out Mask _))
+                    var biomeLayer = PortalImage.PortalLayers[4]; // ACTUAL 5
+                    biomeLayer.LayerType = ScreenType.BiomeImage;
+                    if (biomeLayer != null && biomeLayer.LayerType == ScreenType.BiomeImage && PortalImage.PortalBiomeTextures.ContainsKey(biome))
                     {
-                        orginal5.AddComponent<Mask>().showMaskGraphic = false;
+                        MagicPortalFluid.RareMagicPortal.LogInfo("Setting circle image to " + biome);
+                        // biomeLayer.ChangeBiomeSprite(PortalImage.PortalBiomeTextures[biome]);
 
-                        GameObject childImageObject = new GameObject("ChildImage");
-                        childImageObject.transform.SetParent(orginal5.transform, false);
-                        childImageObject.AddComponent<Image>();
+                        Image imageComponent = orginal5.GetComponent<Image>();
+                        imageComponent.sprite = PortalImage.MaskSprite;//PortalImage.PortalBiomeTextures[biome];
+                                                                       //imageComponent.rectTransform.sizeDelta = new Vector2(PortalImage.maskwidth, PortalImage.maskheight);
+                        orginal5.SetActive(true);
+                        biomeLayer.RotationSpeed = 0;
+
+                        if (!orginal5.TryGetComponent(out Mask _))
+                        {
+                            orginal5.AddComponent<Mask>().showMaskGraphic = false;
+
+                            GameObject childImageObject = new GameObject("ChildImage");
+                            childImageObject.transform.SetParent(orginal5.transform, false);
+                            childImageObject.AddComponent<Image>();
+                        }
+                        orginal5.GetComponent<Uirotate>().enabled = false;
+                        var childImageTrans = orginal5.transform.Find("ChildImage");
+                        var childImage = childImageTrans.GetComponent<Image>();
+                        childImage.rectTransform.sizeDelta = new Vector2(PortalImage.maskwidth, PortalImage.maskheight);
+                        childImage.sprite = PortalImage.PortalBiomeTextures[biome];
+
                     }
-                    orginal5.GetComponent<Uirotate>().enabled = false;
-                    var childImageTrans = orginal5.transform.Find("ChildImage");
-                    var childImage = childImageTrans.GetComponent<Image>();
-                    childImage.rectTransform.sizeDelta = new Vector2(PortalImage.maskwidth, PortalImage.maskheight);
-                    childImage.sprite = PortalImage.PortalBiomeTextures[biome];
-
                 }
+                catch (Exception e) { MagicPortalFluid.RareMagicPortal.LogWarning("Errror catch on Setting Biome Image, restart to fix "); };
             }
         }
         public enum ScreenType
