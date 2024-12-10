@@ -1,8 +1,6 @@
 # Rare Magic Portal Plus
 
-<a href="https://www.buymeacoffee.com/WackyMole" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height='36' style="height: 36px;" ></a>  [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H6LL5GA)
-
-<img src="https://wackymole.com/hosts/FireandIce.png" width="500"/>  <img src="https://wackymole.com/hosts/GoldPortal.png" width="500"/>
+<img src="https://wackymole.com/hosts/newportals2.png" width="1000"/>  
 
 
 **Support Me!**  
@@ -12,7 +10,7 @@ If you enjoy this mod and want to support its continued development. </br> Every
 ---
 
 ## **Overview**
-**Rare Magic Portal Plus** is a feature-rich mod designed to overhaul how portals function in Valheim. It adds depth, challenge, and immersion to an otherwise straightforward teleportation mechanic. Whether you want to create a thriving portal economy, encourage multiplayer cooperation, enforce item restrictions, or simply customize your portals with vibrant colors, this mod is for you.
+**Rare Magic Portal Plus** (RMPP) is a feature-rich mod designed to overhaul how portals function in Valheim. It adds depth, challenge, and immersion to an otherwise straightforward teleportation mechanic. Whether you want to create a thriving portal economy, encourage multiplayer cooperation, enforce item restrictions, or simply customize your portals with vibrant colors, this mod is for you.
 
 Portals become strategic tools for server admins rather than limitless shortcuts. With customizable **Crystals**, **Keys**, and **Magical Portal Fluid**, servers can implement scarcity to foster teamwork, competition, and a thriving in-game economy. From **biome-themed portal colors** to **VIP player restrictions**, this mod offers a broad array of options to make portals as unique and dynamic as your world.
 
@@ -23,13 +21,14 @@ This is a complex mod targeting multiplayer servers, but by default most of the 
 Another, more basic version, might be released in the future. RMP without the Plus. 
 
 ---
-
+<img src="https://wackymole.com/hosts/FireandIce.png" width="500"/>  <img src="https://wackymole.com/hosts/GoldPortal.png" width="500"/>
 ## **Key Features**
 - **Portal Modes:** Normal, TargetPortal, Rainbow, Password Lock, One-Way, and more.
 - **Dynamic Portal Colors:** Match biomes, server events, or player preferences.
 - **Portal Economy:** Introduces Magical Portal Fluid, Crystals, and Keys for strategic teleportation. The colors can consume any item that you choose. 
 - **Player Management:** Limit the number of portals per player, enforce weight restrictions, or enable admin-only settings.
 - **YAML Configuration Support:** Easily manage portal-specific settings like colors, access, and behavior.
+- **More Portals:** This mod unlocks the default stone portal and adds 5 more new portals types!
 
 ---
 
@@ -63,7 +62,7 @@ The default behavior of portals in Valheim. Players can teleport between linked 
 
 ---
 
-#### **C. Crystal and Key **
+#### C. Crystal and Key 
 - Normal mode but with Crystal and Keys
 ---
 
@@ -148,6 +147,7 @@ Most Portal modes can be combined with **Portal Crystals**, **Keys**,  for even 
 Portals don’t have to be dull anymore! Customize portals with **vibrant colors** to match biomes, themes, or server events.
 
 #### **Default Colors by Biome:**
+These can all be changed or manually changed
 - **Meadows**: Tan
 - **Black Forest**: Blue
 - **Swamp**: Green
@@ -160,11 +160,11 @@ Portals don’t have to be dull anymore! Customize portals with **vibrant colors**
 #### **Special Colors:**
 - **Gold**: Endgame or Master portals.
 - **White**: Special-use portals for admins or VIPs.
-- **Rainbow**: Dynamic cycling colors when Portal Drink is active.
+- **Rainbow**: Dynamic cycling colors when Portal Drink is active. OR rainbow Mode
 
 #### **Custom Features:**
 - **Admin-Only Colors**: Restrict some portal colors to server admins.
-- **Biome-Forced Colors**: Automatically assign colors based on the portal’s location.
+- **Biome-Forced Colors**: Automatically assign colors based on the portal’s Biome location.
 - **Manual Cycling**: Use shortcut keys to change portal colors on the fly.
 
 ---
@@ -172,9 +172,11 @@ Portals don’t have to be dull anymore! Customize portals with **vibrant colors**
 ### **3. Crystal and Key Economy**
 This system adds a layer of strategy and progression to portal use.
 
-- **Crystals** are consumed upon entering portals, making their use a calculated decision.
-- **Keys** grant one-time or permanent access to specific portals without consumption.
-
+- **Crystals** are consumed upon entering portals, making their use a calculated decision. // can be anything prefab, from any mod
+- **Keys** grant permanent access to specific color portals without consumption. 
+- 
+<img src="https://wackymole.com/hosts/typesofcrystals.png" width="1000"/> <img src="https://wackymole.com/hosts/nored.png" width="500"/> 
+<img src="https://wackymole.com/hosts/goldPortal.png" width="300"/>
 
 ---
 
@@ -185,10 +187,6 @@ This system adds a layer of strategy and progression to portal use.
 - **Fully Configurable**: Adjust drop rates, crafting requirements, and more.  
 
 </br>
-
-
-
-
 
 ### **4. Portal Restrictions and Freedom**
 Take control of what players can transport through portals:
@@ -203,20 +201,23 @@ Take control of what players can transport through portals:
 
 ---
 
-### **5. Portal Limits and Player Management**
+### **5. Portals**
 Promote fairness and balance by setting limits on portal creation:
 
 - **Maximum Portals per Player:** Configurable caps for regular and VIP players.
 - **World Portal Limit:** Restrict the total number of portals in the world.
 - **Server Sync Enforcement:** Ensure all players follow the same rules.
 
----
 
+---
+<img src="https://wackymole.com/hosts/portal5.7.sizes.png" width="500"/>  
+<img src="https://wackymole.com/hosts/portal.5.8.png" width="500"/>  
 
 #### **Recommended Mods for Drop Integration:**
 - **[Drop That](https://valheim.thunderstore.io/package/ASharpPen/Drop_That/):** Configure loot tables for boss drops and creatures.
-- **[Better Trader](https://valheim.thunderstore.io/package/OdinPlus/Better_Trader_Remake/):** Add items to trader inventories for multiplayer economies.
-- **[Epic Loot](https://valheim.thunderstore.io/package/RandyKnapp/EpicLoot/):** Make these resources rewards for completing quests or bounties.
+- **[TradersExtended](https://thunderstore.io/c/valheim/p/shudnal/TradersExtended/):** Add items to trader inventories for multiplayer economies.
+- **[SimpleTrader](https://thunderstore.io/c/valheim/p/coemt/SimpleTrader/):** Add items to trader inventories for multiplayer economies. Up to 10 items
+- **[TheCodFathersLegacy](https://thunderstore.io/c/valheim/p/blacks7ar/TheCodFathersLegacy/):** a mod to immortalized a loving grandfather as an NPC trader that sells various things.
 - **[KG Marketplace](https://valheim.thunderstore.io/package/KGvalheim/Marketplace_And_Server_NPCs_Revamped/):** Include them in player-run marketplaces.
 
 ---
@@ -227,6 +228,8 @@ A game-changing potion that allows **unrestricted teleportation** for a limited 
 - Active portals temporarily display **Rainbow Mode** or a **White glow.**
 - **Fully Configurable:** Adjust duration and item restrictions for balance.
 
+
+<img src="https://wackymole.com/hosts/White2.png" width="700"/>  <img src="https://wackymole.com/hosts/OdinsBlessing.png" width="200"/>
 ---
 
 
@@ -253,13 +256,18 @@ Rare Magic Portal Plus includes numerous configuration options categorized by th
 | **Option**                       | **Default**           | **Description**                                                                                  |
 |-----------------------------------|-----------------------|--------------------------------------------------------------------------------------------------|
 | `Default Mode for New Portals`   | `Normal`              | Sets the default portal mode for newly placed portals.                                           |
+
+---
+### **1.2 Target Portal**
+| **Option**                       | **Default** | **Description**                                                                                  |
+|-----------------------------------|-------------|--------------------------------------------------------------------------------------------------|
 | `Prevent Target Portal Change`   | `On`                 | Disallows non-creators from changing TargetPortal mode.                                          |
 | `Prevent Creator of TargetPortalChange` | `Off`        | Restricts changes to TargetPortal mode to admins only.                                           |
 | `Force Portal Animation`         | `Off`                | Forces portal animation for TargetPortal mode.                                                  |
 
 ---
 
-### **1.7Teleportation Enhancements**
+### **1.7 Teleportation Enhancements**
 | **Option**                       | **Default** | **Description**                                                                                  |
 |-----------------------------------|-------------|--------------------------------------------------------------------------------------------------|
 | `Fly on Warp`                    | `On`        | Enables flight during teleportation to avoid fall damage.                                        |
@@ -267,6 +275,27 @@ Rare Magic Portal Plus includes numerous configuration options categorized by th
 | `Show Warp Hint Left`            | `On`        | Displays teleportation hints on the left-hand side.                                             |
 
 ---
+
+### **1.9 Rainbow Mode Settings**
+
+This section includes options for configuring the **Rainbow Mode** feature, which is activated when using a Portal Drink.
+
+| **Config Option**         | **Default** | **Description**                                                                                  |
+|----------------------------|-------------|--------------------------------------------------------------------------------------------------|
+| Portal Drink Color Alt     | `Off`       | Changes the portal effect when using a Portal Drink. Default is a Rainbow effect; toggling this changes it to a SwordCheat-like effect.|
+
+---
+
+### **1.9.1 Random Teleport Settings**
+
+This section focuses on the **Random Teleport** mode, where portals can send players to random locations.
+
+| **Config Option**       | **Default** | **Description**                                                                                  |
+|--------------------------|-------------|--------------------------------------------------------------------------------------------------|
+| Always Active?           | `true`      | Determines whether the portal's visual effects (glow and flames) are always active, or only glow when inactive. | 
+
+---
+
 
 ### **2.Portal Colors**
 | **Option**                        | **Default** | **Description**                                                                                  |
@@ -300,8 +329,10 @@ Rare Magic Portal Plus includes numerous configuration options categorized by th
 
 ---
 
+<img src="https://wackymole.com/hosts/portal5.5.png" width="500"/>  
+<img src="https://wackymole.com/hosts/portal5.6.sizes.png" width="500"/>  
 
-### **5.Player and Admin Controls**
+### 5.Portals 
 | **Option**                         | **Default** | **Description**                                                                                  |
 |-------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
 | `Only Creator Can Deconstruct`     | `true`      | Restricts portal deconstruction to creators and admins.                                         |
@@ -311,6 +342,41 @@ Rare Magic Portal Plus includes numerous configuration options categorized by th
 | `MaxAmountOfPortals_VIP`           | `0`         | Sets a higher portal limit for VIP players.                                                     |
 
 ---
+
+### **5.1 Wood Portal Settings**
+
+This section defines configurations specific to **Wood Portals**, such as crafting requirements, health, and crafting station dependencies.
+
+| **Config Option**              | **Default**         | **Description**                                                                                                                                              |
+|---------------------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Station Requirement Wood        | `$piece_workbench` | The crafting station required nearby for placing a Wood Portal. Options include `Workbench = $piece_workbench`, `Forge = $piece_forge`, or `Artisan Station = $piece_artisanstation`. |
+| Level of CraftingStation Req    | `1`                 | The level of the crafting station required to place a Wood Portal.                                                                                           |
+| Portal Health Wood              | `400f`             | The health value of a Wood Portal.                                                                                                                           |
+
+---
+
+### **5.2 Stone Portal Settings**
+
+This section defines configurations specific to **Stone Portals**, including crafting requirements, health, and crafting station dependencies.
+
+| **Config Option**              | **Default**           | **Description**                                                                                                                                              |
+|---------------------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Portal Health Stone             | `1000f`              | The health value of a Stone Portal.                                                                                                                          |
+| Station Requirement Stone       | `$piece_stonecutter` | The crafting station required nearby for placing a Stone Portal. Options include `Workbench = $piece_workbench`, `Forge = $piece_forge`, or `Artisan Station = $piece_artisanstation`. |
+
+---
+
+### **5.3 Original Stone Portal Settings**
+
+This section allows customization of the **Original Stone Portal** (if used) by defining its crafting station and recipe.
+
+| **Config Option**                         | **Default**                                   | **Description**                                                                                                                                              |
+|-------------------------------------------|-----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Original Stone Crafting Station           | `$piece_workbench`                           | The crafting station required nearby for placing the Original Stone Portal.                                                                                  |
+| Original Stone Recipe                     | `GreydwarfEye:20,SurtlingCore:10,Obsidian:100,CheatSword:1` | The crafting recipe for the Original Stone Portal. Format: `id:amount,id:amount,...`.                                                                        |
+
+---
+
 
 ### **6.Portal Drink**
 | **Option**                         | **Default** | **Description**                                                                                  |
@@ -337,6 +403,10 @@ This section configures additional items that can be transported through portals
 | Color Gold Allows        | `""`        | Additional items allowed for Gold portals. Example: `"Iron,Copper"`                                      |
 
 ---
+<img src="https://wackymole.com/hosts/quadraframeblack.png" width="700"/>  
+
+Some black versions have different materials and even images.
+
 
 ### **8. Crystal Selector**
 
@@ -360,8 +430,9 @@ This section allows you to replace the default portal crystals with custom items
 
 
 ### **9. Portal Images**
+<img src="https://wackymole.com/hosts/portal.tp.images.png" width="800"/>  </br>
 
-This section allows you to replace the default portal transporting screen (black background) with a random background image and a inner transport circle with a biome specific image. Very Cool!
+This section allows you to replace the default portal transporting screen (black background) with a random background image and a inner transport circle with a biome specific image. Very Cool! Restart Required
 
 | **Option**                         | **Default** | **Description**                                                                                  |
 |-------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
@@ -388,8 +459,21 @@ Prefab IDs (Keys):
 Rare Magic Portal Plus works seamlessly with many popular Valheim mods, including:
 
 - **[TargetPortal](https://valheim.thunderstore.io/package/Smoothbrain/TargetPortal/):** A highly recommended mod for advanced portal mechanics. This mod has tight integration with TP.
-- **Epic Loot, Drop That, Better Trader, KG Marketplace, and more!**
+- **Epic Loot, JewelCrafting, Drop That, KG Marketplace, and more!**
+- **Not Compatible with the old RMP 2.0**
+- **Not Compatible with Advanced Portals**
 
+---
+
+## **Target Portal**
+So Target Portal is an intersting mod. I really wanted to add it to RMP, so I did. 
+
+I works awesome with RMPP. 
+
+RMPP actually fixes a lot of my personal gripes with Target Portal through the extra configs too!
+
+Download TargetPortal and RMPP together, you won't be disappointed. 
+<img src="https://wackymole.com/hosts/TargetPortalRMP2.png" width="700"/> 
 ---
 
 ## **Acknowledgments**
@@ -397,7 +481,7 @@ Rare Magic Portal Plus works seamlessly with many popular Valheim mods, includin
 - **My Wife again for putting up with all my modding time and being awesome.**    
 - Special thanks to:
   - The **OdinPlus Team** for their guidance and support.
-  - The **Blaxx** for making TargetPortal easy to patch. Seriously, I probably overrode half of the patches in this Target Portal to get compatibility. I am glad it worked.
+  - The **Blaxx** for making TargetPortal easy to patch. Seriously, I probably overrode half of the patches in this Target Portal to get compatibility. I am glad it worked out.
   -  **GraveBear** for updated icons.
 - Assets provided by the **Unity Asset Store**:
   - [Alchemy and Magic Pack](https://assetstore.unity.com/packages/3d/props/interior/free-alchemy-and-magic-pack-142991)
@@ -406,7 +490,7 @@ Rare Magic Portal Plus works seamlessly with many popular Valheim mods, includin
 ---
 
 ## **Changelog**
-- **v3.0.0:** Full rewrite and modularization of features.
+- **v3.0.0:** Full rewrite and modularization of features + extra portals.
 - **v2.x.x:** Introduced Portal Colors, Biome Modes, and Portal Drink.
 - **v1.x.x:** Initial release with core functionality.
 

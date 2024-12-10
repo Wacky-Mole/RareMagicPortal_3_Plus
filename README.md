@@ -1,7 +1,6 @@
 # Rare Magic Portal Plus
 
-
-<img src="https://wackymole.com/hosts/FireandIce.png" width="500"/>  <img src="https://wackymole.com/hosts/GoldPortal.png" width="500"/>
+<img src="https://wackymole.com/hosts/newportals2.png" width="1000"/>  
 
 
 **Support Me!**  
@@ -22,13 +21,14 @@ This is a complex mod targeting multiplayer servers, but by default most of the 
 Another, more basic version, might be released in the future. RMP without the Plus. 
 
 ---
-
+<img src="https://wackymole.com/hosts/FireandIce.png" width="500"/>  <img src="https://wackymole.com/hosts/GoldPortal.png" width="500"/>
 ## **Key Features**
 - **Portal Modes:** Normal, TargetPortal, Rainbow, Password Lock, One-Way, and more.
 - **Dynamic Portal Colors:** Match biomes, server events, or player preferences.
 - **Portal Economy:** Introduces Magical Portal Fluid, Crystals, and Keys for strategic teleportation. The colors can consume any item that you choose. 
 - **Player Management:** Limit the number of portals per player, enforce weight restrictions, or enable admin-only settings.
 - **YAML Configuration Support:** Easily manage portal-specific settings like colors, access, and behavior.
+- **More Portals:** This mod unlocks the default stone portal and adds 5 more new portals types!
 
 ---
 
@@ -175,7 +175,8 @@ This system adds a layer of strategy and progression to portal use.
 - **Crystals** are consumed upon entering portals, making their use a calculated decision. // can be anything prefab, from any mod
 - **Keys** grant permanent access to specific color portals without consumption. 
 - 
-<img src="https://wackymole.com/hosts/typesofcrystals.png" width="300"/> <img src="https://wackymole.com/hosts/nored.png" width="300"/> <img src="https://wackymole.com/hosts/goldPortal.png" width="300"/>
+<img src="https://wackymole.com/hosts/typesofcrystals.png" width="1000"/> <img src="https://wackymole.com/hosts/nored.png" width="500"/> 
+<img src="https://wackymole.com/hosts/goldPortal.png" width="300"/>
 
 ---
 
@@ -207,8 +208,10 @@ Promote fairness and balance by setting limits on portal creation:
 - **World Portal Limit:** Restrict the total number of portals in the world.
 - **Server Sync Enforcement:** Ensure all players follow the same rules.
 
----
 
+---
+<img src="https://wackymole.com/hosts/portal5.7.sizes.png" width="500"/>  
+<img src="https://wackymole.com/hosts/portal.5.8.png" width="500"/>  
 
 #### **Recommended Mods for Drop Integration:**
 - **[Drop That](https://valheim.thunderstore.io/package/ASharpPen/Drop_That/):** Configure loot tables for boss drops and creatures.
@@ -326,6 +329,8 @@ This section focuses on the **Random Teleport** mode, where portals can send pla
 
 ---
 
+<img src="https://wackymole.com/hosts/portal5.5.png" width="500"/>  
+<img src="https://wackymole.com/hosts/portal5.6.sizes.png" width="500"/>  
 
 ### 5.Portals 
 | **Option**                         | **Default** | **Description**                                                                                  |
@@ -398,6 +403,10 @@ This section configures additional items that can be transported through portals
 | Color Gold Allows        | `""`        | Additional items allowed for Gold portals. Example: `"Iron,Copper"`                                      |
 
 ---
+<img src="https://wackymole.com/hosts/quadraframeblack.png" width="700"/>  
+
+Some black versions have different materials and even images.
+
 
 ### **8. Crystal Selector**
 
@@ -421,8 +430,9 @@ This section allows you to replace the default portal crystals with custom items
 
 
 ### **9. Portal Images**
+<img src="https://wackymole.com/hosts/portal.tp.images.png" width="800"/>  </br>
 
-This section allows you to replace the default portal transporting screen (black background) with a random background image and a inner transport circle with a biome specific image. Very Cool!
+This section allows you to replace the default portal transporting screen (black background) with a random background image and a inner transport circle with a biome specific image. Very Cool! Restart Required
 
 | **Option**                         | **Default** | **Description**                                                                                  |
 |-------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
@@ -463,7 +473,7 @@ I works awesome with RMPP.
 RMPP actually fixes a lot of my personal gripes with Target Portal through the extra configs too!
 
 Download TargetPortal and RMPP together, you won't be disappointed. 
-<img src="https://wackymole.com/hosts/TargetPortalRMP2.png" width="600"/> 
+<img src="https://wackymole.com/hosts/TargetPortalRMP2.png" width="700"/> 
 ---
 
 ## **Acknowledgments**
@@ -471,7 +481,7 @@ Download TargetPortal and RMPP together, you won't be disappointed.
 - **My Wife again for putting up with all my modding time and being awesome.**    
 - Special thanks to:
   - The **OdinPlus Team** for their guidance and support.
-  - The **Blaxx** for making TargetPortal easy to patch. Seriously, I probably overrode half of the patches in this Target Portal to get compatibility. I am glad it worked.
+  - The **Blaxx** for making TargetPortal easy to patch. Seriously, I probably overrode half of the patches in this Target Portal to get compatibility. I am glad it worked out.
   -  **GraveBear** for updated icons.
 - Assets provided by the **Unity Asset Store**:
   - [Alchemy and Magic Pack](https://assetstore.unity.com/packages/3d/props/interior/free-alchemy-and-magic-pack-142991)
@@ -480,7 +490,7 @@ Download TargetPortal and RMPP together, you won't be disappointed.
 ---
 
 ## **Changelog**
-- **v3.0.0:** Full rewrite and modularization of features.
+- **v3.0.0:** Full rewrite and modularization of features + extra portals.
 - **v2.x.x:** Introduced Portal Colors, Biome Modes, and Portal Drink.
 - **v1.x.x:** Initial release with core functionality.
 

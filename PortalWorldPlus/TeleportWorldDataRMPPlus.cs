@@ -944,7 +944,9 @@ static class SetInitialPortalModeRMP
 					//red.material.SetColor("_TintColor", new Color(82f / 255f, 56f / 255f, 55f / 255f, 1));
 					//red.material = RareMagicPortal.Globals.originalMaterials["silver_necklace"];
 					CenterAdmin.gameObject.SetActive(true);
-				}
+                    red.material.SetColor("_TintColor", Color.clear);
+
+                }
 				else
 				{
                     CenterAdmin.gameObject.SetActive(false);
@@ -956,17 +958,29 @@ static class SetInitialPortalModeRMP
 
 			foreach (Material material in this.Materials)
 			{
-				material.color = this.TargetColor;
+
+                material.color = this.TargetColor;
 				material.SetColor("_TintColor", this.TargetColor); // actual tint
-			}
+                if (this.TargetColor == Color.black)
+                {
+                    material.SetColor("_TintColor", Color.clear);
+                }
+
+            }
 			
 			foreach (Material material in this.Materials2)
             {
+
+
                 Color Col2 = this.TargetColor;
 				//Col2.r = +.3f;
 				material.color = Col2;
 				material.SetColor("_TintColor", Col2 ); // actual tint
-			}
+                if (this.TargetColor == Color.black)
+                {
+                    material.SetColor("_TintColor", Color.clear);
+                }
+            }
 		}
 
 		public TeleportWorldDataRMPModel4(TeleportWorld teleportWorld)
