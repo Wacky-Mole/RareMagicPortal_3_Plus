@@ -248,9 +248,26 @@ namespace RareMagicPortal_3_Plus.Patches
                // MagicPortalFluid.RareMagicPortal.LogWarning("Start Trigger");
                // ZLog.LogWarning("Start Trigger");
                 string PortalName = __instance.m_teleportWorld.m_nview.m_zdo.GetString("tag");
-                var zdoname = __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);  
-                var portal = PortalColorLogic.PortalN.Portals[PortalName];
-                var portalZDO = portal.PortalZDOs[zdoname];
+                var zdoname = __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
+                if (zdoname == "")
+                {
+                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Hover over portal first");
+                    throw new SkipPortalException();
+                }
+
+                if (!PortalColorLogic.PortalN.Portals.TryGetValue(PortalName, out var portal))
+                {
+                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Hover over portal first");
+                    throw new SkipPortalException();
+                }
+
+                if (!portal.PortalZDOs.TryGetValue(zdoname, out var portalZDO))
+                {
+                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Hover over portal first");
+                    throw new SkipPortalException();
+                }
+                //var portal = PortalColorLogic.PortalN.Portals[PortalName];
+                //var portalZDO = portal.PortalZDOs[zdoname];
                 MagicPortalFluid.TeleportingforWeight = 1;// what?
                 MagicPortalFluid.LastTeleportFast = portalZDO.FastTeleport;
                // MagicPortalFluid.RareMagicPortal.LogWarning(" Trigger Init done");

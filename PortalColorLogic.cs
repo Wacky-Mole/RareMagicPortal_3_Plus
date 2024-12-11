@@ -546,7 +546,7 @@ namespace RareMagicPortal
 
                 if (portalName == "" && PortalColorLogic.reloaded)
                 {
-                    PortalColorLogic.RMP.LogInfo("Updating Blank Portals");
+                    PortalColorLogic.RMP.LogInfo("Updating Blank Portals Color");
                     PortalColorLogic.updateYmltoColorChange("", colorIndex, zdoName);
                     PortalColorLogic.reloaded = false;
                 }
