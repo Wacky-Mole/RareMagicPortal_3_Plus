@@ -247,7 +247,7 @@ Rare Magic Portal Plus includes numerous configuration options categorized by th
 | `Risky Server Save`             | `Off`       | Saves YAML updates only during server shutdown.                                                 |
 | `Use Small Server Updates`      | `On`        | Sends only small parts of the YAML to clients.                                                  |
 | `Clients Save Data`             | `Off`       | Allows clients to save YAML data locally.                                                       |
-| `Modifier key for Color`        | `CapsLock`  | Sets the modifier key for changing portal colors.                                               |
+| `Modifier key for Color`        | `LeftAlt`  | Sets the modifier key for changing portal colors.                                               |
 | `Modifier key for PortalMode`   | `LeftCtrl`  | Sets the modifier key for changing portal modes.                                                |
 
 ---

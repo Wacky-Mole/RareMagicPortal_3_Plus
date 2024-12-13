@@ -13,6 +13,7 @@ using YamlDotNet.Serialization;
 using System.IO;
 using ItemManager;
 using System.ComponentModel;
+using RareMagicPortalPlus.PortalScreens;
 using YamlDotNet.Core.Tokens;
 
 namespace RareMagicPortal_3_Plus.Patches
@@ -87,12 +88,12 @@ namespace RareMagicPortal_3_Plus.Patches
             [HarmonyPriority(Priority.LowerThanNormal)]
             internal static bool Prefix(ref bool __result, ref Inventory __instance)
             {
-               //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 1");
+                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 1");
                 if (__instance == null || Player.m_localPlayer == null || MagicPortalFluid.JustWaitforInventory)
                 {
                     return true;
                 }
-               // MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 2");
+                // MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 2");
 
                 bool teleportAllowed = false;
                 bool drinkActive = Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode());
@@ -102,7 +103,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     teleportAllowed = true;
                 }
 
-              //  MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 3");
+                //  MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 3");
                 Vector3 playerPosition = Player.m_localPlayer.transform.position;
                 List<Piece> piecesFound = new List<Piece>();
                 functions.GetAllTheDamnPiecesinRadius(playerPosition, 5f, piecesFound);
@@ -121,10 +122,11 @@ namespace RareMagicPortal_3_Plus.Patches
                 }
                 //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 5");
                 string portalName = portalW.GetText();
+                /*
                 if (string.IsNullOrEmpty(portalName))
                 {
                     return true; // Invalid portal
-                }
+                } */
 
                 if (!PortalColorLogic.PortalN.Portals.TryGetValue(portalName, out var portalData))
                 {
@@ -141,8 +143,8 @@ namespace RareMagicPortal_3_Plus.Patches
                 {
                     currentColor = portalZDO.BiomeColor;
                 }
-                    // MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 7");
-                if (portalData.TeleportAnything )
+                // MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 7");
+                if (portalData.TeleportAnything)
                 {
                     teleportAllowed = true;
                 }
@@ -241,14 +243,14 @@ namespace RareMagicPortal_3_Plus.Patches
 
                     // Remove any duplicates
                     additionalAllows = additionalAllows.Distinct().ToList();
-                   // MagicPortalFluid.RareMagicPortal.LogInfo("additionalAllows contains:" + string.Join(",", additionalAllows));
+                    // MagicPortalFluid.RareMagicPortal.LogInfo("additionalAllows contains:" + string.Join(",", additionalAllows));
                     foreach (var item in __instance.m_inventory)
                     {
                         if (!item.m_shared.m_teleportable && !additionalAllows.Contains(item.m_dropPrefab.name))
                         {
                             Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Cannot teleport due to item: " + item.m_dropPrefab.name);
-                           // MagicPortalFluid.RareMagicPortal.LogInfo("Cannot teleport:" + item.m_dropPrefab.name);
-                           __result = false;
+                            // MagicPortalFluid.RareMagicPortal.LogInfo("Cannot teleport:" + item.m_dropPrefab.name);
+                            __result = false;
                             return false;
                         }
                     }
@@ -268,8 +270,8 @@ namespace RareMagicPortal_3_Plus.Patches
             {
                 ZRoutedRpc.instance.Register("RequestServerAnnouncementRMP", new Action<long, ZPackage>(functions.RPC_RequestServerAnnouncementRMP)); // Our Server Handler
                 ZRoutedRpc.instance.Register("RequestServerAnnouncementRMPZDOFULL", new Action<long, ZPackage>(functions.RPC_RequestServerAnnouncementRMPZDOFULL)); // Our Server Handler
-                //((MonoBehaviour)(object)MagicPortalFluid.context).StartCoroutine(MagicPortalFluid.RemovedDestroyedTeleportWorldsCoroutine()); // moved to this incase the stop and start joining
-                                                                                                            //ZRoutedRpc.instance.Register("EventServerAnnouncementRMP", new Action<long, ZPackage>(RPC_EventServerAnnouncementRMP)); // event handler
+                                                                                                                                                                    //((MonoBehaviour)(object)MagicPortalFluid.context).StartCoroutine(MagicPortalFluid.RemovedDestroyedTeleportWorldsCoroutine()); // moved to this incase the stop and start joining
+                                                                                                                                                                    //ZRoutedRpc.instance.Register("EventServerAnnouncementRMP", new Action<long, ZPackage>(RPC_EventServerAnnouncementRMP)); // event handler
             }
         }
 
@@ -329,7 +331,19 @@ namespace RareMagicPortal_3_Plus.Patches
         }
 
 
+        [HarmonyPatch(typeof(Player), "OnDestroy")]
+        private static class PlayerDeathRMPP
+        {
+            private static void Postfix()
+            {
+                if (Player.m_localPlayer == null)
+                {
+                    ps_patches.setBackgroundblack();
+                    PortalColorLogic.startupwait = 0;
+                }
+                    
+            }
 
-
+        }
     }
 }

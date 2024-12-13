@@ -91,6 +91,12 @@ namespace RareMagicPortal_3_Plus.Patches
                     var portal = PortalColorLogic.PortalN.Portals[PortalName];
                     var portalZDO = portal.PortalZDOs[zdoname];
 
+                    if (string.IsNullOrEmpty(PortalName) && MagicPortalFluid.DisableNoNamed.Value  == MagicPortalFluid.Toggle.On)
+                    {
+                        __result = false;
+                        return false;
+                    }
+
                     if (!portalZDO.Active)
                     {
                         __result = false;
@@ -264,6 +270,11 @@ namespace RareMagicPortal_3_Plus.Patches
                 if (!portal.PortalZDOs.TryGetValue(zdoname, out var portalZDO))
                 {
                     Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Hover over portal first");
+                    throw new SkipPortalException();
+                }
+
+                if (PortalName == "" && MagicPortalFluid.DisableNoNamed.Value == MagicPortalFluid.Toggle.On)
+                {
                     throw new SkipPortalException();
                 }
                 //var portal = PortalColorLogic.PortalN.Portals[PortalName];

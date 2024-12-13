@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,6 +20,18 @@ namespace RareMagicPortalPlus.PortalScreens
         private static Sprite  defaultblack = null;
         private static GameObject privBKG = null;
         private static GameObject orginal5 = null;
+        private static bool Crossplay = false;
+
+
+        internal static void setBackgroundblack()
+        {
+            if (privBKG != null && defaultblack != null)
+            {
+                Image img = privBKG.GetComponent<Image>();
+                img.sprite = defaultblack;
+            }
+        }
+        
         [HarmonyPatch(typeof(Hud), "Awake")]
         private class HudHud_AwakeRMP
         {
@@ -26,7 +39,24 @@ namespace RareMagicPortalPlus.PortalScreens
             {
 
                 //if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
-                 //   return;
+                //   return;
+
+                // Pseudocode using reflection or known public fields if any
+                if (Crossplay)
+                    return;
+
+                try
+                {
+                    if (ZPlayFabMatchmaking.instance != null && ZPlayFabMatchmaking.instance.IsJoinedToNetwork())
+                    {
+                        Crossplay = true;
+                        MagicPortalFluid.RareMagicPortal.LogWarning("Crossplay client detected, removing portalImages");
+                        return;
+                    }
+
+                }
+                catch { }
+
 
                 PortalImage.Initialize();
               
@@ -53,6 +83,9 @@ namespace RareMagicPortalPlus.PortalScreens
         {
             private static bool Prefix(Uirotate __instance)
             {
+                if (Crossplay)
+                    return true;
+
                 if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
                     return true;
 
@@ -95,8 +128,12 @@ namespace RareMagicPortalPlus.PortalScreens
         {
             private static void Prefix(Vector3 pos)
             {
+                if (Crossplay)
+                    return;
+
                 if (MagicPortalFluid.PortalImages.Value == MagicPortalFluid.Toggle.Off)
                     return;
+
 
                 if (privBKG == null || defaultblack == null)
                 {

@@ -173,11 +173,14 @@ namespace RareMagicPortal
         internal static int startupwait = 0;
         private static IEnumerator DelayUpdatesForStartup()
         {
-            yield return new WaitForSecondsRealtime(5f);
+            yield return new WaitForSecondsRealtime(10f);
             startupwait = 2;
         }
 
         #region Patches
+
+
+
 
         [HarmonyPatch(typeof(TeleportWorld))] 
         private class TeleportWorldPatchRMP
@@ -330,6 +333,7 @@ namespace RareMagicPortal
                     string PortalName = __instance.m_nview.m_zdo.GetString("tag");
                     string zdoName = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
                     var oneportal = PortalN.Portals[PortalName].PortalZDOs[zdoName];
+
 
                     Player closestPlayer = Player.m_localPlayer; //Player.GetClosestPlayer(__instance.m_proximityRoot.position, 5f);
                     bool sameperson = false;
@@ -754,8 +758,14 @@ namespace RareMagicPortal
                 }
                 else
                 {
+
                     string jo = "Please name Portal, ";
                     string hi = " Color ";
+
+                    if (MagicPortalFluid.DisableNoNamed.Value == MagicPortalFluid.Toggle.On)
+                        jo = "Portal is Disabled, Please name Portal \n";
+        
+
                     hoverText = string.Format(
                         "{0}\n<size={1}><color={3}>{2}{5}</color><color={3}>{6}</color></size>\n{7}",
                         hoverText,

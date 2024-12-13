@@ -86,7 +86,7 @@ namespace RareMagicPortal
     }
 
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-    [KeyManager.VerifyKey(Author + "/" + ModName, LicenseMode.DedicatedServer)]
+    [KeyManager.VerifyKey(Author + "/" + ModName, LicenseMode.Always)]
     [BepInDependency("org.bepinex.plugins.targetportal", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("org.bepinex.plugins.guilds", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("org.bepinex.plugins.jewelcrafting", BepInDependency.DependencyFlags.SoftDependency)]  // it loads before this mod// not really required, but whatever
@@ -190,6 +190,7 @@ namespace RareMagicPortal
 
         internal static ConfigEntry<string>? DefaultColor;
         internal static ConfigEntry<PortalModeClass.PortalMode>? DefaultMode;
+        internal static ConfigEntry<Toggle>? DisableNoNamed;
 
         internal static ConfigEntry<int>? PortalDrinkTimer;
         internal static ConfigEntry<string>? PortalDrinkDeny;
@@ -859,6 +860,9 @@ namespace RareMagicPortal
             YMLCurrentFile = Path.Combine(YMLFULLFOLDER, Worldname + ".yml");
             YMLCurrentFileBackup = Path.Combine(YMLFULLFOLDER, Worldname + "_backup.yml");
 
+            if (ClientSave.Value == Toggle.Off && !ZNet.instance.IsServer())
+                return;
+
             if (!File.Exists(YMLCurrentFile))
             {
                 PortalColorLogic.PortalN = new PortalName()  // kind of iffy in inside this
@@ -1341,12 +1345,12 @@ namespace RareMagicPortal
             ConfigEnableYMLLogs = config(general, "YML Portal Logs", Toggle.Off, "Show YML Portal Logs after Every update");
 
             RiskyYMLSave = config(general, "Risky Server Save", Toggle.Off, "Only save YML updates when server shuts down");
-
+    
             UseSmallUpdates = config(general, "Use Small Server Updates", Toggle.On, "Only sends a tiny part of the YML to clients");
 
             ClientSave = config(general, "Clients Save Data", Toggle.Off, "Clients save YML data. (Has Passwords and coord info)");
       
-            portalRMPKEY = config(general, "Modifier key for Color", new KeyboardShortcut(KeyCode.CapsLock), "Modifier keY that has to be pressed while hovering over Portal + E", false);
+            portalRMPKEY = config(general, "Modifier key for Color", new KeyboardShortcut(KeyCode.LeftAlt), "Modifier keY that has to be pressed while hovering over Portal + E", false);
 
             portalRMPMODEKEY = config(general, "Modifier key for PortalMode", new KeyboardShortcut(KeyCode.LeftControl), "Modifier key that has to be pressed while hovering over Portal + E", false);
 
@@ -1355,6 +1359,7 @@ namespace RareMagicPortal
 
             string modes = "1.0 Portal Modes-----------";
             DefaultMode = config(modes, "Default Mode for New Portals", PortalModeClass.PortalMode.Normal, "Portal Mode for all newly placed portals.");
+            DisableNoNamed = config(modes, "Disable All No Named Portals", Toggle.Off, "Portals with no Names will not work. Remember you can also edit the yaml for ''  to set default portalmode ");
             
             string normalMode = "1.1 Normal Mode-----------";
 
