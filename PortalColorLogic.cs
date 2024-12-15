@@ -179,10 +179,7 @@ namespace RareMagicPortal
         }
 
         #region Patches
-
-
-
-
+        
         [HarmonyPatch(typeof(TeleportWorld))] 
         private class TeleportWorldPatchRMP
         {   
@@ -196,7 +193,7 @@ namespace RareMagicPortal
                 }
 
                // RMP.LogWarning("portal model name " + __instance.m_model.name);
-                if (__instance.m_model.name == "small_portal" )//|| __instance.m_model.name == "model")
+                if (__instance.m_model.name == "small_portal" )// portal_wood and portal_stone both
                 {
                     if (!MagicPortalFluid._teleportWorldDataCache.ContainsKey(__instance))
                     {
@@ -456,24 +453,24 @@ namespace RareMagicPortal
                         {
                             if (!PortalN.Portals.ContainsKey(name))
                             {
-                                WritetoYML(name, zdoname, check);
+                                WritetoYML(name, zdoname, check, false, __instance);
                             }
 
                             if (!PortalN.Portals[name].PortalZDOs.ContainsKey(zdoname))
                             {
-                                WritetoYML(name, zdoname, check, true);
+                                WritetoYML(name, zdoname, check, true, __instance);
                             }
                         }
                         else
                         {
                             if (!PortalN.Portals.ContainsKey(name))
                             {
-                                WritetoYML(name, zdoname);
+                                WritetoYML(name, zdoname, "" ,false, __instance);
                             }
 
                             if (!PortalN.Portals[name].PortalZDOs.ContainsKey(zdoname))
                             {
-                                WritetoYML(name, zdoname, "", true);
+                                WritetoYML(name, zdoname, "", true, __instance);
                             }
                         }
                     }
@@ -549,9 +546,9 @@ namespace RareMagicPortal
                         zdoName);
                 }
 
-                if (portalName == "" && PortalColorLogic.reloaded)
+                if (portalName == "" && PortalColorLogic.reloaded && MagicPortalFluid.isAdmin )
                 {
-                    PortalColorLogic.RMP.LogInfo("Updating Blank Portals Color");
+                    PortalColorLogic.RMP.LogInfo("Updating Blank Portals Color - just incase admin changed color");
                     PortalColorLogic.updateYmltoColorChange("", colorIndex, zdoName);
                     PortalColorLogic.reloaded = false;
                 }
@@ -830,7 +827,7 @@ namespace RareMagicPortal
 
             if (!PortalN.Portals.ContainsKey(portalName))
             {
-                WritetoYML(portalName, zdoName);
+                WritetoYML(portalName, zdoName, "", false, instance);
             }
 
             if (!PortalN.Portals[portalName].PortalZDOs.ContainsKey(zdoName))
@@ -991,7 +988,12 @@ namespace RareMagicPortal
             var serializedPortal = portalName + MagicPortalFluid.StringSeparator + serializer.Serialize(PortalN.Portals[portalName]);
             //var serializedPortal =  serializer.Serialize(PortalN.Portals[portalName]);
             if(MagicPortalFluid.ConfigEnableYMLLogs.Value == MagicPortalFluid.Toggle.On)
-                RMP.LogInfo("Sending THIS TO Server " + serializedPortal);
+            {
+                if (!ZNet.instance.IsServer())
+                {
+                    RMP.LogInfo("Sending THIS TO Server " + serializedPortal);
+                }
+            }             
 
             // Construct full YAML
             string fullYml = MagicPortalFluid.WelcomeString + Environment.NewLine + serializer.Serialize(PortalN);
@@ -1001,9 +1003,15 @@ namespace RareMagicPortal
                 // Handling for dedicated server
                 if (ZNet.instance.IsDedicated())
                 {
-                    if (MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.Off)
+                    if (MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.Off && MagicPortalFluid.JustWrote == 0)
                     {
+                        if (MagicPortalFluid.ConfigEnableYMLLogs.Value == MagicPortalFluid.Toggle.On)
+                        {
+                            RMP.LogInfo("Writing/adding this to the full yaml on the Server " + serializedPortal);
+                        }
+
                         WriteYmlToFile(fullYml);
+                        MagicPortalFluid.context.StartCoroutine(MagicPortalFluid.context.WaitforReadWrote());
                     }
 
                     // Update the appropriate YML data for clients
@@ -1055,8 +1063,8 @@ namespace RareMagicPortal
       {
           MagicPortalFluid.JustWrote = 1;
 
-          // Adding extra newlines for readability directly to the content
-          string[] lines = ymlContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            // Adding extra newlines for readability directly to the content
+            string[] lines = ymlContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
           var formattedContent = new StringBuilder();
 
           foreach (string line in lines)

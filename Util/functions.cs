@@ -178,9 +178,7 @@ namespace RareMagicPortal
                         {
                             
                         }
-
-                        
-
+                     
                         //YMLPortalData.Value has been updated
                         return;
 
@@ -237,7 +235,7 @@ namespace RareMagicPortal
                             PortalColorLogic.PortalN.Portals.Add(portalNCheck, port);
                         }
                         if (MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.Off) 
-                            MagicPortalFluid.JustWrote = 2;
+                            MagicPortalFluid.JustWrote = 0;
                         
                         PortalColorLogic.ClientORServerYMLUpdate(PortalColorLogic.PortalN.Portals[portalNCheck], portalNCheck); // Would only be on server so it's fine. 
                         MagicPortalFluid.RareMagicPortal.LogInfo($"Server has recieved a YML PORTAL update from {playername} for {PortalName} ");

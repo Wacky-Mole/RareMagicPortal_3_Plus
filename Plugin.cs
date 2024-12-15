@@ -979,7 +979,7 @@ namespace RareMagicPortal
             }
         }
 
-        private IEnumerator WaitforReadWrote()
+        internal IEnumerator WaitforReadWrote()
         {
             yield return new WaitForSeconds(1);
 
