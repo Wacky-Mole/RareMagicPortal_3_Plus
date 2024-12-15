@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
@@ -1535,18 +1536,25 @@ namespace RareMagicPortal
         {
             teleportWorldData.OldColor = teleportWorldData.TargetColor;
 
-            if (teleportWorldData.TargetColor == Gold)
+            if (teleportWorldData.DefaultMaterial == null)
+            {
+                teleportWorldData.DefaultMaterial = teleportWorldData.MeshRend[0].material;
+                teleportWorldData.DefaultColor = teleportWorldData.DefaultMaterial.GetColor("_Color");
+            }
+
+            if (teleportWorldData.TargetColor == Gold &&  teleportWorldData.Runes.Count == 0)
             {
                 try
                 {
-                    Material mat = MagicPortalFluid.originalMaterials["shaman_prupleball"];
+                   // Material mat = MagicPortalFluid.originalMaterials["shaman_prupleball"];
                     foreach (Renderer red in teleportWorldData.MeshRend)
                     {
-                        red.material = mat;
+                        red.material = MagicPortalFluid.originalMaterials["silver_necklace"];//teleportWorldData.DefaultMaterial;
+                        red.material.SetColor("_Color", teleportWorldData.TargetColor * 2);
                     }
                 }
                 catch { }
-            }
+            } 
             else if (teleportWorldData.TargetColor == Color.black)
             {
                 try
@@ -1587,10 +1595,15 @@ namespace RareMagicPortal
             }*/
             else
             {          // sets back to default
-                Material mat = MagicPortalFluid.originalMaterials["portal_small"];
+                Material mat = teleportWorldData.DefaultMaterial;//MagicPortalFluid.originalMaterials["portal_small"];
+                
                 foreach (Renderer red in teleportWorldData.MeshRend)
                 {
                     red.material = mat;
+                    if( teleportWorldData.Runes.Count != 0)
+                        red.material.SetColor("_Color", teleportWorldData.TargetColor * 2);
+                    else 
+                        red.material.SetColor("_Color", teleportWorldData.DefaultColor);
                 }
             }
 
@@ -1699,7 +1712,7 @@ namespace RareMagicPortal
                 }
                 else if (teleportWorldData.TargetColor == Color.cyan)
                 { 
-                    system.GetComponent<Renderer>().material = MagicPortalFluid.originalMaterials["crystal_Dvergrcase"];
+                   // system.GetComponent<Renderer>().material = MagicPortalFluid.originalMaterials["crystal_Dvergrcase"];
                     partcolor = new Color(78f / 255f, 205f / 255f, 196f / 255f, 1f);
 
                 }

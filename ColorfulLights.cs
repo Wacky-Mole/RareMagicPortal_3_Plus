@@ -37,6 +37,7 @@ namespace RareMagicPortal // Thank you Redseiko and Comfymods
         public List<ParticleSystem> Systems { get; } = new List<ParticleSystem>();
         public List<ParticleSystem> Sucks { get; } = new List<ParticleSystem>();
         public List<ParticleSystem> BlueFlames { get; set; } = new List<ParticleSystem>();
+        public List<ParticleSystem> Runes { get; set; } = new List<ParticleSystem>();
         public List<Material> Materials { get; } = new List<Material>();
         public String Biome { get; set; }
         public String BiomeColor { get; set; }
@@ -46,6 +47,10 @@ namespace RareMagicPortal // Thank you Redseiko and Comfymods
         public Color OldColor = Color.clear;
         public List<Renderer> MeshRend { get; } = new List<Renderer>();
         public String MaterialPortName { get; set; }
+
+        public Material DefaultMaterial { get; set; } = null;
+        public Color DefaultColor { get; set; } = Color.clear;
+
         public TeleportWorld TeleportW { get; }
 
         public TeleportWorldDataRMP(TeleportWorld teleportWorld)
@@ -56,6 +61,7 @@ namespace RareMagicPortal // Thank you Redseiko and Comfymods
             Systems.AddRange(teleportWorld.GetComponentsInNamedChild<ParticleSystem>("Particle System"));
             Sucks.AddRange(teleportWorld.GetComponentsInNamedChild<ParticleSystem>("Black_suck"));
             BlueFlames.AddRange(teleportWorld.GetComponentsInNamedChild<ParticleSystem>("blue flames"));
+            Runes.AddRange(teleportWorld.GetComponentsInNamedChild<ParticleSystem>("Runes"));
 
             Materials.AddRange(
                 teleportWorld.GetComponentsInNamedChild<ParticleSystemRenderer>("blue flames") //

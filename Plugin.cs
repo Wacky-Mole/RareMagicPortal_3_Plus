@@ -474,7 +474,7 @@ namespace RareMagicPortal
             {
                 if (col.Key == "Tan")
                 {
-                    IconColor.setTint(PortalColorLogic.Brown);
+                    IconColor.setTint(new Color(210 / 255f, 180 / 255f, 140 / 255f, 1f));
                     Icons.Add(col.Key, IconColor.CreateSprite(tex, true));
                 }
                 else if (col.Key == "Yellow")

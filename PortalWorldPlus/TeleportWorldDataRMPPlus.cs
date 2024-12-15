@@ -92,7 +92,8 @@ static class SetInitialPortalModeRMP
             {
                 return;
             }
-			//MagicPortalFluid.RareMagicPortal.LogWarning("Model name " + __instance.m_model.name);
+
+			//MagicPortalFluid.RareMagicPortal.LogWarning("Model name " + __instance.m_model.name );
 			
            // if (__instance.m_model.name == PLUS.ModelDefault)  //  hopefully a better way can be found
                 //MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassDefault.FactoryMethod(__instance));
