@@ -50,32 +50,34 @@ namespace RareMagicPortal_3_Plus.Patches
         {
             internal static bool Prefix()
             {
-                MagicPortalFluid.RareMagicPortal.LogInfo("Logoff? Save text file, don't delete");
-
-                //MagicPortalFluid.context.StopCoroutine(MagicPortalFluid.RemovedDestroyedTeleportWorldsCoroutine());
-                //context.StopCoroutine(myCoroutineRMP);
+                MagicPortalFluid.RareMagicPortal.LogInfo("Logoff? Saving YML file");
 
                 MagicPortalFluid.NoMoreLoading = true;
                 MagicPortalFluid.JustWaitforInventory = true;
                 PortalColorLogic.startupwait = 0;
 
-                if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated() && MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.On)
+                if (ZNet.instance.IsServer())
                 {
                     var serializer = new SerializerBuilder()
                      .Build();
                     var yamlfull = MagicPortalFluid.WelcomeString + Environment.NewLine + serializer.Serialize(PortalColorLogic.PortalN); // build everytime
-
+                    
                     MagicPortalFluid.JustWrote = 1;
-                    File.WriteAllText(MagicPortalFluid.YMLCurrentFile, yamlfull); //overwrite
-                    string lines = "";
-                    foreach (string line in System.IO.File.ReadLines(MagicPortalFluid.YMLCurrentFile)) // rethrough lines manually and add spaces, stupid
-                    {
-                        lines += line + Environment.NewLine;
-                        if (line.Contains("Admin_only_Access")) // three spaces for non main objects
-                        { lines += Environment.NewLine; }
-                    }
-                    File.WriteAllText(MagicPortalFluid.YMLCurrentFile, lines); //overwrite with extra goodies
 
+                    // Adding extra newlines for readability directly to the content
+                    string[] lines = yamlfull.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                    var formattedContent = new StringBuilder();
+
+                    foreach (string line in lines)
+                    {
+                        formattedContent.AppendLine(line);
+                        if (line.Contains("EndPart"))
+                        {
+                            formattedContent.AppendLine(); // Add an extra newline
+                        }
+                    }
+
+                    File.WriteAllText(MagicPortalFluid.YMLCurrentFile, formattedContent.ToString());
                     MagicPortalFluid.JustWrote = 2;
                 }
                 return true;

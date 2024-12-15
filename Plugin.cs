@@ -938,7 +938,7 @@ namespace RareMagicPortal
                     }
 
                     //JustWrote = 2;
-                    //JustSent = 0; // ready for another send
+                    JustSent = 0; // ready for another send
                 }
             }
         }
@@ -976,7 +976,7 @@ namespace RareMagicPortal
                     //File.WriteAllText(YMLCurrentFile, SyncedString);
                 }
                 //JustWrote = 2;
-                //JustSent = 0; // ready for another send
+                JustSent = 0; // ready for another send
             }
             if (!ZNet.instance.IsServer())
             {
@@ -1017,7 +1017,7 @@ namespace RareMagicPortal
 
             if (ZNet.instance.IsServer())
             {
-               if (JustSent == 0 && JustWrote == 0) // if local admin or ServerSync admin
+               if (JustWrote == 0) // if local admin or ServerSync admin
                {
                     var yml = File.ReadAllText(YMLCurrentFile);
                     
@@ -1038,14 +1038,14 @@ namespace RareMagicPortal
                         if (ConfigEnableYMLLogs.Value == Toggle.On)
                             RareMagicPortal.LogInfo(yml);
                     }
-                    JustSent = 1;
+                    JustWrote = 1;
                 }
 
                
-                if (JustSent == 1)
+                if (JustWrote == 1)
                 {
-                    JustSent = 2; // stops from doing again
-                    StartCoroutine(WaitforJustSent());
+                    JustWrote = 2; // stops from doing again
+                    StartCoroutine(WaitforReadWrote());
                 }
                
             }
