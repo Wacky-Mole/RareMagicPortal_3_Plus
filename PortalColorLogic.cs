@@ -982,6 +982,18 @@ namespace RareMagicPortal
             ClientORServerYMLUpdate(wacky, PortalName, zdoID, colorint, true);
         }
 
+        internal static void FullUpdateCatchup()
+        {
+            if (MagicPortalFluid.SmallUpdateReadyToFull && ZNet.instance.IsServer())
+            {
+                var serializer = new SerializerBuilder().Build();
+                string fullYml = MagicPortalFluid.WelcomeString + Environment.NewLine + serializer.Serialize(PortalN);
+                MagicPortalFluid.YMLPortalData.Value = fullYml;
+                MagicPortalFluid.SmallUpdateReadyToFull = false;
+
+            }
+        }
+
         internal static void ClientORServerYMLUpdate(Portal portal, string portalName, string zdoId ="", int colorInt = 0, bool zdoColorUpdate = false )
         {
             var serializer = new SerializerBuilder().Build();
@@ -1018,6 +1030,7 @@ namespace RareMagicPortal
                     if (MagicPortalFluid.UseSmallUpdates.Value == MagicPortalFluid.Toggle.On)
                     {
                         MagicPortalFluid.YMLPortalSmallData.Value = serializedPortal;
+                        MagicPortalFluid.SmallUpdateReadyToFull = true;
                     }
                     else
                     {
@@ -1026,7 +1039,7 @@ namespace RareMagicPortal
                 }
                 else // Handling for local server (not dedicated)
                 {
-                    if (MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.Off)
+                    if (MagicPortalFluid.RiskyYMLSave.Value == MagicPortalFluid.Toggle.Off && MagicPortalFluid.JustWrote == 0)
                     {
                         WriteYmlToFile(fullYml);
                     }
@@ -1039,6 +1052,7 @@ namespace RareMagicPortal
                     if (MagicPortalFluid.UseSmallUpdates.Value == MagicPortalFluid.Toggle.On)
                     {
                         MagicPortalFluid.YMLPortalSmallData.Value = serializedPortal;
+                        MagicPortalFluid.SmallUpdateReadyToFull = true;
                     }
                     else
                     {

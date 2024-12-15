@@ -155,6 +155,7 @@ namespace RareMagicPortal
         internal static int JustWrote = 0;
         internal static bool JustWait = false;
         internal static int JustSent = 0;
+        internal static bool SmallUpdateReadyToFull = false;
         internal static bool JustRespawn = false;
         internal static bool NoMoreLoading = false;
         internal static bool WaitSomeMore = false;
@@ -527,7 +528,11 @@ namespace RareMagicPortal
             setupYMLFile();
             ReadYMLValuesBoring();
             PortalColorLogic.reloadcolors();
-            PortalLimit.ServerSidePortalInit();
+            if (ZNet.instance.IsServer())
+            {
+                PortalLimit.ServerSidePortalInit();
+                context.StartCoroutine(context.WaitForBigUpdate());
+            }
 
         }
 
@@ -986,11 +991,24 @@ namespace RareMagicPortal
             JustWrote = 0; 
         }
 
-        private IEnumerator WaitforJustSent()
+        internal IEnumerator WaitforJustSent()
         {
             yield return new WaitForSeconds(1);
 
             JustSent = 0;
+        }
+        internal IEnumerator WaitForBigUpdate()
+        {
+            for (;;)
+            {              
+                if (SmallUpdateReadyToFull)
+                {
+                    PortalColorLogic.FullUpdateCatchup();
+                }
+
+                yield return new WaitForSecondsRealtime(10); // check every 10 seconds // for new players, this needs to happen
+            }
+
         }
 
         internal void ReadYMLValues(object sender, FileSystemEventArgs e)  // This gets hit after writing
@@ -999,7 +1017,7 @@ namespace RareMagicPortal
 
             if (ZNet.instance.IsServer())
             {
-               if ( JustWrote == 0) // if local admin or ServerSync admin
+               if (JustSent == 0 && JustWrote == 0) // if local admin or ServerSync admin
                {
                     var yml = File.ReadAllText(YMLCurrentFile);
                     
@@ -1020,16 +1038,15 @@ namespace RareMagicPortal
                         if (ConfigEnableYMLLogs.Value == Toggle.On)
                             RareMagicPortal.LogInfo(yml);
                     }
-                }
-               
-                if (JustWrote == 2)
-                {
-                    JustWrote = 3; // stops from doing again
-                    StartCoroutine(WaitforReadWrote());
+                    JustSent = 1;
                 }
 
-                if (JustWrote == 1)
-                    JustWrote = 2;
+               
+                if (JustSent == 1)
+                {
+                    JustSent = 2; // stops from doing again
+                    StartCoroutine(WaitforJustSent());
+                }
                
             }
         }
