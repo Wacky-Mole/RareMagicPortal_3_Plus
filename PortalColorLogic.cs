@@ -1733,8 +1733,9 @@ namespace RareMagicPortal
                    // shape = 1.5f;
                 }
                 else if (teleportWorldData.TargetColor == Color.cyan)
-                { 
-                   // system.GetComponent<Renderer>().material = MagicPortalFluid.originalMaterials["crystal_Dvergrcase"];
+                {
+                    system.GetComponent<Renderer>().material = MagicPortalFluid.originalMaterials["teleport_suck"];
+                    // system.GetComponent<Renderer>().material = MagicPortalFluid.originalMaterials["crystal_Dvergrcase"];
                     partcolor = new Color(78f / 255f, 205f / 255f, 196f / 255f, 1f);
 
                 }

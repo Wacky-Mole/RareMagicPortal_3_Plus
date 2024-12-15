@@ -20,7 +20,7 @@ namespace RareMagicPortalPlus.PortalScreens
         private static Sprite  defaultblack = null;
         private static GameObject privBKG = null;
         private static GameObject orginal5 = null;
-        private static bool Crossplay = false;
+        internal static bool Crossplay = false;
 
 
         internal static void setBackgroundblack()
@@ -47,7 +47,7 @@ namespace RareMagicPortalPlus.PortalScreens
 
                 try
                 {
-                    if (ZPlayFabMatchmaking.instance != null && ZPlayFabMatchmaking.instance.IsJoinedToNetwork())
+                    if (ZPlayFabMatchmaking.instance != null && (ZPlayFabMatchmaking.instance.IsJoinedToNetwork() || ZPlayFabMatchmaking.instance.m_isConnectingToNetwork ) )
                     {
                         Crossplay = true;
                         MagicPortalFluid.RareMagicPortal.LogWarning("Crossplay client detected, removing portalImages");
@@ -255,23 +255,27 @@ namespace RareMagicPortalPlus.PortalScreens
         public static void Initialize()
         {
             LoadBackgroundSprite();
-            LoadPortalBiomeTextures();
+            if (!ps_patches.Crossplay)
+                LoadPortalBiomeTextures();
         }
 
         internal static void LoadBackgroundSprite()
         {
             // Load the background sprite from resources or user-defined path
             //var background = Path.Combine(MagicPortalFluid.BackgroundFolder, "teleport_background.png");
-
-            var files = Directory.GetFiles(MagicPortalFluid.BackgroundFolder);
-            System.Random random = new System.Random();
-            string randomFile = files[random.Next(files.Length)];
-
-            Texture2D texture = LoadTextureFromFile(randomFile);
-            if (texture != null)
+            try
             {
-                BackgroundSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                var files = Directory.GetFiles(MagicPortalFluid.BackgroundFolder);
+                System.Random random = new System.Random();
+                string randomFile = files[random.Next(files.Length)];
+
+                Texture2D texture = LoadTextureFromFile(randomFile);
+                if (texture != null)
+                {
+                    BackgroundSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                }
             }
+            catch { ps_patches.Crossplay = true; }
         }
 
         private static void LoadPortalBiomeTextures()
