@@ -218,7 +218,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<Toggle>? ConfigPreventCreatorsToChangeBiomeColor;
         internal static ConfigEntry<string>? BiomeRepColors;
         internal static ConfigEntry<string>? EnabledColors;
-        internal static ConfigEntry<string>? FreePassageColor;
+        //internal static ConfigEntry<string>? FreePassageColor;
         internal static ConfigEntry<Toggle>? EnableCrystalsforNewIfPossible;
        // internal static ConfigEntry<string>? AdminColor;
         internal static ConfigEntry<Toggle>? PortalDrinkColor;
@@ -1440,7 +1440,7 @@ namespace RareMagicPortal
 
             ConfigMessageLeft = config(crystals, "Use Top Left Message", Toggle.Off, "In case a mod is interfering with Center Messages for Portal tags, display on TopLeft instead.");
 
-            FreePassageColor = config(crystals, "Free Passage Color", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or 'none' are the available Colors that can be selected for the Free Passage Color - Only 1 can be set - Default is none");
+           // FreePassageColor = config(crystals, "Free Passage Color", "none", "Yellow,Red,Green,Blue,Purple,Tan,Cyan,Orange,White,Black,Gold or 'none' are the available Colors that can be selected for the Free Passage Color - Only 1 can be set - Default is none");
 
             EnableCrystalsforNewIfPossible = config(crystals, "Enable CrystalKey For New", Toggle.Off, "Enable CrystalKey option if the Default Mode supports it for new Portals");
 

@@ -314,7 +314,6 @@ This section focuses on the **Random Teleport** mode, where portals can send pla
 | `Use Gold as Portal Master`        | `On`        | Enables Gold Crystals/Keys as master teleportation resources.                                   |
 | `Crystal Consume Per Transit`      | `1`         | Sets the number of crystals consumed per portal use.                                            |
 | `Use Top Left Message`             | `Off`       | Displays portal tags/messages in the top-left corner instead of center.                         |
-| `Free Passage Color`               | `None`      | Specifies the color for portals allowing free passage.                                          |
 
 ---
 

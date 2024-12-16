@@ -325,8 +325,8 @@ namespace RareMagicPortal_3_Plus.PortalMode
         }
         private void OnCrystalKeyChange()
         {
-            if (selectedMode == PortalModeClass.PortalMode.CrystalKeyMode)
-                crystalsKeysBox.isOn = true;
+           // if (selectedMode == PortalModeClass.PortalMode.CrystalKeyMode)
+              //  crystalsKeysBox.isOn = true;
 
             UpdateModeDescription();
             if (crystalsKeysBox.isOn && crystalsKeysBox.IsActive())

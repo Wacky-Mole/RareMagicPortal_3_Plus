@@ -450,7 +450,7 @@ namespace RareMagicPortal_3_Plus.Patches
                         }
                         Player.m_localPlayer.Message(MessageHud.MessageType.Center, funnyLine);
                         string whatI = " did a random teleport: ";
-                        Chat.instance.SendText(Talker.Type.Shout, whatI + funnyLine);
+                        Chat.instance.SendText(Talker.Type.Shout, whatI + Localization.instance.Localize(funnyLine));
 
                         var points = functions.GenerateRandomPoint();
                         ((Character)Player.m_localPlayer).TeleportTo(new Vector3((float)points.x, Random.Range(0.5f, 3f), (float)points.y), Quaternion.identity, true);

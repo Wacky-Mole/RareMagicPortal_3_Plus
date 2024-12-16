@@ -226,8 +226,10 @@ namespace RareMagicPortal_3_Plus.PortalMode
                         zdoEntry.Value.SpecialMode = PortalMode.Normal;
                         zdoEntry.Value.CrystalActive = false;
                     }
+                    //port.Value.Free_Passage = false; // reset to none
                 }
             }
+            
             PopInstance.crystalsKeysBox.isOn = false;
             SetMode(PortalMode.Normal, PopInstance.portalName, PopInstance.zdo);
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now in Normal mode.");
