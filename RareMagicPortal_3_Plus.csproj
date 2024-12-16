@@ -317,7 +317,7 @@
     <Copy SourceFiles="README.md" DestinationFolder="$(ProjectDir)\Thunderstore" OverwriteReadOnlyFiles="true" />
   </Target>
   <Target Name="CopyEnglishToTSFolder" AfterTargets="CopyOutputDLL" Condition=" ('$(Configuration)|$(Platform)' == 'Release|AnyCPU') And ('$(OS)' == 'Windows_NT') ">
-		<Copy SourceFiles="$(ProjectDir)\translations\English.yml" DestinationFiles="$(ProjectDir)\Thunderstore\English_Example.yml" OverwriteReadOnlyFiles="true" />
+		<Copy SourceFiles="$(ProjectDir)\translations\English.yml" DestinationFiles="$(ProjectDir)\Thunderstore\RareMagicPortalPlus.English_Example.yml" OverwriteReadOnlyFiles="true" />
 	</Target>
   <UsingTask TaskName="WriteManifestFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
     <ParameterGroup>
@@ -351,6 +351,8 @@ System.IO.File.WriteAllText(ManifestFile, content);
     <Message Text="Updating version number in Thunderstore\manifest.json" Condition="Exists(@(ManifestFile))" />
     <Exec Command="powershell.exe -ExecutionPolicy Bypass -Command &quot;&amp; { &amp; '$(ProjectDir)UpdateManifest.ps1' -manifestFile '@(ManifestFile)' -versionString '$(PackageVersion)' }&quot;" />
   </Target>
+
+	<!--
   <Target Name="MakeThunderstorePackage" AfterTargets="UpdateManifestVersion" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Error Text="manifest.json not found in Thunderstore directory." Condition="!Exists('$(ProjectDir)\Thunderstore\manifest.json')" />
     <Error Text="icon.png not found in Thunderstore directory. Please note that Thunderstore requires this image to be 256x256 in dimension" Condition="!Exists('$(ProjectDir)\Thunderstore\icon.png')" />
@@ -359,7 +361,7 @@ System.IO.File.WriteAllText(ManifestFile, content);
       <PackageFiles Include="$(ProjectDir)\Thunderstore\CHANGELOG.md" Condition="Exists('$(ProjectDir)\Thunderstore\CHANGELOG.md')" />
       <PackageFiles Include="$(ProjectDir)\Thunderstore\manifest.json" Condition="Exists('$(ProjectDir)\Thunderstore\manifest.json')" />
       <PackageFiles Include="$(ProjectDir)\Thunderstore\icon.png" Condition="Exists('$(ProjectDir)\Thunderstore\icon.png')" />
-      <PackageFiles Include="$(ProjectDir)\Thunderstore\English_Example.yml" Condition="Exists('$(ProjectDir)\Thunderstore\English_Example.yml')" />
+      <PackageFiles Include="$(ProjectDir)\Thunderstore\English_Example.yml" Condition="Exists('$(ProjectDir)\Thunderstore\RareMagicPortalPlus.English_Example.yml')" />
     </ItemGroup>
     <MakeDir Directories="$(PackageDir)" />
     <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(PackageDir)" />
@@ -375,5 +377,5 @@ System.IO.File.WriteAllText(ManifestFile, content);
     <Copy SourceFiles="@(NexusPackageFiles)" DestinationFolder="$(PackageDir)" />
     <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="Nexus\$(PackageName).zip" Overwrite="true" />
     <RemoveDir Directories="$(PackageDir)" />
-  </Target>
+  </Target>  -->
 </Project>
