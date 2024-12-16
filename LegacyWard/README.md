@@ -433,7 +433,7 @@ This section allows you to replace the default portal crystals with custom items
 <img src="https://wackymole.com/hosts/portal.tp.images.png" width="800"/>  </br>
 
 The idea for this came from https://www.nexusmods.com/valheim/mods/1030 or Badgers HD Portals mod in the nexus download link.
-</br> He doesn't want it to be shared outside of nexus or in mod packs so I have created my own version that does something similar. His version is better, but this one is freely disturbable. 
+</br> He doesn't want it to be shared outside of nexus or in mod packs so I have created my own version that does something similar. His version is better, but this one is freely disruptable. 
 Support Willybach's HD Valheim or HD Portals if you like. 
 
 This section allows you to replace the default portal transporting screen (black background) with a random background image and a inner transport circle with a biome specific image. Very Cool! Restart Required
