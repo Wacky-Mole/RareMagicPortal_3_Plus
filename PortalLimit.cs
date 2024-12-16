@@ -18,7 +18,7 @@ namespace RareMagicPortalPlus.limit
 {
     internal class PortalLimit
     {
-        private static SyncedList VIPplayersList;
+        private static SyncedList VIPportalplayersList;
         private static PortalManager _portalManager;
         private static FileSystemWatcher fsw;
         private static string pathPortalData;
@@ -149,7 +149,7 @@ namespace RareMagicPortalPlus.limit
                     if (MagicPortalFluid.AdminOnlyMakesPortals.Value == MagicPortalFluid.Toggle.On && !MagicPortalFluid.isAdmin )
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
-                            "<color=red>Only Admin Can build Portals</color>");
+                            "<color=red> $rmp_admin_only_canPlace </color>");
                         return false;
                     }
 
@@ -159,7 +159,7 @@ namespace RareMagicPortalPlus.limit
                     if (!MagicPortalFluid._canPlacePortal)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
-                            "<color=red>Ward Limit</color>");
+                            "<color=yellow> $rmp_portal_limit </color>");
                         return false;
                     }
 
@@ -218,12 +218,11 @@ namespace RareMagicPortalPlus.limit
 
                 if (MagicPortalFluid.PortalNames.Contains(searchname))
                 {
-                    MagicPortalFluid.RareMagicPortal.LogWarning("Portal Creator " + piece.GetCreator() + " Me " + __instance.GetPlayerID());
+                    //MagicPortalFluid.RareMagicPortal.LogWarning("Portal Creator " + piece.GetCreator() + " Me " + __instance.GetPlayerID());
                     if (ZNet.instance.GetServerPeer() != null)
                         ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "WackyPortal Portalremoved",
                             new object[] { null });
                 }
-
             }
         }
 
@@ -236,7 +235,7 @@ namespace RareMagicPortalPlus.limit
 
         private static PlayerStatus GetPlayerStatus(string id)
         {
-            return ZNet.instance.ListContainsId(VIPplayersList, id) ? PlayerStatus.VIP : PlayerStatus.User;
+            return ZNet.instance.ListContainsId(VIPportalplayersList, id) ? PlayerStatus.VIP : PlayerStatus.User;
         }
 
         private class PortalManager
@@ -297,8 +296,8 @@ namespace RareMagicPortalPlus.limit
             if (!Directory.Exists(MagicPortalFluid.YMLFULLFOLDER)) Directory.CreateDirectory(MagicPortalFluid.YMLFULLFOLDER);
             pathPortalData = Path.Combine(MagicPortalFluid.YMLFULLFOLDER, MagicPortalFluid.Worldname + "_PlayerPortals.json");
             _portalManager = new PortalManager(pathPortalData);
-            var VIPPath = Path.Combine(MagicPortalFluid.YMLFULLFOLDER, "VIPplayers.txt");
-            VIPplayersList = new SyncedList(VIPPath, "");
+            var VIPPath = Path.Combine(MagicPortalFluid.YMLFULLFOLDER, "VIP_Portal_players.txt");
+            VIPportalplayersList = new SyncedList(VIPPath, "");
 
             /*
 

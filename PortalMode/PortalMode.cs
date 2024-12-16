@@ -407,7 +407,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
             currentPortalZDO.CrystalActive = false;
 
             SetMode(PortalMode.TransportNetwork, PopInstance.portalName, PopInstance.zdo, true);
-            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now in Transport Network mode. All other portals with this name are deactivated. Cords:" + currentPortalZDO.Coords);
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Portal is now in Transport Network mode. All other portals with this name are deactivated");
         }
 
         private static void SetCoordinates(ModeSelectionPopup PopInstance, string coordinates)

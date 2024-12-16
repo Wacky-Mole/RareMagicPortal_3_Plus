@@ -163,7 +163,7 @@ namespace RareMagicPortal_3_Plus.Patches
 
                         if (prohibitedItem != null)
                         {
-                            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Prohibited item detected: " + prohibitedItem.m_shared.m_name);
+                            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "$rmp_prohibited_item " + prohibitedItem.m_shared.m_name);
                             __result = false;
                             return false;
                         }
@@ -175,7 +175,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     float playerWeight = __instance.GetTotalWeight();
                     if (playerWeight > MagicPortalFluid.ConfigMaxWeight.Value)
                     {
-                        Player.m_localPlayer.Message(MessageHud.MessageType.Center, "You are carrying too much, max is " + MagicPortalFluid.ConfigMaxWeight.Value);
+                        Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$rmp_you_are_carrytoomuch " + MagicPortalFluid.ConfigMaxWeight.Value);
                         MagicPortalFluid.TeleportingforWeight = Math.Min(MagicPortalFluid.TeleportingforWeight + 1, 10);
                         __result = false;
                         return false;
@@ -196,7 +196,7 @@ namespace RareMagicPortal_3_Plus.Patches
 
                     if (prohibitedItem != null)
                     {
-                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Odin still doesn't allow carrying " + prohibitedItem.m_shared.m_name + " with Portal Drink");
+                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "$rmp_odin_doesnt_allow " + prohibitedItem.m_shared.m_name + " $rmp_with_portaldrink");
                         __result = false;
                         return false;
                     }
@@ -250,7 +250,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     {
                         if (!item.m_shared.m_teleportable && !additionalAllows.Contains(item.m_dropPrefab.name))
                         {
-                            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Cannot teleport due to item: " + item.m_dropPrefab.name);
+                            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "$rmp_cant_teleport_due " + item.m_dropPrefab.name);
                             // MagicPortalFluid.RareMagicPortal.LogInfo("Cannot teleport:" + item.m_dropPrefab.name);
                             __result = false;
                             return false;
@@ -341,7 +341,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 if (Player.m_localPlayer == null)
                 {
                     ps_patches.setBackgroundblack();
-                    PortalColorLogic.startupwait = 0;
+                    PortalColorLogic.deathwait = 0;
                 }
                     
             }

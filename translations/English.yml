@@ -96,7 +96,6 @@ rmp_orangeKey_access: "Orange Portal Key Grants Access"
 rmp_whiteKey_access: "White Portal Key Grants Access"
 rmp_blackKey_access: "Black Portal Key Grants Access"
 
-
 rmp_crystalgrants_access: "Portal Crystal Grants Access"
 rmp_consumed: "Consumed"
 rmp_noaccess: "No Access"
@@ -110,9 +109,46 @@ rmp_crystals: "Crystals"
 rmp_key: "Key"
 rmp_crystalorkey: "Crystals or Keys"
 rmp_freepassage: "The Gods Allow Free Passage"
-
+rmp_gold_access: "Gold Crystal/Key Allows Passage"
 
 rmp_tooltip_drink: "<color=green>You can Teleport Everything through the Portals</color>"
 rmp_startmessage: "Odin Blesses you with Teleporting Power"
 rmp_stopmessage: "Odin's Portal blessing fades"
 rmp_allowsEverything: "Odin Allows Everything Through"
+
+rmp_portal_limit: "Player Portal Limit Reached"
+rmp_admin_only_canPlace: "Only Admin Can build Portals"
+
+rmp_cant_teleport_due: "Cannot teleport due to item:"
+rmp_odin_doesnt_allow: "Odin still doesn't allow carrying"
+rmp_with_portaldrink: "with Portal Drink"
+rmp_you_are_carrytoomuch: "You are carrying too much, max is"
+rmp_prohibited_item: "Prohibited item detected:"
+rmp_incorrect_password: "Incorrect password"
+rmp_correct_password: "Password is correct, you may proceed"
+rmp_only_this_guild_allowed: "Player is allowed to use this portal. Guild:"
+rmp_only: "Only"
+rmp_hover_over_portal: "Hover over portal first"
+rmp_warp_notice: "Warp to Location with /warp destination"
+
+rmp_funnyline1: "May Odin look favorably one You"
+rmp_funnyline2: "Good Luck"
+rmp_funnyline3: "Suckerrr"
+rmp_funnyline4: "To Valhalla and beyond!"
+rmp_funnyline5: "Here goes nothing—see you on the other side... hopefully alive!"
+rmp_funnyline6: "Off to find some mythical loot. Wish me luck!"
+rmp_funnyline7: "Hold my mead, I'm about to explore the unknown!"
+rmp_funnyline8: "Portal jump initiated! Pray the gods are watching."
+rmp_funnyline9: "If I don't come back, tell my axe I loved it."
+rmp_funnyline10: "Embarking on a mystical journey. Send reinforcements if needed!"
+rmp_funnyline11: "Here’s to hoping this portal leads to more loot and fewer enemies!"
+rmp_funnyline12: "Taking the scenic route through a portal. What could possibly go wrong?"
+rmp_defaultline: "One small step for a Viking"
+
+rmp_portal: "Portal"
+rmp_crystalportal: "Crystal Portal"
+rmp_mode: "Mode"
+rmp_danger_random: "Danger, Danger: Random Teleport"
+
+
+

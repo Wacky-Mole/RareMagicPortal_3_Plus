@@ -257,19 +257,19 @@ namespace RareMagicPortal_3_Plus.Patches
                 var zdoname = __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
                 if (zdoname == "")
                 {
-                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Hover over portal first");
+                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "$rmp_hover_over_portal");
                     throw new SkipPortalException();
                 }
 
                 if (!PortalColorLogic.PortalN.Portals.TryGetValue(PortalName, out var portal))
                 {
-                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Hover over portal first");
+                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "$rmp_hover_over_portal");
                     throw new SkipPortalException();
                 }
 
                 if (!portal.PortalZDOs.TryGetValue(zdoname, out var portalZDO))
                 {
-                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Hover over portal first");
+                    Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "$rmp_hover_over_portal");
                     throw new SkipPortalException();
                 }
 
@@ -307,12 +307,12 @@ namespace RareMagicPortal_3_Plus.Patches
                                 if (playerGuild != null && playerGuild.Name.Equals(portal.GuildOnly, StringComparison.OrdinalIgnoreCase))
                                 {
                                     // Player is part of the allowed guild
-                                    MagicPortalFluid.RareMagicPortal.LogMessage($"Player is allowed to use this portal. Guild: {playerGuild.Name}");
+                                    MagicPortalFluid.RareMagicPortal.LogMessage($"$rmp_only_this_guild_allowed {playerGuild.Name}");
                                     pass = true;
                                 }
                                 else
                                 {   
-                                    Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"{playerGuild.Name} Only");
+                                    Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"{playerGuild.Name} $rmp_only");
                                     //throw new SkipPortalException(); catch in next block
 
                                 }
@@ -348,13 +348,13 @@ namespace RareMagicPortal_3_Plus.Patches
                             portal.AllowedUsers.Add(Player.m_localPlayer.GetPlayerName());
 
                             PortalColorLogic.ClientORServerYMLUpdate(portal, PortalName);
-                            Player.m_localPlayer.Message(MessageHud.MessageType.Center,  "Password is correct, you may proceed");
+                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$rmp_correct_password");
 
                         }
                         else
                         {
                             MagicPortalFluid.RareMagicPortal.LogMessage("Incorrect password entered.");
-                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Incorrect password.");
+                            Player.m_localPlayer.Message(MessageHud.MessageType.Center, "$rmp_incorrect_password");
                         }                      
                     });
 
@@ -381,7 +381,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     //currentMicListener = new MicListener();
                     //currentMicListener.StartListening();
                     if (MagicPortalFluid.shownetowrkhint.Value == MagicPortalFluid.Toggle.On)
-                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "Warp to Location with /warp destination");
+                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "$rmp_warp_notice");
 
                 }
                 // ZLog.LogWarning("CrystalKeyLogic");
@@ -419,32 +419,32 @@ namespace RareMagicPortal_3_Plus.Patches
                         switch  ((int)Random.Range(0, 11))
                         {
                             case 0:
-                            funnyLine = "May Odin look favorably one You"; break;
+                            funnyLine = "$rmp_funnyline1"; break;
                             case 1:
-                            funnyLine = "Good Luck"; break;
+                            funnyLine = "$rmp_funnyline2"; break;
                             case 2:
-                            funnyLine = "Suckerrr";break;
+                            funnyLine = "$rmp_funnyline3"; break;
                             case 3:
-                            funnyLine = "To Valhalla and beyond!";
+                            funnyLine = "$rmp_funnyline4";
                             break;             case 4:
-                            funnyLine = "Here goes nothing—see you on the other side... hopefully alive!";
+                            funnyLine = "$rmp_funnyline5";
                             break;             case 5:
-                            funnyLine = "Off to find some mythical loot. Wish me luck!";
+                            funnyLine = "$rmp_funnyline6";
                             break;             case 6:
-                            funnyLine = "Hold my mead, I'm about to explore the unknown!";
+                            funnyLine = "$rmp_funnyline7";
                             break;             case 7:
-                            funnyLine = "Portal jump initiated! Pray the gods are watching.";
+                            funnyLine = "$rmp_funnyline8";
                             break;             case 8:
-                            funnyLine = "If I don't come back, tell my axe I loved it.";
+                            funnyLine = "$rmp_funnyline9";
                             break;             case 9:
-                            funnyLine = "Embarking on a mystical journey. Send reinforcements if needed!";
+                            funnyLine = "$rmp_funnyline10";
                             break;             case 10:
-                            funnyLine = "Here’s to hoping this portal leads to more loot and fewer enemies!";
+                            funnyLine = "$rmp_funnyline11";
                             break;             case 11:
-                            funnyLine = "Taking the scenic route through a portal. What could possibly go wrong?";
+                            funnyLine = "$rmp_funnyline12";
                             break;
 
-                            default: funnyLine = "One small step for a Viking";
+                            default: funnyLine = "$rmp_defaultline";
                                 break;
 
                         }

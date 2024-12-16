@@ -177,7 +177,6 @@
     <Compile Include="PortalLimit.cs" />
     <Compile Include="PortalMode\BasePopup.cs" />
     <Compile Include="PortalMode\PortalMode.cs" />
-    <Compile Include="PortalScreens\portalscreens.cs" />
     <Compile Include="PortalScreens\ps_patches.cs" />
     <Compile Include="Scripts\PortalFX_AxisRotateByTime.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -207,6 +206,7 @@
     <EmbeddedResource Include="assets\portalmagicfluid" />
     <EmbeddedResource Include="assets\wackyportals" />
     <EmbeddedResource Include="assets\rmpui" />
+    <None Include="translations\Spanish.yml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
