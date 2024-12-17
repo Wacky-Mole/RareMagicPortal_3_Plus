@@ -565,7 +565,7 @@ namespace RareMagicPortal
                         zdoName);
                 } */
 
-                if (portalName == "" && PortalColorLogic.reloaded && MagicPortalFluid.isAdmin )
+                if (portalName == "" &&  PortalColorLogic.reloaded && MagicPortalFluid.isAdmin ) // I am really not sure of the point of this
                 {
                     PortalColorLogic.RMP.LogInfo("Updating Blank Portals Color - just incase admin changed color");
                     PortalColorLogic.updateYmltoColorChange("", colorIndex, zdoName);
@@ -574,7 +574,7 @@ namespace RareMagicPortal
                 // Update hover text
                 Color color = currentColorHex;
                 
-                if (portalName == "" && currentColor != MagicPortalFluid.DefaultColor.Value && MagicPortalFluid.JustSent == 0)
+                if (portalName == "" && currentColor != MagicPortalFluid.DefaultColor.Value && MagicPortalFluid.JustSent == 0) // updates default color just in case
                 {
                     colorIndex = PortalColorLogic.PortalColors.ContainsKey(MagicPortalFluid.DefaultColor.Value)
                         ? PortalColorLogic.PortalColors[MagicPortalFluid.DefaultColor.Value].Pos
@@ -630,7 +630,7 @@ namespace RareMagicPortal
                 }
                 //__result = __result.Replace(Localization.instance.Localize("$piece_portal_connected"), mode + (mode is PortalMode.Public or PortalMode.Admin ? "" : $"
                 //(Owner: {__instance.m_nview.GetZDO().GetString("TargetPortal PortalOwnerName")})")) + $"\n[<b><color=yellow>{portalModeToggleModifierKey.Value}</color> + <color=yellow>{Localization.instance.Localize("$KEY_Use")}</color></b>] Toggle Mode";
-                UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, Crystaltext, zdoData, currentmode, portalZDO.SpecialMode);
+                UpdateHoverText(ref __result, currentColor, nextColor, isCreator, currentColorHex, portalName, Crystaltext, zdoData, currentmode, portalZDO.SpecialMode, zdoName);
 
                 if (portalZDO.SpecialMode != PortalModeClass.PortalMode.TargetPortal && MagicPortalFluid.TargetPortalLoaded)
                 {
@@ -638,7 +638,7 @@ namespace RareMagicPortal
                 }
             }
 
-            private static void UpdateHoverText(ref string hoverText, string currentColor, string nextColor, bool isCreator, Color currentColorHex, string portalName, string Crystaltext, ZDOP portal, string currentmodestring,PortalModeClass.PortalMode specialMode )
+            private static void UpdateHoverText(ref string hoverText, string currentColor, string nextColor, bool isCreator, Color currentColorHex, string portalName, string Crystaltext, ZDOP portal, string currentmodestring,PortalModeClass.PortalMode specialMode, string zdoName)
             {
                 if (portalName != "" && portalName != "Empty tag")
                 {
@@ -673,7 +673,7 @@ namespace RareMagicPortal
                     
                     if (MagicPortalFluid.isAdmin)
                     {
-                        adminstring = "[<color=#" + ColorUtility.ToHtmlStringRGB(Color.yellow) + ">" + MagicPortalFluid.portalRMPMODEKEY.Value + " + " + "E</color>] Open Portal Mode UI ";
+                        adminstring = "[<color=#" + ColorUtility.ToHtmlStringRGB(Color.yellow) + ">" + MagicPortalFluid.portalRMPMODEKEY.Value + " + " + "E</color>] Open Portal Mode UI \n" + "Portal ID " + zdoName;
                     }
                     crystalString = $"<size=15><color=#{ColorUtility.ToHtmlStringRGB(currentColorHex)}>" + Crystaltext +"</color></size>";
                     
@@ -1216,7 +1216,7 @@ namespace RareMagicPortal
 
         internal static void WritetoYML(string PortalName, string ZDOID = null, string oldname = "", bool writeZdoOnly = false, TeleportWorld instance = null, string creator = "") // this only happens if portal is not in yml file at all
         {
-            RMP.LogInfo("Writing New YML");
+            RMP.LogInfo("Writing New YML:"+ PortalName);
             int colorint = 1;
             bool wascloned = false;
 
