@@ -182,8 +182,18 @@ namespace RareMagicPortal
         internal static ConfigEntry<bool>? ConfigCreator;
         internal static ConfigEntry<float>? ConfiglHealthWood;
         internal static ConfigEntry<float>? ConfiglHealthStone;
+        internal static ConfigEntry<bool>? StoneAllowsEverything;
+        internal static ConfigEntry<bool>? WoodAllowsEverything;
+        internal static ConfigEntry<bool>? OrgStoneAllowsEverything;
+        internal static ConfigEntry<bool>? wacky1_portalAllowsEverything;
+        internal static ConfigEntry<bool>? wacky2_portalAllowsEverything;
+        internal static ConfigEntry<bool>? wacky3_portalAllowsEverything;
+        internal static ConfigEntry<bool>? wacky4_portalAllowsEverything;
+        internal static ConfigEntry<bool>? wacky5_portalAllowsEverything;
         internal static ConfigEntry<Toggle>? ConfigCreatorLock;
         internal static ConfigEntry<int>? ConfigFluidValue;
+        
+        
         //internal static ConfigEntry<bool>? ConfigEnableCrystalsNKeys;
 
         // internal static ConfigEntry<bool>? ConfigEnableKeys;
@@ -741,6 +751,7 @@ namespace RareMagicPortal
             portal1.RequiredItems.Add("FineWood", 20, true); 
             portal1.RequiredItems.Add("SurtlingCore", 4, true);
             portal1.RequiredItems.Add("PortalMagicFluid", 2, true);
+            portal1.RequiredItems.Add("Obsidian", 20, true);
             portal1.RequiredItems.Add("SwordCheat",1, false);
             portal1.Category.Set("Portals"); 
             portal1.Crafting.Set(PieceManager.CraftingTable.Workbench);
@@ -754,6 +765,7 @@ namespace RareMagicPortal
             portal2.RequiredItems.Add("FineWood", 20, true);
             portal2.RequiredItems.Add("SurtlingCore", 4, true);
             portal2.RequiredItems.Add("PortalMagicFluid", 2, true);
+            portal2.RequiredItems.Add("Obsidian", 20, true);
             portal2.RequiredItems.Add("SwordCheat", 1, false);
             portal2.Category.Set("Portals"); 
             portal2.Crafting.Set(PieceManager.CraftingTable.Workbench); 
@@ -767,6 +779,7 @@ namespace RareMagicPortal
             portal3.RequiredItems.Add("FineWood", 20, true);
             portal3.RequiredItems.Add("SurtlingCore", 4, true);
             portal3.RequiredItems.Add("PortalMagicFluid", 2, true);
+            portal3.RequiredItems.Add("Obsidian", 20, true);
             portal3.RequiredItems.Add("SwordCheat", 1, false);
             portal3.Category.Set("Portals"); 
             portal3.Crafting.Set(PieceManager.CraftingTable.Workbench); 
@@ -780,6 +793,7 @@ namespace RareMagicPortal
             portal5.RequiredItems.Add("FineWood", 20, true);
             portal5.RequiredItems.Add("SurtlingCore", 4, true);
             portal5.RequiredItems.Add("PortalMagicFluid", 2, true);
+            portal5.RequiredItems.Add("Obsidian", 20, true);
             portal5.RequiredItems.Add("SwordCheat", 1, false);
             portal5.Category.Set("Portals");
             portal5.Crafting.Set(PieceManager.CraftingTable.Workbench);
@@ -792,6 +806,7 @@ namespace RareMagicPortal
             portal6.RequiredItems.Add("FineWood", 20, true);
             portal6.RequiredItems.Add("SurtlingCore", 4, true);
             portal6.RequiredItems.Add("PortalMagicFluid", 2, true);
+            portal6.RequiredItems.Add("Obsidian", 20, true);
             portal6.RequiredItems.Add("SwordCheat", 1, false);
             portal6.Category.Set("Portals");
             portal6.Crafting.Set(PieceManager.CraftingTable.Workbench);
@@ -804,6 +819,7 @@ namespace RareMagicPortal
             portal4.RequiredItems.Add("FineWood", 20, true);
             portal4.RequiredItems.Add("SurtlingCore", 4, true);
             portal4.RequiredItems.Add("PortalMagicFluid", 2, true);
+            portal4.RequiredItems.Add("Obsidian", 20, true);
             portal4.RequiredItems.Add("SwordCheat", 1, false);
             portal4.Category.Set("Portals"); 
             portal4.Crafting.Set(PieceManager.CraftingTable.Workbench); //
@@ -818,6 +834,7 @@ namespace RareMagicPortal
             portal8.RequiredItems.Add("FineWood", 20, true);
             portal8.RequiredItems.Add("SurtlingCore", 4, true);
             portal8.RequiredItems.Add("PortalMagicFluid", 2, true);
+            portal8.RequiredItems.Add("Obsidian", 20, true);
             portal8.RequiredItems.Add("SwordCheat", 1, false);
             portal8.Category.Set("Portals"); 
             portal8.Crafting.Set(PieceManager.CraftingTable.Workbench);
@@ -874,13 +891,13 @@ namespace RareMagicPortal
                 {
                     Portals = new Dictionary<string, PortalName.Portal>
                     {
-                        {"Demo_Portal_Name", new PortalName.Portal() {
+                        {"", new PortalName.Portal() {
 							//Crystal_Cost_Master = 3,
 						}},
                     }
                 };
-                PortalColorLogic.PortalN.Portals["Demo_Portal_Name"].AdditionalProhibitItems.Add("Stone");
-                PortalColorLogic.PortalN.Portals["Demo_Portal_Name"].AdditionalProhibitItems.Add("Wood");
+               // PortalColorLogic.PortalN.Portals[""].AdditionalProhibitItems.Add("Iron");
+                //PortalColorLogic.PortalN.Portals[""].AdditionalProhibitItems.Add("Wood");
 
                 var serializer = new SerializerBuilder()
                     .Build();
@@ -1164,6 +1181,8 @@ namespace RareMagicPortal
             Piece petercomponent1 = peter1.GetComponent<Piece>();
             Piece petercomponent2 = peter2.GetComponent<Piece>();
 
+
+
             var CraftingStationforPaul1 = functions.GetCraftingStation(ConfigTableWood.Value);
             if (CraftingStationforPaul1 == null)          
                 CraftingStationforPaul1.m_name = DefaultTable;     
@@ -1174,7 +1193,11 @@ namespace RareMagicPortal
                 CraftingStationforPaul2.m_name = DefaultTableStone;
             petercomponent2.m_craftingStation = functions.GetCraftingStation(CraftingStationforPaul2.m_name);
 
-
+            var woodTele = peter1.GetComponent<TeleportWorld>();
+            //woodTele.m_allowAllItems = WoodAllowsEverything.Value;
+            
+            var stoneTele = peter2.GetComponent<TeleportWorld>();
+            stoneTele.m_allowAllItems = StoneAllowsEverything.Value;
 
             bool fluidFound1 = false;
             foreach (var res in petercomponent1.m_resources)
@@ -1485,19 +1508,32 @@ namespace RareMagicPortal
             string wood_portal = "5.1 WoodPortal-----------";
             ConfigTableWood = config(wood_portal, "Station Requirement Wood", DefaultTable, "Which CraftingStation is required nearby for Wood Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_workbench, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstation
             ConfigTableLvl = config(wood_portal, "Level of CraftingStation Req", 1, "What level of CraftingStation is required for placing Wood Portal?");
-            ConfiglHealthWood = config(portal, "Portal Health Wood", 400f, "Health of Portal Wood");
+            ConfiglHealthWood = config(wood_portal, "Portal Health Wood", 400f, "Health of Portal Wood");
+           // WoodAllowsEverything = config(wood_portal, "Portal Wood Allows Everything", false, "Allow all Wood Portals to Transport Everything. ");
 
             string stone_portal = "5.2 StonePortal-----------";
             ConfiglHealthStone = config(stone_portal, "Portal Health Stone", 1000f, "Health of Portal Stone");
-            ConfigTableStone = config(portal, "Station Requirement Stone", DefaultTableStone,
+            ConfigTableStone = config(stone_portal, "Station Requirement Stone", DefaultTableStone,
                 "Which CraftingStation is required nearby for Stone Portal?" + System.Environment.NewLine + "Default is Workbench = $piece_stonecutter, forge = $piece_forge, Artisan station = $piece_artisanstation " + System.Environment.NewLine + "Pick a valid table otherwise default is workbench"); // $piece_workbench , $piece_forge , $piece_artisanstationConfigTable = config(portal, "CraftingStation Requirement", DefaultTable,
-             // configCraftingStation.SettingChanged += (s, e) => Fix(ZNetScene.instance);
-
+                                                                                                                                                                                                                                                                                                             // configCraftingStation.SettingChanged += (s, e) => Fix(ZNetScene.instance);
+            StoneAllowsEverything = config(stone_portal, "Portal Stone Allows Everything", true, "Vanilla Game allows Stone Portal to Transport Everything.");
+            
+            
             string orginal_portal = "5.3 OrginalStonePortal-----------";
             OrginalStonePortalconfigCraftingStation = config(orginal_portal, "Orginal Stone Crafting station", "piece_workbench", "Required crafting station.");
-            OrginalStonePortalconfigRequirements = config(orginal_portal, "Orginal Stone Recipe", "GreydwarfEye:20,SurtlingCore:10,Obsidian:100,CheatSword:1", "Recipe (id:amount,id:amount,...)");
+            OrginalStonePortalconfigRequirements = config(orginal_portal, "Orginal Stone Recipe", "GreydwarfEye:20,SurtlingCore:5,Obsidian:50", "Recipe (id:amount,id:amount,...)");
+            OrgStoneAllowsEverything = config(stone_portal, "Portal Org Stone Allows Everything", false, "Orginal Stone Portal to Transport Everything.");
 
-            string wacky1_portal = "5.4 wacky1Portal-----------";
+            string wacky1_portal = "5.4 Aetherstone Gateway";
+            wacky1_portalAllowsEverything = config(wacky1_portal, "Portal Aetherstone Allows Everything", false, "Allow Portal to Transport Everything. ");
+            string wacky2_portal = "5.5 Runeveil Nexus";
+            wacky2_portalAllowsEverything = config(wacky2_portal, "Portal Runeveil Nexus Allows Everything", false, "Allow Portal to Transport Everything. ");
+            string wacky3_portal = "5.6 Arcspire Gate";
+            wacky3_portalAllowsEverything = config(wacky3_portal, "Portal Arcspire Gate Allows Everything", false, "Allow Portal to Transport Everything. ");
+            string wacky4_portal = "5.7 Quadraframe Portal";
+            wacky4_portalAllowsEverything = config(wacky4_portal, "Portal Quadraframe Allows Everything", false, "Allow Portal to Transport Everything. ");
+            string wacky5_portal = "5.8 Luminis Circle";
+            wacky5_portalAllowsEverything = config(wacky5_portal, "Portal Luminis Circle Allows Everything", false, "Allow Portal to Transport Everything. ");
 
             //configRequirements.SettingChanged += (s, e) => Fix(ZNetScene.instance);
 

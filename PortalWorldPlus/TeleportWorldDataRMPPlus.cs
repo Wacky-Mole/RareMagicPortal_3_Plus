@@ -98,19 +98,44 @@ static class SetInitialPortalModeRMP
            // if (__instance.m_model.name == PLUS.ModelDefault)  //  hopefully a better way can be found
                 //MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassDefault.FactoryMethod(__instance));
             else if (__instance.m_model.name == PLUS.Model1)
-               MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel1.FactoryMethod(__instance));
+            {
+	            MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance,
+		            PLUS.ClassModel1.FactoryMethod(__instance));
+	            __instance.m_allowAllItems = MagicPortalFluid.wacky1_portalAllowsEverything.Value;
+            }
             else if (__instance.m_model.name == PLUS.Model2)
-                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel2.FactoryMethod(__instance));
+            {
+	            MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance,
+		            PLUS.ClassModel2.FactoryMethod(__instance));
+	            __instance.m_allowAllItems = MagicPortalFluid.wacky2_portalAllowsEverything.Value;
+            }
             else if (__instance.m_model.name == PLUS.Model3)
-                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel3.FactoryMethod(__instance));
+            {
+	            MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance,
+		            PLUS.ClassModel3.FactoryMethod(__instance));
+	            __instance.m_allowAllItems = MagicPortalFluid.wacky3_portalAllowsEverything.Value;
+            }
             else if (__instance.m_model.name == PLUS.Model4)
-                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel4.FactoryMethod(__instance));
-			else if (__instance.m_model.name == PLUS.Model5)
-                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel5.FactoryMethod(__instance));
-			else if (__instance.m_model.name == PLUS.Model6)
-                MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance, PLUS.ClassModel6.FactoryMethod(__instance));
+            {
+	            MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance,
+		            PLUS.ClassModel4.FactoryMethod(__instance));
+	            __instance.m_allowAllItems = MagicPortalFluid.wacky4_portalAllowsEverything.Value;
+            }
+            else if (__instance.m_model.name == PLUS.Model5)
+            {
+	            MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance,
+		            PLUS.ClassModel5.FactoryMethod(__instance));
+	            __instance.m_allowAllItems = MagicPortalFluid.wacky5_portalAllowsEverything.Value;
+            }
+            else if (__instance.m_model.name == PLUS.Model6)
+			{
+				MagicPortalFluid._teleportWorldDataCacheDefault.Add(__instance,
+					PLUS.ClassModel6.FactoryMethod(__instance));
+				__instance.m_allowAllItems = MagicPortalFluid.OrgStoneAllowsEverything.Value;
 
-        }
+			}
+
+		}
     }
 
 

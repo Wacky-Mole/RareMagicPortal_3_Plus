@@ -104,6 +104,9 @@ namespace RareMagicPortal_3_Plus.Patches
                 {
                     teleportAllowed = true;
                 }
+                
+                if (ZoneSystem.instance.GetGlobalKey(GlobalKeys.TeleportAll))
+                    return true;
 
                 //  MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 3");
                 Vector3 playerPosition = Player.m_localPlayer.transform.position;
@@ -241,6 +244,12 @@ namespace RareMagicPortal_3_Plus.Patches
                                                              .Where(s => !string.IsNullOrEmpty(s))
                                                              .ToList();
                         additionalAllows.AddRange(colorSpecificAllows);
+                    }
+
+                    if (portalW.m_allowAllItems)
+                    {
+                        __result = true;
+                        return false;
                     }
 
                     // Remove any duplicates
