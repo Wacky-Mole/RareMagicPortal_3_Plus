@@ -86,7 +86,7 @@ namespace RareMagicPortal
     }
 
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-    [KeyManager.VerifyKey(Author + "/" + ModName, LicenseMode.Always)]
+    [KeyManager.VerifyKey(Author + "/" + ModName, LicenseMode.DedicatedServer)]
     [BepInDependency("org.bepinex.plugins.targetportal", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("org.bepinex.plugins.guilds", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("org.bepinex.plugins.jewelcrafting", BepInDependency.DependencyFlags.SoftDependency)]  // it loads before this mod// not really required, but whatever
@@ -313,29 +313,29 @@ namespace RareMagicPortal
         public static string PortalKeyOrange = "$item_PortalKeyOrange";
         */
 
-        public static string CrystalMaster = "PortalCrystalMaster";
-        public static string CrystalRed = "PortalCrystalRed";
-        public static string CrystalGreen = "PortalCrystalGreen";
-        public static string CrystalBlue = "PortalCrystalBlue";
-        public static string CrystalPurple = "PortalCrystalPurple";
-        public static string CrystalTan = "PortalCrystalTan";
-        public static string CrystalYellow = "PortalCrystalYellow";
-        public static string CrystalWhite = "PortalCrystalWhite";
-        public static string CrystalCyan = "PortalCrystalCyan";
-        public static string CrystalBlack = "PortalCrystalBlack";
-        public static string CrystalOrange = "PortalCrystalOrange";
+        public static string CrystalMaster = "rmp_PortalCrystalGold";
+        public static string CrystalRed = "rmp_PortalCrystalRed";
+        public static string CrystalGreen = "rmp_PortalCrystalGreen";
+        public static string CrystalBlue = "rmp_PortalCrystalBlue";
+        public static string CrystalPurple = "rmp_PortalCrystalPurple";
+        public static string CrystalTan = "rmp_PortalCrystalTan";
+        public static string CrystalYellow = "rmp_PortalCrystalYellow";
+        public static string CrystalWhite = "rmp_PortalCrystalWhite";
+        public static string CrystalCyan = "rmp_PortalCrystalCyan";
+        public static string CrystalBlack = "rmp_PortalCrystalBlack";
+        public static string CrystalOrange = "rmp_PortalCrystalOrange";
 
-        public static string PortalKeyGold = "PortalKeyGold";
-        public static string PortalKeyRed = "PortalKeyRed";
-        public static string PortalKeyGreen = "PortalKeyGreen";
-        public static string PortalKeyBlue = "PortalKeyBlue";
-        public static string PortalKeyPurple = "PortalKeyPurple";
-        public static string PortalKeyTan = "PortalKeyTan";
-        public static string PortalKeyYellow = "PortalKeyYellow";
-        public static string PortalKeyBlack = "PortalKeyBlack";
-        public static string PortalKeyWhite = "PortalKeyWhite";
-        public static string PortalKeyCyan = "PortalKeyCyan";
-        public static string PortalKeyOrange = "PortalKeyOrange";
+        public static string PortalKeyGold = "rmp_PortalKeyGold";
+        public static string PortalKeyRed = "rmp_PortalKeyRed";
+        public static string PortalKeyGreen = "rmp_PortalKeyGreen";
+        public static string PortalKeyBlue = "rmp_PortalKeyBlue";
+        public static string PortalKeyPurple = "rmp_PortalKeyPurple";
+        public static string PortalKeyTan = "rmp_PortalKeyTan";
+        public static string PortalKeyYellow = "rmp_PortalKeyYellow";
+        public static string PortalKeyBlack = "rmp_PortalKeyBlack";
+        public static string PortalKeyWhite = "rmp_PortalKeyWhite";
+        public static string PortalKeyCyan = "rmp_PortalKeyCyan";
+        public static string PortalKeyOrange = "rmp_PortalKeyOrange";
 
         private SpriteTools IconColor = new SpriteTools();
 
@@ -572,9 +572,10 @@ namespace RareMagicPortal
         {
 
             Item portalmagicfluid = new("portalmagicfluid", "portalmagicfluid", "assets");
-            
-            portalmagicfluid.Name.English("Magical Portal Fluid");
-            portalmagicfluid.Description.English("Once a mythical essence, now made real with Odin's blessing");
+           
+
+           // portalmagicfluid.Name.English("Magical Portal Fluid");
+            //portalmagicfluid.Description.English("Once a mythical essence, now made real with Odin's blessing");
             portalmagicfluid.DropsFrom.Add("gd_king", 1f, 1, 2); // Elder drop 100% 1-2 portalFluids
             portalmagicfluid.ToggleConfigurationVisibility(Configurability.Drop);
 
@@ -583,131 +584,131 @@ namespace RareMagicPortal
             PortalFluidname = portalmagicfluid.Prefab.name;
 
             Item PortalDrink = new("portalmagicfluid", "PortalDrink", "assets");
-            PortalDrink.Name.English("Magical Portal Drink");
-            PortalDrink.Description.English("Odin's Blood of Teleportation");
+           // PortalDrink.Name.English("Magical Portal Drink");
+           // PortalDrink.Description.English("Odin's Blood of Teleportation");
             PortalDrink.ToggleConfigurationVisibility(Configurability.Drop);
 
-            Item PortalCrystalMaster = new("portalcrystal", "PortalCrystalMaster", "assets");
-            PortalCrystalMaster.Name.English("Gold Portal Crystal");
-            PortalCrystalMaster.Description.English("Odin's Golden Crystal allows for Golden Portal Traveling and maybe more Portals");
+            Item PortalCrystalMaster = new("portalcrystal", "rmp_PortalCrystalGold", "assets");
+           // PortalCrystalMaster.Name.English("Gold Portal Crystal");
+           // PortalCrystalMaster.Description.English("Odin's Golden Crystal allows for Golden Portal Traveling and maybe more Portals");
             PortalCrystalMaster.ToggleConfigurationVisibility(Configurability.Drop);
 
-            Item PortalCrystalRed = new("portalcrystal", "PortalCrystalRed", "assets");
-            PortalCrystalRed.Name.English("Red Portal Crystal");
-            PortalCrystalRed.Description.English("Odin's Traveling Crystals allow for Red Portal Traveling");
+            Item PortalCrystalRed = new("portalcrystal", "rmp_PortalCrystalRed", "assets");
+            //PortalCrystalRed.Name.English("Red Portal Crystal");
+           // PortalCrystalRed.Description.English("Odin's Traveling Crystals allow for Red Portal Traveling");
             PortalCrystalRed.ToggleConfigurationVisibility(Configurability.Drop);
             // PortalCrystalRed.Snapshot();
 
-            Item PortalCrystalYellow = new("portalcrystal", "PortalCrystalYellow", "assets");
-            PortalCrystalYellow.Name.English("Yellow Portal Crystal");
-            PortalCrystalYellow.Description.English("Odin's Traveling Crystals allow for Yellow Portal Traveling");
+            Item PortalCrystalYellow = new("portalcrystal", "rmp_PortalCrystalYellow", "assets");
+           // PortalCrystalYellow.Name.English("Yellow Portal Crystal");
+            //PortalCrystalYellow.Description.English("Odin's Traveling Crystals allow for Yellow Portal Traveling");
             PortalCrystalYellow.ToggleConfigurationVisibility(Configurability.Drop);
             //PortalCrystalYellow.Snapshot();
 
-            Item PortalCrystalGreen = new("portalcrystal", "PortalCrystalGreen", "assets");
-            PortalCrystalGreen.Name.English("Green Portal Crystal");
-            PortalCrystalGreen.Description.English("Odin's Traveling Crystals allow for Green Portal Traveling");
+            Item PortalCrystalGreen = new("portalcrystal", "rmp_PortalCrystalGreen", "assets");
+            //PortalCrystalGreen.Name.English("Green Portal Crystal");
+           // PortalCrystalGreen.Description.English("Odin's Traveling Crystals allow for Green Portal Traveling");
             PortalCrystalGreen.ToggleConfigurationVisibility(Configurability.Drop);
 
-            Item PortalCrystalBlue = new("portalcrystal", "PortalCrystalBlue", "assetsEmbedassetsded");
-            PortalCrystalBlue.Name.English("Blue Portal Crystal");
-            PortalCrystalBlue.Description.English("Odin's Traveling Crystals allow for Blue Portal Traveling");
+            Item PortalCrystalBlue = new("portalcrystal", "rmp_PortalCrystalBlue", "assets");
+           // PortalCrystalBlue.Name.English("Blue Portal Crystal");
+            //PortalCrystalBlue.Description.English("Odin's Traveling Crystals allow for Blue Portal Traveling");
             PortalCrystalBlue.ToggleConfigurationVisibility(Configurability.Drop);
             //PortalCrystalBlue.Snapshot();
 
-            Item PortalCrystalCyan = new("portalcrystal", "PortalCrystalCyan", "assets");
-            PortalCrystalCyan.Name.English("Cyan Portal Crystal");
-            PortalCrystalCyan.Description.English("Odin's Traveling Crystals allow for Cyan Portal Traveling");
+            Item PortalCrystalCyan = new("portalcrystal", "rmp_PortalCrystalCyan", "assets");
+           // PortalCrystalCyan.Name.English("Cyan Portal Crystal");
+            //PortalCrystalCyan.Description.English("Odin's Traveling Crystals allow for Cyan Portal Traveling");
             PortalCrystalCyan.ToggleConfigurationVisibility(Configurability.Drop);
             // PortalCrystalCyan.Snapshot();
 
-            Item PortalCrystalPurple = new("portalcrystal", "PortalCrystalPurple", "assets");
-            PortalCrystalPurple.Name.English("Purple Portal Crystal");
-            PortalCrystalPurple.Description.English("Odin's Traveling Crystals allow for Purple Portal Traveling");
+            Item PortalCrystalPurple = new("portalcrystal", "rmp_PortalCrystalPurple", "assets");
+           // PortalCrystalPurple.Name.English("Purple Portal Crystal");
+           // PortalCrystalPurple.Description.English("Odin's Traveling Crystals allow for Purple Portal Traveling");
             PortalCrystalPurple.ToggleConfigurationVisibility(Configurability.Drop);
 
-            Item PortalCrystalTan = new("portalcrystal", "PortalCrystalTan", "assets");
-            PortalCrystalTan.Name.English("Tan Portal Crystal");
-            PortalCrystalTan.Description.English("Odin's Traveling Crystals allow for Tan Portal Traveling");
+            Item PortalCrystalTan = new("portalcrystal", "rmp_PortalCrystalTan", "assets");
+            //PortalCrystalTan.Name.English("Tan Portal Crystal");
+           // PortalCrystalTan.Description.English("Odin's Traveling Crystals allow for Tan Portal Traveling");
             PortalCrystalTan.ToggleConfigurationVisibility(Configurability.Drop);
 
-            Item PortalCrystalOrange = new("portalcrystal", "PortalCrystalOrange", "assets");
-            PortalCrystalOrange.Name.English("Orange Portal Crystal");
-            PortalCrystalOrange.Description.English("Odin's Traveling Crystals allow for Orange Portal Traveling");
+            Item PortalCrystalOrange = new("portalcrystal", "rmp_PortalCrystalOrange", "assets");
+            //PortalCrystalOrange.Name.English("Orange Portal Crystal");
+            //PortalCrystalOrange.Description.English("Odin's Traveling Crystals allow for Orange Portal Traveling");
             PortalCrystalOrange.ToggleConfigurationVisibility(Configurability.Drop);
             //PortalCrystalOrange.Snapshot();
 
-            Item PortalCrystalWhite = new("portalcrystal", "PortalCrystalWhite", "assets");
-            PortalCrystalWhite.Name.English("White Portal Crystal");
-            PortalCrystalWhite.Description.English("Odin's Traveling Crystals allow for White Portal Traveling");
+            Item PortalCrystalWhite = new("portalcrystal", "rmp_PortalCrystalWhite", "assets");
+           // PortalCrystalWhite.Name.English("White Portal Crystal");
+          //  PortalCrystalWhite.Description.English("Odin's Traveling Crystals allow for White Portal Traveling");
             PortalCrystalWhite.ToggleConfigurationVisibility(Configurability.Drop);
             // PortalCrystalWhite.Snapshot();
 
-            Item PortalCrystalBlack = new("portalcrystal", "PortalCrystalBlack", "assets");
-            PortalCrystalBlack.Name.English("Black Portal Crystal");
-            PortalCrystalBlack.Description.English("Odin's Traveling Crystals allow for Black Portal Traveling");
+            Item PortalCrystalBlack = new("portalcrystal", "rmp_PortalCrystalBlack", "assets");
+            //PortalCrystalBlack.Name.English("Black Portal Crystal");
+            //PortalCrystalBlack.Description.English("Odin's Traveling Crystals allow for Black Portal Traveling");
             PortalCrystalBlack.ToggleConfigurationVisibility(Configurability.Drop);
             // PortalCrystalBlack.Snapshot();
 
-            Item PortalKeyYellow = new("portalcrystal", "PortalKeyYellow", "assets");
-            PortalKeyYellow.Name.English("Yellow Portal Key");
-            PortalKeyYellow.Description.English("Unlock Portals Requiring The Yellow Key");
+            Item PortalKeyYellow = new("portalcrystal", "rmp_PortalKeyYellow", "assets");
+           // PortalKeyYellow.Name.English("Yellow Portal Key");
+           // PortalKeyYellow.Description.English("Unlock Portals Requiring The Yellow Key");
             PortalKeyYellow.ToggleConfigurationVisibility(Configurability.Disabled);
             //PortalKeyYellow.Snapshot();
 
-            Item PortalKeyRed = new("portalcrystal", "PortalKeyRed", "assets");
-            PortalKeyRed.Name.English("Red Portal Key");
-            PortalKeyRed.Description.English("Unlock Portals Requiring The Red Key");
+            Item PortalKeyRed = new("portalcrystal", "rmp_PortalKeyRed", "assets");
+            //PortalKeyRed.Name.English("Red Portal Key");
+            //PortalKeyRed.Description.English("Unlock Portals Requiring The Red Key");
             PortalKeyRed.ToggleConfigurationVisibility(Configurability.Disabled);
             //PortalKeyRed.Snapshot();
 
-            Item PortalKeyGold = new("portalcrystal", "PortalKeyGold", "assets");
-            PortalKeyGold.Name.English("Gold Portal Key");
-            PortalKeyGold.Description.English("Unlock Gold Portals and perhaps more Portals");
+            Item PortalKeyGold = new("portalcrystal", "rmp_PortalKeyGold", "assets");
+            //PortalKeyGold.Name.English("Gold Portal Key");
+           // PortalKeyGold.Description.English("Unlock Gold Portals and perhaps more Portals");
             PortalKeyGold.ToggleConfigurationVisibility(Configurability.Disabled);
 
-            Item PortalKeyBlue = new("portalcrystal", "PortalKeyBlue", "assets");
-            PortalKeyBlue.Name.English("Blue Portal Key");
-            PortalKeyBlue.Description.English("Unlock Portals Requiring The Blue Key");
+            Item PortalKeyBlue = new("portalcrystal", "rmp_PortalKeyBlue", "assets");
+            //PortalKeyBlue.Name.English("Blue Portal Key");
+           // PortalKeyBlue.Description.English("Unlock Portals Requiring The Blue Key");
             PortalKeyBlue.ToggleConfigurationVisibility(Configurability.Disabled);
             //PortalKeyBlue.Snapshot();
 
-            Item PortalKeyGreen = new("portalcrystal", "PortalKeyGreen", "assets");
-            PortalKeyGreen.Name.English("Green Portal Key");
-            PortalKeyGreen.Description.English("Unlock Portals Requiring The Green Key");
+            Item PortalKeyGreen = new("portalcrystal", "rmp_PortalKeyGreen", "assets");
+            //PortalKeyGreen.Name.English("Green Portal Key");
+            //PortalKeyGreen.Description.English("Unlock Portals Requiring The Green Key");
             PortalKeyGreen.ToggleConfigurationVisibility(Configurability.Disabled);
 
-            Item PortalKeyPurple = new("portalcrystal", "PortalKeyPurple", "assets");
-            PortalKeyPurple.Name.English("Purple Portal Key");
-            PortalKeyPurple.Description.English("Unlock Portals Requiring The Purple Key");
+            Item PortalKeyPurple = new("portalcrystal", "rmp_PortalKeyPurple", "assets");
+           // PortalKeyPurple.Name.English("Purple Portal Key");
+            //PortalKeyPurple.Description.English("Unlock Portals Requiring The Purple Key");
             PortalKeyPurple.ToggleConfigurationVisibility(Configurability.Disabled);
 
-            Item PortalKeyTan = new("portalcrystal", "PortalKeyTan", "assets");
-            PortalKeyTan.Name.English("Tan Portal Key");
-            PortalKeyTan.Description.English("Unlock Portals Requiring The Tan Key");
+            Item PortalKeyTan = new("portalcrystal", "rmp_PortalKeyTan", "assets");
+           // PortalKeyTan.Name.English("Tan Portal Key");
+            //PortalKeyTan.Description.English("Unlock Portals Requiring The Tan Key");
             PortalKeyTan.ToggleConfigurationVisibility(Configurability.Disabled);
 
-            Item PortalKeyCyan = new("portalcrystal", "PortalKeyCyan", "assets");
-            PortalKeyCyan.Name.English("Cyan Portal Key");
-            PortalKeyCyan.Description.English("Unlock Portals Requiring The Cyan Key");
+            Item PortalKeyCyan = new("portalcrystal", "rmp_PortalKeyCyan", "assets");
+            //PortalKeyCyan.Name.English("Cyan Portal Key");
+            //PortalKeyCyan.Description.English("Unlock Portals Requiring The Cyan Key");
             PortalKeyCyan.ToggleConfigurationVisibility(Configurability.Disabled);
             //PortalKeyCyan.Snapshot();
 
-            Item PortalKeyOrange = new("portalcrystal", "PortalKeyOrange", "assets");
-            PortalKeyOrange.Name.English("Orange Portal Key");
-            PortalKeyOrange.Description.English("Unlock Portals Requiring The Orange Key");
+            Item PortalKeyOrange = new("portalcrystal", "rmp_PortalKeyOrange", "assets");
+            //PortalKeyOrange.Name.English("Orange Portal Key");
+            //PortalKeyOrange.Description.English("Unlock Portals Requiring The Orange Key");
             PortalKeyOrange.ToggleConfigurationVisibility(Configurability.Disabled);
             PortalKeyOrange.Snapshot();
 
-            Item PortalKeyWhite = new("portalcrystal", "PortalKeyWhite", "assets");
-            PortalKeyWhite.Name.English("White Portal Key");
-            PortalKeyWhite.Description.English("Unlock Portals Requiring The White Key");
+            Item PortalKeyWhite = new("portalcrystal", "rmp_PortalKeyWhite", "assets");
+            //PortalKeyWhite.Name.English("White Portal Key");
+            //PortalKeyWhite.Description.English("Unlock Portals Requiring The White Key");
             PortalKeyWhite.ToggleConfigurationVisibility(Configurability.Disabled);
             //PortalKeyWhite.Snapshot();
 
-            Item PortalKeyBlack = new("portalcrystal", "PortalKeyBlack", "assets");
-            PortalKeyBlack.Name.English("Black Portal Key");
-            PortalKeyBlack.Description.English("Unlock Portals Requiring The Black Key");
+            Item PortalKeyBlack = new("portalcrystal", "rmp_PortalKeyBlack", "assets");
+            //PortalKeyBlack.Name.English("Black Portal Key");
+            //PortalKeyBlack.Description.English("Unlock Portals Requiring The Black Key");
             PortalKeyBlack.ToggleConfigurationVisibility(Configurability.Disabled);
             //PortalKeyBlack.Snapshot();
 
