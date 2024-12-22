@@ -503,7 +503,7 @@ namespace RareMagicPortal
         {
             internal class SkipPortalException3 : Exception { }
 
-            [HarmonyPriority(Priority.HigherThanNormal)]
+            [HarmonyPriority(Priority.LowerThanNormal)]
             private static void Postfix(ref TeleportWorld __instance, ref string __result)
             {
                 if ( MagicPortalFluid.NoMoreLoading || MagicPortalFluid.WaitSomeMore)
@@ -853,7 +853,7 @@ namespace RareMagicPortal
             }
             
             
-            if(MagicPortalFluid.isDebug.Value)
+           // if(MagicPortalFluid.isDebug.Value)
                 RMP.LogInfo("default yELLOW");
             // Default fallback to Yellow
             currentColor = "Yellow";
@@ -1315,6 +1315,8 @@ namespace RareMagicPortal
                     }         
                 }         
             }
+
+            bool setupnew = false;
             if(oldname == "" && PortalName != "")
             {
                 if (PortalN.Portals[""].PortalZDOs.ContainsKey(ZDOID))
@@ -1325,24 +1327,12 @@ namespace RareMagicPortal
                 }
                 else
                 {
-                    if (instance != null)
-                    {
-                        string biome = Player.m_localPlayer.GetCurrentBiome().ToString();
-                        PortalN.Portals[PortalName].PortalZDOs[ZDOID].Biome = biome;
-                        if (MagicPortalFluid.ConfigUseBiomeColors.Value == MagicPortalFluid.Toggle.On)
-                        {
-                            PortalN.Portals[PortalName].PortalZDOs[ZDOID].BiomeColor = functions.GetBiomeColor(biome);
-                        }
-
-                        instance.m_nview.m_zdo.Set(MagicPortalFluid._portalBiomeHashCode, biome);
-
-                        PortalColorLogic.RMP.LogInfo("Setting ZDO Biome Data in New YML");
-                    }
+                    setupnew = true;
                 }
             }
             
 
-            if (PortalName == "" )
+            if (PortalName == "" || setupnew)
             {
 
                 PortalN.Portals[PortalName].PortalZDOs[ZDOID].SpecialMode = MagicPortalFluid.DefaultMode.Value;
