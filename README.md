@@ -16,9 +16,9 @@ Portals become strategic tools for server admins rather than limitless shortcuts
 
 If you're tired of the default portal mechanics and want more flexibility and control, **Rare Magic Portal Plus** is the solution!
 
-This is a complex mod targeting multiplayer servers, but by default most of the settings are disabled.
+This is a complex mod targeting multiplayer servers, so by default most of the settings are disabled.
 
-Another, more basic version, might be released in the future. RMP without the Plus. 
+By default most of the new Portals have Cheat Sword as a requirement, and Biome Colors mode is enabled. 
 
 ---
 <img src="https://wackymole.com/hosts/FireandIce.png" width="500"/>  <img src="https://wackymole.com/hosts/GoldPortal.png" width="500"/>
@@ -29,6 +29,7 @@ Another, more basic version, might be released in the future. RMP without the Pl
 - **Player Management:** Limit the number of portals per player, enforce weight restrictions, or enable admin-only settings.
 - **YAML Configuration Support:** Easily manage portal-specific settings like colors, access, and behavior.
 - **More Portals:** This mod unlocks the default stone portal and adds 5 more new portals types!
+- **Teleport Everything:** Won't teleport your pets, but all items. 
 
 ---
 
@@ -36,9 +37,9 @@ Another, more basic version, might be released in the future. RMP without the Pl
 
 The idea behind Rare Magic Portal Plus (RMP) was straightforward: portals felt too overpowered, and I wanted to introduce mechanics that balanced their convenience with meaningful strategy. At the same time, I understood how crucial portals are for navigating dungeons and exploring the world. When Target Portal was released, I saw an opportunity to support its functionality while expanding on my vision. 
 
-For large servers, the demand for more portal prefab options was clear, and I realized this mod could potentially become a valuable contribution to the community. After dedicating over two years of work—conceptualizing, refining, and developing—RMP has become the feature-rich mod it is today. 
+For large servers, the demand for more portal prefab options was clear, and I realized this mod could potentially become a valuable contribution to the community. After dedicating over two years of work conceptualizing, refining, and developing RMP, it has become the feature-rich mod it is today. 
 
-Though the mod is completely free for several reasons, your contributions are always appreciated. If you’d like to support my efforts, your generosity helps keep the magic flowing and inspires me to continue enhancing the Valheim experience.
+Though the mod is completely free for several reasons, your contributions are always appreciated. If you like to support my efforts, your generosity helps keep the magic flowing and inspires me to continue enhancing the Valheim experience.
 
 
 ---
@@ -55,7 +56,7 @@ The default behavior of portals in Valheim. Players can teleport between linked 
 ---
 
 #### **B. TargetPortal Mode**
-- Requires the **TargetPortal mod** to function. Otherwise default to Normal behavior
+- Requires the <a href="https://thunderstore.io/c/valheim/p/Smoothbrain/TargetPortal/" >**TargetPortal mod** </a> to function. Otherwise default to Normal behavior
 - Allows precise targeting of destination portals.
 - Ideal for creating networks where only certain players or groups can utilize specific portals.
 - Has configs to lock TargetPortal's more open features. 
@@ -105,7 +106,7 @@ The default behavior of portals in Valheim. Players can teleport between linked 
 #### **I. Transport Network Mode**
 - By default a nameless portal that appears inactive. Is named by admin
 - When a player gets close to a TN portal the /warp feature becomes available. 
-- If a player guess or knows the a TN portal name they can do /warp portalName to be transported to that TN portal
+- If a player guess or knows the a TN portal name they can do /warp portalName to be transported to that or another TN portal
 
 ---
 
@@ -119,14 +120,15 @@ The default behavior of portals in Valheim. Players can teleport between linked 
 #### **J. Random Teleport Mode**
 - Sends players to a random location upon activation. Player is very likly to die! (most of the map is water)
 - Adds unpredictability and risk, suitable for adventure servers or event-based challenges.
-- Will only transported within the default map size
+- Will only transported within the default map size.
+- Makes a funny public annoucement when a player takes the portal.
+- 
 
 ---
 
 #### **K. Admin-Only Mode**
 - Restricts portal use to server admins.
 - Ensures exclusive access for server management, events, or private builds.
-- Configurable for specific portal colors or types (e.g., Gold or White).
 
 ---
 
@@ -144,7 +146,7 @@ Most Portal modes can be combined with **Portal Crystals**, **Keys**,  for even 
 
 
 ### **2. Dynamic Portal Colors**
-Portals don’t have to be dull anymore! Customize portals with **vibrant colors** to match biomes, themes, or server events.
+Portals don't have to be dull anymore! Customize portals with **vibrant colors** to match biomes, themes, or server events.
 
 #### **Default Colors by Biome:**
 These can all be changed or manually changed
@@ -159,12 +161,10 @@ These can all be changed or manually changed
 
 #### **Special Colors:**
 - **Gold**: Endgame or Master portals.
-- **White**: Special-use portals for admins or VIPs.
 - **Rainbow**: Dynamic cycling colors when Portal Drink is active. OR rainbow Mode
 
 #### **Custom Features:**
-- **Admin-Only Colors**: Restrict some portal colors to server admins.
-- **Biome-Forced Colors**: Automatically assign colors based on the portal’s Biome location.
+- **Biome-Forced Colors**: Automatically assign colors based on the portal's Biome location.
 - **Manual Cycling**: Use shortcut keys to change portal colors on the fly.
 
 ---
@@ -256,6 +256,7 @@ Rare Magic Portal Plus includes numerous configuration options categorized by th
 | **Option**                       | **Default**           | **Description**                                                                                  |
 |-----------------------------------|-----------------------|--------------------------------------------------------------------------------------------------|
 | `Default Mode for New Portals`   | `Normal`              | Sets the default portal mode for newly placed portals.                                           |
+| `DisableNoNamed`				   | `False`              | No named Portals do not work at all.                                          |
 
 ---
 ### **1.2 Target Portal**
@@ -337,8 +338,8 @@ This section focuses on the **Random Teleport** mode, where portals can send pla
 | `Only Creator Can Deconstruct`     | `true`      | Restricts portal deconstruction to creators and admins.                                         |
 | `Max Weight Allowed for Portals`   | `0`         | Limits the maximum weight of items transported through portals.                                 |
 | `Only Admin Can Build`             | `Off`       | Restricts portal construction to admins.                                                        |
-| `MaxAmountOfPortals`               | `0`         | Limits the total number of portals per player.                                                  |
-| `MaxAmountOfPortals_VIP`           | `0`         | Sets a higher portal limit for VIP players.                                                     |
+| `MaxAmountOfPortals`               | `0`         | Limits the total number of portals per player.     0 Disables Limit                             |                |
+| `MaxAmountOfPortals_VIP`           | `0`         | Sets a higher portal limit for VIP players.          0 Disables Limit                           |
 
 ---
 
@@ -413,17 +414,17 @@ This section allows you to replace the default portal crystals with custom items
 
 | **Config Option**       | **Default**             | **Description**                                                                                                                                                                                |
 |--------------------------|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Use for Crystal Gold     | `PortalCrystalMaster`  | Replace the default Gold crystal with a custom item. Example: `"Shattered_Yellow_Crystal"`                                                                                                     |
-| Use for Crystal Red      | `PortalCrystalRed`     | Replace the default Red crystal with a custom item. Example: `"Uncut_Yellow_Stone"`                                                                                                            |
-| Use for Crystal Green    | `PortalCrystalGreen`   | Replace the default Green crystal with a custom item. Example: `"Simple_Yellow_Socket"`                                                                                                        |
-| Use for Crystal Blue     | `PortalCrystalBlue`    | Replace the default Blue crystal with a custom item. Example: `"Advanced_Yellow_Socket"`                                                                                                       |
-| Use for Crystal Yellow   | `PortalCrystalYellow`  | Replace the default Yellow crystal with a custom item. Example: `"Perfect_Yellow_Socket"`                                                                                                      |
-| Use for Crystal Purple   | `PortalCrystalPurple`  | Replace the default Purple crystal with a custom item. Example: `"Uncut_Purple_Stone"`                                                                                                         |
-| Use for Crystal Tan      | `PortalCrystalTan`     | Replace the default Tan crystal with a custom item. Example: `"Simple_Tan_Socket"`                                                                                                             |
-| Use for Crystal Cyan     | `PortalCrystalCyan`    | Replace the default Cyan crystal with a custom item. Example: `"Advanced_Cyan_Socket"`                                                                                                         |
-| Use for Crystal Orange   | `PortalCrystalOrange`  | Replace the default Orange crystal with a custom item. Example: `"Perfect_Orange_Socket"`                                                                                                      |
-| Use for Crystal White    | `PortalCrystalWhite`   | Replace the default White crystal with a custom item. Example: `"Shattered_White_Crystal"`                                                                                                     |
-| Use for Crystal Black    | `PortalCrystalBlack`   | Replace the default Black crystal with a custom item. Example: `"Uncut_Black_Stone"`                                                                                                           |
+| Use for Crystal Gold     | `rmp_PortalCrystalGold`  | Replace the default Gold crystal with a custom item. Example: `"Shattered_Yellow_Crystal"`                                                                                                     |
+| Use for Crystal Red      | `rmp_PortalCrystalRed`     | Replace the default Red crystal with a custom item. Example: `"Uncut_Yellow_Stone"`                                                                                                            |
+| Use for Crystal Green    | `rmp_PortalCrystalGreen`   | Replace the default Green crystal with a custom item. Example: `"Simple_Yellow_Socket"`                                                                                                        |
+| Use for Crystal Blue     | `rmp_PortalCrystalBlue`    | Replace the default Blue crystal with a custom item. Example: `"Advanced_Yellow_Socket"`                                                                                                       |
+| Use for Crystal Yellow   | `rmp_PortalCrystalYellow`  | Replace the default Yellow crystal with a custom item. Example: `"Perfect_Yellow_Socket"`                                                                                                      |
+| Use for Crystal Purple   | `rmp_PortalCrystalPurple`  | Replace the default Purple crystal with a custom item. Example: `"Uncut_Purple_Stone"`                                                                                                         |
+| Use for Crystal Tan      | `rmp_PortalCrystalTan`     | Replace the default Tan crystal with a custom item. Example: `"Simple_Tan_Socket"`                                                                                                             |
+| Use for Crystal Cyan     | `rmp_PortalCrystalCyan`    | Replace the default Cyan crystal with a custom item. Example: `"Advanced_Cyan_Socket"`                                                                                                         |
+| Use for Crystal Orange   | `rmp_PortalCrystalOrange`  | Replace the default Orange crystal with a custom item. Example: `"Perfect_Orange_Socket"`                                                                                                      |
+| Use for Crystal White    | `rmp_PortalCrystalWhite`   | Replace the default White crystal with a custom item. Example: `"Shattered_White_Crystal"`                                                                                                     |
+| Use for Crystal Black    | `rmp_PortalCrystalBlack`   | Replace the default Black crystal with a custom item. Example: `"Uncut_Black_Stone"`                                                                                                           |
 
 ---
 
@@ -451,10 +452,10 @@ Use these prefab IDs for custom configurations or integrations with other mods:
 - **Fluid and Drink:** `PortalMagicFluid`, `PortalDrink`
 
 Prefab IDs (Crystals):  
-- `PortalCrystalRed`, `PortalCrystalGold`, `PortalCrystalTan`, `PortalCrystalGreen`, `PortalCrystalBlue`, `PortalCrystalPurple`, `PortalCrystalCyan`, `PortalCrystalOrange`, `PortalCrystalBlack`, `PortalCrystalWhite`, `PortalCrystalYellow`
+- `rmp_PortalCrystalRed`, `rmp_PortalCrystalGold`, `rmp_PortalCrystalTan`, `rmp_PortalCrystalGreen`, `rmp_PortalCrystalBlue`, `rmp_PortalCrystalPurple`, `rmp_PortalCrystalCyan`, `rmp_PortalCrystalOrange`, `rmp_PortalCrystalBlack`, `rmp_PortalCrystalWhite`, `rmp_PortalCrystalYellow`
 
 Prefab IDs (Keys):  
-- `PortalKeyGold`, `PortalKeyRed`, `PortalKeyTan`, `PortalKeyGreen`, `PortalKeyBlue`, `PortalKeyPurple`, `PortalKeyCyan`, `PortalKeyOrange`, `PortalKeyBlack`, `PortalKeyWhite`, `PortalKeyYellow`
+- `rmp_PortalKeyGold`, `rmp_PortalKeyRed`, `rmp_PortalKeyTan`, `rmp_PortalKeyGreen`, `rmp_PortalKeyBlue`, `rmp_PortalKeyPurple`, `rmp_PortalKeyCyan`, `rmp_PortalKeyOrange`, rmp_`PortalKeyBlack`, `rmp_PortalKeyWhite`, `rmp_PortalKeyYellow`
 
 ---
 
@@ -465,6 +466,7 @@ Rare Magic Portal Plus works seamlessly with many popular Valheim mods, includin
 - **Epic Loot, JewelCrafting, Drop That, KG Marketplace, and more!**
 - **Not Compatible with the old RMP 2.0**
 - **Not Compatible with Advanced Portals**
+- Not Compatible other Portal mods probably(besides Target Portal), I'll work on Teleport Anything if that doesn't work.
 
 ---
 
@@ -484,7 +486,7 @@ Download TargetPortal and RMPP together, you won't be disappointed.
 - **My Wife again for putting up with all my modding time and being awesome.**    
 - Special thanks to:
   - The **OdinPlus Team** for their guidance and support.
-  - The **Blaxx** for making TargetPortal easy to patch. Seriously, I probably overrode half of the patches in this Target Portal to get compatibility. I am glad it worked out.
+  - The **Blaxx** for making TargetPortal easy to patch. Seriously, I probably overrode half of the patches in this Target Portal to get compatibility. I am glad it worked out. I'll happily take TargetPortal off your hands though :wink:
   -  **GraveBear** for updated icons.
 - Assets provided by the **Unity Asset Store**:
   - [Alchemy and Magic Pack](https://assetstore.unity.com/packages/3d/props/interior/free-alchemy-and-magic-pack-142991)

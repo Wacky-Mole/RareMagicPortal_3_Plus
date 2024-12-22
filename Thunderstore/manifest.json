@@ -1,8 +1,8 @@
 {
-  "name": "YOURMODNAME_HERE",
+  "name": "RareMagicPortalPlus",
   "version_number": "3.0.1",
-  "website_url": "https://discord.gg/pdHgy6Bsng",
-  "description": "Your mod description goes here. Do not forget to replace the icon.png file with your own. Must be 256x256. Your Readme.md file will be copied from the one in your project folder.",
+  "website_url": "https://discord.gg/uPjjH8y52j",
+  "description": "Rare Magic Portal Plus (RMPP) is a feature-rich mod designed to overhaul how portals function in Valheim.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2202"
   ]
