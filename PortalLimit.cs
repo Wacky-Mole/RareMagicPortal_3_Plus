@@ -200,32 +200,6 @@ namespace RareMagicPortalPlus.limit
             }
         } */
 
-        [HarmonyPatch(typeof(Player), nameof(Player.CheckCanRemovePiece))]
-        static class RemovePiece_PatchPortalPost
-        {
-            private static void Postfix(ref Player __instance, ref Piece piece, ref bool __result)
-            {
-               if (!__result)
-                    return;
-
-                if (ZNet.instance.IsServer())
-                    return;
-
-                //MagicPortalFluid.RareMagicPortal.LogWarning("Checking Remove:"+ piece.name);
-
-                var searchname = piece.name;
-                searchname = searchname.Replace("(Clone)", "").Trim();
-
-                if (MagicPortalFluid.PortalNames.Contains(searchname))
-                {
-                    //MagicPortalFluid.RareMagicPortal.LogWarning("Portal Creator " + piece.GetCreator() + " Me " + __instance.GetPlayerID());
-                    if (ZNet.instance.GetServerPeer() != null)
-                        ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "WackyPortal Portalremoved",
-                            new object[] { null });
-                }
-            }
-        }
-
 
         private enum PlayerStatus
         {

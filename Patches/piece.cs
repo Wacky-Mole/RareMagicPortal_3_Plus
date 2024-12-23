@@ -18,15 +18,17 @@ namespace RareMagicPortal_3_Plus.Patches
             {
                 if (piece == null)
                     return true;
-                
 
-                if (MagicPortalFluid.PortalNames.Contains(piece.name) && !__instance.m_noPlacementCost && MagicPortalFluid.ConfigCreator.Value) // portal and Configonly
+                var piecename = piece.name;
+                piecename = piecename.Replace("(Clone)", "").Trim();
+
+               // PortalColorLogic.RMP.LogInfo("Piece name was " + piece.name + ":Creator: " + piece.m_creator);
+                if (MagicPortalFluid.PortalNames.Contains(piecename) && !__instance.m_noPlacementCost && MagicPortalFluid.ConfigCreator.Value) // portal and Configonly
                 {
-                    __instance.Message(MessageHud.MessageType.Center, "$rmp_youarenotcreator");
                     bool bool2 = piece.IsCreator();// nice
                     if (bool2)
                     { // can remove because is creator or creator only mode is On
-                        return true;
+                       // return true;
                     }
                     else
                     {
@@ -34,10 +36,19 @@ namespace RareMagicPortal_3_Plus.Patches
                         return false;   
                     }
                 }
+
+                if (MagicPortalFluid.PortalNames.Contains(piecename))
+                {
+                    if (ZNet.instance.GetServerPeer() != null)
+                        ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "WackyPortal Portalremoved",
+                            new object[] { null });
+                }
+
                 return true;    
             }
         }
-        
+
+
         [HarmonyPatch(typeof(global::Player), "TryPlacePiece")]
         internal static class Player_MessageforPortal_PatchRMP
         {

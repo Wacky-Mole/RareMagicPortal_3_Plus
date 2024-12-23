@@ -80,18 +80,18 @@ static class SetInitialPortalModeRMP
 
 	}
 
-    [HarmonyPatch(typeof(TeleportWorld))] 
+	[HarmonyPatch(typeof(TeleportWorld), nameof(TeleportWorld.Awake))]
 	class TeleportWorldPatchRMPPLUS
 	{
+		
         //[HarmonyPriority(Priority.High)]
-        [HarmonyPostfix]
-		[HarmonyPatch(nameof(TeleportWorld.Awake))]
-		static void TeleportWorldAwakePostPLUS(ref TeleportWorld __instance)
+		private static void Postfix(ref TeleportWorld __instance)
 		{
             if (!__instance)
             {
                 return;
             }
+            
 
 			//MagicPortalFluid.RareMagicPortal.LogWarning("Model name " + __instance.m_model.name );
 			

@@ -95,7 +95,7 @@ namespace RareMagicPortal
     {
         public const string PluginGUID = "WackyMole.RareMagicPortalPlus";
         public const string PluginName = "RareMagicPortalPlus";
-        public const string PluginVersion = "3.0.1";
+        public const string PluginVersion = "3.0.2";
 //
         internal const string ModName = PluginName;
         internal const string ModVersion = PluginVersion;
@@ -216,6 +216,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<KeyboardShortcut>? portalRMPsacrifceKEY = null!;
         internal static ConfigEntry<Toggle>? ConfigMessageLeft;
         internal static ConfigEntry<Toggle>? ConfigTargetPortalAnimation;
+        internal static ConfigEntry<TargetPortalMode>? ConfigTargetPortalDefaultMode;
         internal static ConfigEntry<Toggle>? flyonactivate;
         internal static ConfigEntry<Toggle>? hideTeleNetName;
         internal static ConfigEntry<Toggle>? hideTeleNetNameadmin;
@@ -418,6 +419,15 @@ namespace RareMagicPortal
         {
             On = 1,
             Off = 0,
+        }
+        
+        public enum TargetPortalMode
+        {
+            Public = 0,
+            Private = 1,
+            Group = 2,
+            Admin = 3,
+            Guild = 4,
         }
 
 
@@ -753,7 +763,7 @@ namespace RareMagicPortal
             portal1.RequiredItems.Add("SurtlingCore", 4, true);
             portal1.RequiredItems.Add("PortalMagicFluid", 2, true);
             portal1.RequiredItems.Add("Obsidian", 20, true);
-            portal1.RequiredItems.Add("SwordCheat",1, false);
+           // portal1.RequiredItems.Add("SwordCheat",1, false);
             portal1.Category.Set("Portals"); 
             portal1.Crafting.Set(PieceManager.CraftingTable.Workbench);
             //portal1.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
@@ -767,7 +777,7 @@ namespace RareMagicPortal
             portal2.RequiredItems.Add("SurtlingCore", 4, true);
             portal2.RequiredItems.Add("PortalMagicFluid", 2, true);
             portal2.RequiredItems.Add("Obsidian", 20, true);
-            portal2.RequiredItems.Add("SwordCheat", 1, false);
+            //portal2.RequiredItems.Add("SwordCheat", 1, false);
             portal2.Category.Set("Portals"); 
             portal2.Crafting.Set(PieceManager.CraftingTable.Workbench); 
            // portal2.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
@@ -781,7 +791,7 @@ namespace RareMagicPortal
             portal3.RequiredItems.Add("SurtlingCore", 4, true);
             portal3.RequiredItems.Add("PortalMagicFluid", 2, true);
             portal3.RequiredItems.Add("Obsidian", 20, true);
-            portal3.RequiredItems.Add("SwordCheat", 1, false);
+           // portal3.RequiredItems.Add("SwordCheat", 1, false);
             portal3.Category.Set("Portals"); 
             portal3.Crafting.Set(PieceManager.CraftingTable.Workbench); 
            // portal3.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
@@ -795,7 +805,7 @@ namespace RareMagicPortal
             portal5.RequiredItems.Add("SurtlingCore", 4, true);
             portal5.RequiredItems.Add("PortalMagicFluid", 2, true);
             portal5.RequiredItems.Add("Obsidian", 20, true);
-            portal5.RequiredItems.Add("SwordCheat", 1, false);
+           // portal5.RequiredItems.Add("SwordCheat", 1, false);
             portal5.Category.Set("Portals");
             portal5.Crafting.Set(PieceManager.CraftingTable.Workbench);
             // portal5.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
@@ -808,7 +818,7 @@ namespace RareMagicPortal
             portal6.RequiredItems.Add("SurtlingCore", 4, true);
             portal6.RequiredItems.Add("PortalMagicFluid", 2, true);
             portal6.RequiredItems.Add("Obsidian", 20, true);
-            portal6.RequiredItems.Add("SwordCheat", 1, false);
+           // portal6.RequiredItems.Add("SwordCheat", 1, false);
             portal6.Category.Set("Portals");
             portal6.Crafting.Set(PieceManager.CraftingTable.Workbench);
             //portal6.SpecialProperties = new SpecialProperties() { AdminOnly = true };   
@@ -821,7 +831,7 @@ namespace RareMagicPortal
             portal4.RequiredItems.Add("SurtlingCore", 4, true);
             portal4.RequiredItems.Add("PortalMagicFluid", 2, true);
             portal4.RequiredItems.Add("Obsidian", 20, true);
-            portal4.RequiredItems.Add("SwordCheat", 1, false);
+           // portal4.RequiredItems.Add("SwordCheat", 1, false);
             portal4.Category.Set("Portals"); 
             portal4.Crafting.Set(PieceManager.CraftingTable.Workbench); //
            // portal4.SpecialProperties = new SpecialProperties() { AdminOnly = true }; /     
@@ -836,7 +846,7 @@ namespace RareMagicPortal
             portal8.RequiredItems.Add("SurtlingCore", 4, true);
             portal8.RequiredItems.Add("PortalMagicFluid", 2, true);
             portal8.RequiredItems.Add("Obsidian", 20, true);
-            portal8.RequiredItems.Add("SwordCheat", 1, false);
+           // portal8.RequiredItems.Add("SwordCheat", 1, false);
             portal8.Category.Set("Portals"); 
             portal8.Crafting.Set(PieceManager.CraftingTable.Workbench);
             //portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
@@ -1405,11 +1415,12 @@ namespace RareMagicPortal
             string normalMode = "1.1 Normal Mode-----------";
 
             string targetportal = "1.2 Target Portal-----------";
-            PreventTargetPortalFromChanging = config(targetportal, "Prevent Target Portal Change", Toggle.On, "Prevent People (non creator/admin) from changing TargetPortal Mode. Groups/Private/Public/Guilds etc");
-            PreventTargetPortalOwnerFromChanging = config(targetportal, "Prevent Creator of TargetPortalChange", Toggle.Off, "Only allow Admins to Change TargetPortal Mode Groups/Private/Public/Guilds etc");
+            PreventTargetPortalFromChanging = config(targetportal, "Prevent Target Portal Mode Change", Toggle.On, "Prevent People (non creator/admin) from changing TargetPortal Mode. Groups/Private/Public/Guilds etc");
+            PreventTargetPortalOwnerFromChanging = config(targetportal, "Prevent Creator from changing TargetPortalMode", Toggle.Off, "Only allow Admins to Change TargetPortal Mode Groups/Private/Public/Guilds etc");
             ConfigTargetPortalAnimation = config(targetportal, "Force Portal Animation", Toggle.Off, "Forces Portal Animation for Target Portal Mod, is not synced and only applies the config if the mod is loaded", false);
+            ConfigTargetPortalDefaultMode = config(targetportal, "Default Target Portal Mode", TargetPortalMode.Private, "Because of some hackyness, this needs to be set in RMPP instead. Set the default Target Portal Mode. ");
 
-            string crystalkeymode = "1.3 Crystal Key Mode-----------";
+            string crystalkeymode = "1.3 Crystal Key Mode-----------"; 
 
             string passwordLock = "1.4 Password Lock Mode-----------";
 
@@ -1499,9 +1510,9 @@ namespace RareMagicPortal
 
             AdminOnlyMakesPortals = config(portal, "Only Admin Can Build", Toggle.Off, "Only The Admins Can Build Portals");
 
-            MaxAmountOfPortals = config(portal, "MaxAmountOfPortals", 0, "Max amount of portals, a Value of 0 disables the check");
+            MaxAmountOfPortals = config(portal, "MaxAmountOfPortals", 0, "Max amount of portals, a Value of 0 disables the check. This is a STEAM Or XBOX ID");
 
-            MaxAmountOfPortals_VIP = config(portal, "MaxAmountOfPortals_VIP", 0, "Max amount of portals for VIP, a Value of 0 disables the check");
+            MaxAmountOfPortals_VIP = config(portal, "MaxAmountOfPortals_VIP", 0, "Max amount of portals for VIP, a Value of 0 disables the check. This is a STEAM Or XBOX ID");
 
 
 

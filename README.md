@@ -18,7 +18,7 @@ If you're tired of the default portal mechanics and want more flexibility and co
 
 This is a complex mod targeting multiplayer servers, so by default most of the settings are disabled.
 
-By default most of the new Portals have Cheat Sword as a requirement, and Biome Colors mode is enabled. 
+By default all the portals can be built by players, add SwordCheat (non recoverable) if you want to restrict, and Biome Colors mode is enabled. 
 
 ---
 <img src="https://wackymole.com/hosts/FireandIce.png" width="500"/>  <img src="https://wackymole.com/hosts/GoldPortal.png" width="500"/>
@@ -265,7 +265,10 @@ Rare Magic Portal Plus includes numerous configuration options categorized by th
 | `Prevent Target Portal Change`   | `On`                 | Disallows non-creators from changing TargetPortal mode.                                          |
 | `Prevent Creator of TargetPortalChange` | `Off`        | Restricts changes to TargetPortal mode to admins only.                                           |
 | `Force Portal Animation`         | `Off`                | Forces portal animation for TargetPortal mode.                                                  |
+| `Default Target Portal Mode`         | `private`                | Because of some hackyness, this needs to be set in RMPP instead. Set the default Target Portal Mode..                                                  |
 
+
+You cannot Target Portal to unnamed Portals in RMPP. They will show up on map.
 ---
 
 ### **1.7 Teleportation Enhancements**
@@ -338,8 +341,8 @@ This section focuses on the **Random Teleport** mode, where portals can send pla
 | `Only Creator Can Deconstruct`     | `true`      | Restricts portal deconstruction to creators and admins.                                         |
 | `Max Weight Allowed for Portals`   | `0`         | Limits the maximum weight of items transported through portals.                                 |
 | `Only Admin Can Build`             | `Off`       | Restricts portal construction to admins.                                                        |
-| `MaxAmountOfPortals`               | `0`         | Limits the total number of portals per player.     0 Disables Limit                             |                |
-| `MaxAmountOfPortals_VIP`           | `0`         | Sets a higher portal limit for VIP players.          0 Disables Limit                           |
+| `MaxAmountOfPortals`               | `0`         | Limits the total number of portals per player.     0 Disables Limit      This is a STEAM Or XBOX ID          This is not a perfect tracker. It tracker a players creations/destructions on the server in WorldName_PlayerPortals.json             |                |
+| `MaxAmountOfPortals_VIP`           | `0`         | Sets a higher portal limit for VIP players.          0 Disables Limit       This is a STEAM Or XBOX ID     VIP players can be added in VIP_Portal_players.txt               |
 
 ---
 
