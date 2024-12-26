@@ -25,6 +25,7 @@ namespace RareMagicPortal_3_Plus
                 }
             }
         }
+        /*
 
         [HarmonyPatch(typeof(Game), nameof(Game.ConnectPortals))]
         [HarmonyPriority(Priority.HigherThanNormal)]
@@ -32,6 +33,7 @@ namespace RareMagicPortal_3_Plus
         {
             internal class SkipPortalException5 : Exception { }
         }
+        */
 
 
         [HarmonyPatch(typeof(Minimap), nameof(Minimap.OnMapLeftClick))]
@@ -82,7 +84,7 @@ namespace RareMagicPortal_3_Plus
 
                 portalName = portalZDO.GetString("tag");
 
-                if (portalName == null || portalName == "")
+                if (portalName == null )
                 {
                    // MagicPortalFluid.RareMagicPortal.LogWarning("PortalName = null or empty");
                     throw new SkipPortalException2(); // Stop TargetPortals from executing
