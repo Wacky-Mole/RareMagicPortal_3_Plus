@@ -95,7 +95,7 @@ namespace RareMagicPortal
     {
         public const string PluginGUID = "WackyMole.RareMagicPortalPlus";
         public const string PluginName = "RareMagicPortalPlus";
-        public const string PluginVersion = "3.0.3";
+        public const string PluginVersion = "3.0.4";
 //
         internal const string ModName = PluginName;
         internal const string ModVersion = PluginVersion;
@@ -750,6 +750,7 @@ namespace RareMagicPortal
             PortalNames.Add("wacky_portal5");
             PortalNames.Add("wacky_portal6");
             PortalNames.Add("wacky_portal8");
+            PortalNames.Add("wacky_portal9_boat");
             PortalNames.Add("portal_wood");
             PortalNames.Add("portal");
             PortalNames.Add("portal_stone");
@@ -851,6 +852,19 @@ namespace RareMagicPortal
             portal8.Crafting.Set(PieceManager.CraftingTable.Workbench);
             //portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
             portal8G = portal8.Prefab;
+            
+            BuildPiece portal9 = new("wackyportals", "wacky_portal91_boat", "assets");
+            portal9.Name.English("5.8 Boat"); 
+            portal9.Description.English("Glowing, mystical circular portal on the ground. ");
+            portal9.RequiredItems.Add("FineWood", 20, true);
+            portal9.RequiredItems.Add("SurtlingCore", 4, true);
+            portal9.RequiredItems.Add("PortalMagicFluid", 2, true);
+            portal9.RequiredItems.Add("Obsidian", 20, true);
+            // portal8.RequiredItems.Add("SwordCheat", 1, false);
+            portal9.Category.Set("Portals"); 
+            portal9.Crafting.Set(PieceManager.CraftingTable.Workbench);
+            //portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
+            portal9G = portal9.Prefab;
 
             /*
             BuildPiece portal9 = new("wackyportals", "wacky_stone_portal", "assets");
@@ -1604,7 +1618,7 @@ namespace RareMagicPortal
             GemColorBlack = config(crystal_selector, "Use for Crystal Black", CrystalBlack, "You can use default or use an item like JewelCrafting crystal - Shattered_Yellow_Crystal, Uncut_Yellow_Stone, Simple_Yellow_Socket, Advanced_Yellow_Socket, Perfect_Yellow_Socket, " + System.Environment.NewLine + "Use VNEI to get game name for the color - must reboot game");
 
             string portal_images = "9.Portal Images--------";
-            PortalImages = config(portal_images, "Activate Portal Images", Toggle.Off, "Portal Images during Teleport activated - Restart required - You may lose sleep messages");
+            PortalImages = config(portal_images, "Activate Portal Images", Toggle.On, "Portal Images during Teleport activated - Restart required - You may lose sleep messages");
             PortalImagesFullScreenOnly = config(portal_images, "Full Screen Image Only", Toggle.Off, "Random Full Screen Image Only, disables Biome images and swirl. - Restart required - You may lose sleep messages");
         }
 

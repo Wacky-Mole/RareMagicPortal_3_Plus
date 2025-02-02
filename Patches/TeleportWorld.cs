@@ -247,6 +247,11 @@ namespace RareMagicPortal_3_Plus.Patches
             [HarmonyPriority(Priority.HigherThanNormal)]
             internal static bool Prefix(TeleportWorldTrigger __instance, Collider colliderIn)
             {
+                if (PortalColorLogic.startupwait == 0)
+                {
+                    return false;
+                }
+
                 if (colliderIn.GetComponent<Player>() != Player.m_localPlayer)
                 {
                     throw new SkipPortalException();

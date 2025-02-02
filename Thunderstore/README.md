@@ -443,7 +443,7 @@ This section allows you to replace the default portal transporting screen (black
 
 | **Option**                         | **Default** | **Description**                                                                                  |
 |-------------------------------------|-------------|--------------------------------------------------------------------------------------------------|
-| `Activate Portal Images`           | `Off`       | Enables animated portal images during teleportation.      YOU SHOULD TURN THIS ON, it's AWESOME   |
+| `Activate Portal Images`           | `On`       | Enables animated portal images during teleportation.      YOU SHOULD TURN THIS ON, it's AWESOME   |
 | `Full Screen Image Only`           | `Off`       | Displays random full-screen images instead of animations.                                       |
 
 ---
