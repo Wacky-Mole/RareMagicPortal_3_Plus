@@ -84,95 +84,127 @@ namespace RareMagicPortal_3_Plus.Patches
             }
         }
 
+
         [HarmonyPatch(typeof(Inventory), nameof(Inventory.IsTeleportable))]
-        public static class Is_Teleportable
+        public static class Is_TeleportableRMP
         {
             [HarmonyPriority(Priority.LowerThanNormal)]
             internal static bool Prefix(ref bool __result, ref Inventory __instance)
             {
-                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 1");
-                if (__instance == null || Player.m_localPlayer == null || MagicPortalFluid.JustWaitforInventory)
+                if (__instance == null)
+                {
+                    MagicPortalFluid.RareMagicPortal.LogInfo("Inventory instance is null - aborting teleport check.");
+                    __result = false;
+                    return false;
+                }
+
+                if (Player.m_localPlayer == null)
+                {
+                    MagicPortalFluid.RareMagicPortal.LogInfo("Player.m_localPlayer is null - aborting teleport check.");
+                    __result = false;
+                    return false;
+                }
+
+                if (MagicPortalFluid.JustWaitforInventory)
                 {
                     return true;
                 }
-                // MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 2");
+
+                if (ZoneSystem.instance == null)
+                {
+                    MagicPortalFluid.RareMagicPortal.LogInfo("ZoneSystem.instance is null - skipping teleport check.");
+                    return true;
+                }
 
                 bool teleportAllowed = false;
-                bool drinkActive = Player.m_localPlayer.m_seman.HaveStatusEffect("yippeTele".GetStableHashCode());
+                bool drinkActive = Player.m_localPlayer.m_seman?.HaveStatusEffect("yippeTele".GetStableHashCode()) ?? false;
 
                 if (drinkActive)
                 {
                     teleportAllowed = true;
                 }
-                
+
                 if (ZoneSystem.instance.GetGlobalKey(GlobalKeys.TeleportAll))
                     return true;
 
-                //  MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 3");
                 Vector3 playerPosition = Player.m_localPlayer.transform.position;
                 List<Piece> piecesFound = new List<Piece>();
                 functions.GetAllTheDamnPiecesinRadius(playerPosition, 5f, piecesFound);
 
-                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 4");
                 Piece portalPiece = piecesFound.FirstOrDefault(piece => piece.TryGetComponent<TeleportWorld>(out _));
                 if (portalPiece == null)
                 {
                     return true; // No portal nearby
                 }
 
-                TeleportWorld portalW = portalPiece?.GetComponent<TeleportWorld>();
+                TeleportWorld portalW = portalPiece.GetComponent<TeleportWorld>();
                 if (portalW == null)
                 {
                     return true; // Portal component not found
                 }
-                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 5");
+
                 string portalName = portalW.GetText();
-                /*
-                if (string.IsNullOrEmpty(portalName))
+                if (portalName == null)
                 {
                     return true; // Invalid portal
-                } */
+                }
+
+                if (PortalColorLogic.PortalN == null || PortalColorLogic.PortalN.Portals == null)
+                {
+                    MagicPortalFluid.RareMagicPortal.LogInfo("PortalColorLogic.PortalN or Portals is null.");
+                    return true;
+                }
 
                 if (!PortalColorLogic.PortalN.Portals.TryGetValue(portalName, out var portalData))
                 {
                     return true; // Portal not found in the dictionary
                 }
-                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 6");
+
+                if (portalW.m_nview == null || portalW.m_nview.GetZDO() == null)
+                {
+                    MagicPortalFluid.RareMagicPortal.LogInfo("portalW.m_nview or ZDO is null.");
+                    return true;
+                }
+
                 string zdoID = portalW.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
                 if (string.IsNullOrEmpty(zdoID) || !portalData.PortalZDOs.TryGetValue(zdoID, out var portalZDO))
                 {
                     return true; // ZDO not found or invalid
                 }
+
                 string currentColor = portalZDO.Color;
-                if (portalZDO.BiomeColor != "" || portalZDO.BiomeColor != "skip")
+                if (!string.IsNullOrEmpty(portalZDO.BiomeColor) && portalZDO.BiomeColor != "skip")
                 {
                     currentColor = portalZDO.BiomeColor;
                 }
-                // MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 7");
+
                 if (portalData.TeleportAnything)
                 {
                     teleportAllowed = true;
                 }
-                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 8");
-                if (!teleportAllowed && portalData.AdditionalProhibitItems != null)
-                {
-                    if (portalData.AdditionalProhibitItems.Count > 0)
-                    {
-                        var prohibitedItem = __instance.GetAllItems().FirstOrDefault(item =>
-                        {
-                            var prefab = ObjectDB.instance.GetItemPrefab(item.m_shared.m_name);
-                            return prefab != null && portalData.AdditionalProhibitItems.Contains(prefab.name);
-                        });
 
-                        if (prohibitedItem != null)
-                        {
-                            Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "$rmp_prohibited_item " + prohibitedItem.m_shared.m_name);
-                            __result = false;
-                            return false;
-                        }
+                if (!teleportAllowed && portalData.AdditionalProhibitItems?.Count > 0)
+                {
+                    if (ObjectDB.instance == null)
+                    {
+                        MagicPortalFluid.RareMagicPortal.LogInfo("ObjectDB.instance is null - skipping item check.");
+                        return true;
+                    }
+
+                    var prohibitedItem = __instance.GetAllItems().FirstOrDefault(item =>
+                    {
+                        var prefab = ObjectDB.instance.GetItemPrefab(item.m_shared.m_name);
+                        return prefab != null && portalData.AdditionalProhibitItems.Contains(prefab.name);
+                    });
+
+                    if (prohibitedItem != null)
+                    {
+                        Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, "$rmp_prohibited_item " + prohibitedItem.m_shared.m_name);
+                        __result = false;
+                        return false;
                     }
                 }
-                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 9");
+
                 if (!teleportAllowed && MagicPortalFluid.ConfigMaxWeight.Value > 0)
                 {
                     float playerWeight = __instance.GetTotalWeight();
@@ -185,7 +217,7 @@ namespace RareMagicPortal_3_Plus.Patches
                     }
                     MagicPortalFluid.TeleportingforWeight = 0;
                 }
-                //MagicPortalFluid.RareMagicPortal.LogInfo("Tele Check 10");
+
                 if (teleportAllowed && (!drinkActive || MagicPortalFluid.PortalDrinkDenyloc.Count == 0))
                 {
                     __result = true;
@@ -209,7 +241,6 @@ namespace RareMagicPortal_3_Plus.Patches
 
                 if (ZoneSystem.instance.GetGlobalKey(GlobalKeys.TeleportAll))
                 {
-                    // If a global key allows teleport for all items, we can return true directly
                     __result = true;
                     return false;
                 }
@@ -271,6 +302,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 return true;
             }
         }
+
 
 
         [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]

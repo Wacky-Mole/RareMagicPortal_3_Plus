@@ -750,7 +750,7 @@ namespace RareMagicPortal
             PortalNames.Add("wacky_portal5");
             PortalNames.Add("wacky_portal6");
             PortalNames.Add("wacky_portal8");
-            PortalNames.Add("wacky_portal9_boat");
+           // PortalNames.Add("wacky_portal9_boat");
             PortalNames.Add("portal_wood");
             PortalNames.Add("portal");
             PortalNames.Add("portal_stone");
@@ -852,7 +852,8 @@ namespace RareMagicPortal
             portal8.Crafting.Set(PieceManager.CraftingTable.Workbench);
             //portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
             portal8G = portal8.Prefab;
-            
+
+             /*
             BuildPiece portal9 = new("wackyportals", "wacky_portal91_boat", "assets");
             portal9.Name.English("5.8 Boat"); 
             portal9.Description.English("Glowing, mystical circular portal on the ground. ");
@@ -866,7 +867,7 @@ namespace RareMagicPortal
             //portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
             portal9G = portal9.Prefab;
 
-            /*
+           
             BuildPiece portal9 = new("wackyportals", "wacky_stone_portal", "assets");
             portal9.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.
             portal9.Description.English("Portal 2 is fun");
@@ -941,90 +942,173 @@ namespace RareMagicPortal
 
         internal void CustomSyncSmallEvent()
         {
-            if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated())
-            {
-            }
-            else
-            {
-                if (NoMoreLoading) return;
+            if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated()) return;
 
-                if (!JustWait && !NoMoreLoading)
-                {
-                    RareMagicPortal.LogInfo("Receiving small Portal Update"); // temp
-                    string SyncedString = YMLPortalSmallData.Value;
-                    if (string.IsNullOrEmpty(SyncedString))
-                    {
-                        return;
-                    }
-
-                    var ind = SyncedString.IndexOf(StringSeparator);
-                    string PortNam = SyncedString.Substring(0, ind);
-                    SyncedString = SyncedString.Remove(0, ind + 1);
-
-                    if (ConfigEnableYMLLogs.Value == Toggle.On)
-                        RareMagicPortal.LogInfo("Portalname " + PortNam + " String:\n" + SyncedString);
-
-                    var deserializer = new DeserializerBuilder()
-                        .Build();
-
-                    var ymlsmall = deserializer.Deserialize<PortalName.Portal>(SyncedString);
-                    string portalNCheck = PortNam;
-
-                    if (PortalColorLogic.PortalN.Portals.ContainsKey(portalNCheck))
-                    {
-                        PortalColorLogic.PortalN.Portals[portalNCheck] = ymlsmall;
-                    }
-                    else
-                    {
-                        PortalColorLogic.PortalN.Portals.Add(portalNCheck, ymlsmall);
-                    }
-
-                    //JustWrote = 2;
-                    JustSent = 0; // ready for another send
-                }
-            }
-        }
-
-        internal void CustomSyncEventDetected()
-        {
-            //Worldname = ZNet.instance.GetWorldName();
-            if (String.IsNullOrEmpty(ZNet.instance.GetWorldName()))
-                JustWait = true;
-            else JustWait = false;
+            if (NoMoreLoading) return;
 
             if (!JustWait && !NoMoreLoading)
             {
+                RareMagicPortal.LogInfo("Receiving small Portal Update");
+
+                if (YMLPortalSmallData == null)
+                {
+                    RareMagicPortal.LogInfo("YMLPortalSmallData is null");
+                    return;
+                }
+
+                string SyncedString = YMLPortalSmallData.Value;
+                if (string.IsNullOrEmpty(SyncedString))
+                {
+                    RareMagicPortal.LogInfo("SyncedString is null or empty");
+                    return;
+                }
+
+                var ind = SyncedString.IndexOf(StringSeparator);
+                if (ind == -1)
+                {
+                    RareMagicPortal.LogInfo("StringSeparator not found in SyncedString");
+                    return;
+                }
+
+                string PortNam = SyncedString.Substring(0, ind);
+                SyncedString = SyncedString.Remove(0, ind + 1);
+
+                if (ConfigEnableYMLLogs.Value == Toggle.On)
+                    RareMagicPortal.LogInfo("Portalname " + PortNam + " String:\n" + SyncedString);
+
+                var deserializer = new DeserializerBuilder().Build();
+
+                PortalName.Portal ymlsmall;
+                try
+                {
+                    ymlsmall = deserializer.Deserialize<PortalName.Portal>(SyncedString);
+                    if (ymlsmall == null)
+                    {
+                        RareMagicPortal.LogInfo("Deserialized YAML object is null");
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    RareMagicPortal.LogInfo("YAML deserialization failed: " + ex.Message);
+                    return;
+                }
+
+                if (PortalColorLogic.PortalN == null || PortalColorLogic.PortalN.Portals == null)
+                {
+                    RareMagicPortal.LogInfo("PortalColorLogic.PortalN or Portals is null");
+                    return;
+                }
+
+                if (PortalColorLogic.PortalN.Portals.ContainsKey(PortNam))
+                {
+                    PortalColorLogic.PortalN.Portals[PortNam] = ymlsmall;
+                }
+                else
+                {
+                    PortalColorLogic.PortalN.Portals.Add(PortNam, ymlsmall);
+                }
+
+                JustSent = 0; // ready for another send
+            }
+        }
+
+
+        internal void CustomSyncEventDetected()
+        {
+            if (ZNet.instance == null)
+            {
+                RareMagicPortal.LogInfo("ZNet.instance is null - aborting sync.");
+                return;
+            }
+
+            string worldName = ZNet.instance.GetWorldName();
+            if (string.IsNullOrEmpty(worldName))
+            {
+                JustWait = true;
+                return;
+            }
+            JustWait = false;
+
+            if (!JustWait && !NoMoreLoading)
+            {
+                if (string.IsNullOrEmpty(YMLFULLFOLDER))
+                {
+                    RareMagicPortal.LogInfo("YMLFULLFOLDER is null or empty.");
+                    return;
+                }
+
                 YMLCurrentFile = Path.Combine(YMLFULLFOLDER, Worldname + ".yml");
+
                 if (LoggingOntoServerFirst)
                 {
-                    RareMagicPortal.LogInfo("You are now connected to Server World" + Worldname);
+                    RareMagicPortal.LogInfo("You are now connected to Server World " + worldName);
                     LoggingOntoServerFirst = false;
                 }
-                //RareMagicPortal.LogInfo("Recieving PortalUpdate"); // temp
+
+                if (YMLPortalData == null)
+                {
+                    RareMagicPortal.LogInfo("YMLPortalData is null - aborting sync.");
+                    return;
+                }
 
                 string SyncedString = YMLPortalData.Value;
+                if (string.IsNullOrEmpty(SyncedString))
+                {
+                    RareMagicPortal.LogInfo("SyncedString is null or empty.");
+                    return;
+                }
 
                 if (ConfigEnableYMLLogs.Value == Toggle.On)
                     RareMagicPortal.LogInfo(SyncedString);
 
-                var deserializer = new DeserializerBuilder()
-                    .Build();
+                var deserializer = new DeserializerBuilder().Build();
+
+                if (PortalColorLogic.PortalN == null)
+                {
+                    RareMagicPortal.LogInfo("PortalColorLogic.PortalN is null - initializing new instance.");
+                    PortalColorLogic.PortalN = new PortalName(); // Ensure PortalN is initialized
+                }
+
+                if (PortalColorLogic.PortalN.Portals == null)
+                {
+                    RareMagicPortal.LogInfo("PortalColorLogic.PortalN.Portals is null - initializing dictionary.");
+                    PortalColorLogic.PortalN.Portals = new Dictionary<string, PortalName.Portal>();
+                }
 
                 PortalColorLogic.PortalN.Portals.Clear();
-                PortalColorLogic.PortalN = deserializer.Deserialize<PortalName>(SyncedString);
+
+                try
+                {
+                    PortalColorLogic.PortalN = deserializer.Deserialize<PortalName>(SyncedString);
+                }
+                catch (Exception ex)
+                {
+                    RareMagicPortal.LogInfo("YAML deserialization failed: " + ex.Message);
+                    return;
+                }
+
                 if (ZNet.instance.IsServer() && ZNet.instance.IsDedicated())
                 {
-                    //RareMagicPortal.LogInfo("Server Portal UPdates Are being Saved " + Worldname);
-                    //File.WriteAllText(YMLCurrentFile, SyncedString);
+                    // RareMagicPortal.LogInfo("Server Portal Updates Are being Saved " + worldName);
+                    // File.WriteAllText(YMLCurrentFile, SyncedString);
                 }
-                //JustWrote = 2;
-                JustSent = 0; // ready for another send
+
+                JustSent = 0; // Ready for another send
             }
+
             if (!ZNet.instance.IsServer())
             {
+                if (ConfigSync == null)
+                {
+                    RareMagicPortal.LogInfo("ConfigSync is null - cannot check admin status.");
+                    return;
+                }
+
                 isAdmin = ConfigSync.IsAdmin;
             }
         }
+
 
         internal IEnumerator WaitforReadWrote()
         {
