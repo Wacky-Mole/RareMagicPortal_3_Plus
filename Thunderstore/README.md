@@ -219,6 +219,7 @@ Promote fairness and balance by setting limits on portal creation:
 - **[SimpleTrader](https://thunderstore.io/c/valheim/p/coemt/SimpleTrader/):** Add items to trader inventories for multiplayer economies. Up to 10 items
 - **[TheCodFathersLegacy](https://thunderstore.io/c/valheim/p/blacks7ar/TheCodFathersLegacy/):** a mod to immortalized a loving grandfather as an NPC trader that sells various things.
 - **[KG Marketplace](https://valheim.thunderstore.io/package/KGvalheim/Marketplace_And_Server_NPCs_Revamped/):** Include them in player-run marketplaces.
+- **[Rusty TraderQuest](https://thunderstore.io/c/valheim/p/RustyMods/TraderQuest//):** New Trader Quest Mod!
 
 ---
 
@@ -341,8 +342,8 @@ This section focuses on the **Random Teleport** mode, where portals can send pla
 | `Only Creator Can Deconstruct`     | `true`      | Restricts portal deconstruction to creators and admins.                                         |
 | `Max Weight Allowed for Portals`   | `0`         | Limits the maximum weight of items transported through portals.                                 |
 | `Only Admin Can Build`             | `Off`       | Restricts portal construction to admins.                                                        |
-| `MaxAmountOfPortals`               | `0`         | Limits the total number of portals per player.     0 Disables Limit      This is a STEAM Or XBOX ID          This is not a perfect tracker. It tracker a players creations/destructions on the server in WorldName_PlayerPortals.json             |                |
-| `MaxAmountOfPortals_VIP`           | `0`         | Sets a higher portal limit for VIP players.          0 Disables Limit       This is a STEAM Or XBOX ID     VIP players can be added in VIP_Portal_players.txt               |
+| `MaxAmountOfPortals`               | `0`         | Limits the total number of portals per player.     0 Disables Limit      This is PLAYERNAME        This is not a perfect tracker. It tracker a players creations/destructions on the server in WorldName_PlayerPortals.json             |                |
+| `MaxAmountOfPortals_VIP`           | `0`         | Sets a higher portal limit for VIP players.          0 Disables Limit       This is PLAYERNAME     VIP players can be added in VIP_Portal_players.txt   LogOut Required when adding to VIP list           |
 
 ---
 

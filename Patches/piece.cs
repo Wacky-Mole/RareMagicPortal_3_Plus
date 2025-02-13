@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RareMagicPortalPlus.limit;
 using UnityEngine;
 
 namespace RareMagicPortal_3_Plus.Patches
@@ -39,6 +40,11 @@ namespace RareMagicPortal_3_Plus.Patches
 
                 if (MagicPortalFluid.PortalNames.Contains(piecename))
                 {
+                    if (ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
+                    {
+                        PortalLimit.handlelocalCountDown();
+                        return true;
+                    }
                     if (ZNet.instance.GetServerPeer() != null)
                         ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "WackyPortal Portalremoved",
                             new object[] { null });

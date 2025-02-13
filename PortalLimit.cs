@@ -46,7 +46,8 @@ namespace RareMagicPortalPlus.limit
             {
                 ZNetPeer peer = ZNet.instance.GetPeer(sender);
                 if (peer == null) return;
-                var id = peer.m_socket.GetHostName();
+                var id = peer.m_playerName;
+               // var id = peer.m_socket.GetHostName();
                 if (_portalManager.PlayersPortalData.ContainsKey(id))
                 {
                     _portalManager.PlayersPortalData[id]++;
@@ -64,7 +65,8 @@ namespace RareMagicPortalPlus.limit
             {
                 ZNetPeer peer = ZNet.instance.GetPeer(sender);
                 if (peer == null) return;
-                var id = peer.m_socket.GetHostName();
+                var id = peer.m_playerName;
+                //var id = peer.m_socket.GetHostName();
                 if (_portalManager.PlayersPortalData.ContainsKey(id))
                 {
                     _portalManager.PlayersPortalData[id]--;
@@ -94,6 +96,9 @@ namespace RareMagicPortalPlus.limit
             static void Postfix()
             {
                 MagicPortalFluid._canPlacePortal = false;
+
+                if (MagicPortalFluid.MaxAmountOfPortals.Value == 0)
+                    MagicPortalFluid._canPlacePortal = true;
             }
         }
 
@@ -104,7 +109,8 @@ namespace RareMagicPortalPlus.limit
             {
                 if (!(ZNet.instance.IsServer() && ZNet.instance.IsDedicated())) return;
                 ZNetPeer peer = ZNet.instance.GetPeer(rpc);
-                string id = peer.m_socket.GetHostName();
+                var id = peer.m_playerName;
+                //string id = peer.m_socket.GetHostName();
                 ZRoutedRpc.instance.InvokeRoutedRPC(peer.m_uid, "RMPportal Data", _portalManager.CanBuildPortal(id));
             }
         }
@@ -153,21 +159,35 @@ namespace RareMagicPortalPlus.limit
                         return false;
                     }
 
-                    if (Player.m_debugMode)
-                        return true;
 
+                    if (Player.m_debugMode || MagicPortalFluid.MaxAmountOfPortals.Value == 0)
+                    {
+                        if (ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
+                        {
+                            handlelocalCountUP();
+                            return true;
+                        }
+
+                        if (ZNet.instance.GetServerPeer() != null)
+                        ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "WackyPortal Portalplaced",
+                            new object[] { null });
+                        return true;
+                    }
+                    
                     if (!MagicPortalFluid._canPlacePortal)
                     {
                         MessageHud.instance.ShowMessage(MessageHud.MessageType.Center,
                             "<color=yellow> $rmp_portal_limit </color>");
                         return false;
                     }
-
-                    if (ZNet.instance.IsServer())
+                    // so true then
+                    MagicPortalFluid._canPlacePortal = false; // just in case until wait
+                    if (ZNet.instance.IsServer() && !ZNet.instance.IsDedicated())
+                    {
+                        handlelocalCountUP();
                         return true;
-
-                    MagicPortalFluid._canPlacePortal = false;
-
+                    }
+                    
                     if (ZNet.instance.GetServerPeer() != null)
                         ZRoutedRpc.instance.InvokeRoutedRPC(ZNet.instance.GetServerPeer().m_uid, "WackyPortal Portalplaced",
                             new object[] { null });
@@ -175,6 +195,41 @@ namespace RareMagicPortalPlus.limit
                 }
                 return true;
             }
+        }
+
+        private static void handlelocalCountUP()
+        {
+            //ZNetPeer hi = ZNet.instance.GetPeerByPlayerName(Player.m_localPlayer.GetPlayerName());
+            //var id2 = hi.m_socket.GetHostName();
+            var id2 = Player.m_localPlayer.GetPlayerName();
+            if (_portalManager.PlayersPortalData.ContainsKey(id2))
+            {
+                _portalManager.PlayersPortalData[id2]++;
+            }
+            else
+            {
+                _portalManager.PlayersPortalData[id2] = 1;
+            }
+            _portalManager.Save();
+            MagicPortalFluid._canPlacePortal = _portalManager.CanBuildPortal(id2);
+        }
+        internal static void handlelocalCountDown()
+        {
+            //ZNetPeer hi = ZNet.instance.GetPeerByPlayerName(Player.m_localPlayer.GetPlayerName());
+            //var id2 = hi.m_socket.GetHostName();
+            var id = Player.m_localPlayer.GetPlayerName();
+            if (_portalManager.PlayersPortalData.ContainsKey(id))
+            {
+                _portalManager.PlayersPortalData[id]--;
+                if (_portalManager.PlayersPortalData[id] < 0)
+                    _portalManager.PlayersPortalData[id] = 0;
+            }
+            else
+            {
+                _portalManager.PlayersPortalData[id] = 0;
+            }
+            _portalManager.Save();
+            MagicPortalFluid._canPlacePortal = _portalManager.CanBuildPortal(id);
         }
 
 
