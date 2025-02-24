@@ -95,7 +95,7 @@ namespace RareMagicPortal
     {
         public const string PluginGUID = "WackyMole.RareMagicPortalPlus";
         public const string PluginName = "RareMagicPortalPlus";
-        public const string PluginVersion = "3.0.5";
+        public const string PluginVersion = "3.0.6";
 //
         internal const string ModName = PluginName;
         internal const string ModVersion = PluginVersion;
@@ -750,7 +750,7 @@ namespace RareMagicPortal
             PortalNames.Add("wacky_portal5");
             PortalNames.Add("wacky_portal6");
             PortalNames.Add("wacky_portal8");
-           // PortalNames.Add("wacky_portal9_boat");
+            PortalNames.Add("wacky_portal9_boat");
             PortalNames.Add("portal_wood");
             PortalNames.Add("portal");
             PortalNames.Add("portal_stone");
@@ -853,7 +853,7 @@ namespace RareMagicPortal
             //portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
             portal8G = portal8.Prefab;
 
-             /*
+            
             BuildPiece portal9 = new("wackyportals", "wacky_portal91_boat", "assets");
             portal9.Name.English("5.8 Boat"); 
             portal9.Description.English("Glowing, mystical circular portal on the ground. ");
@@ -866,7 +866,7 @@ namespace RareMagicPortal
             portal9.Crafting.Set(PieceManager.CraftingTable.Workbench);
             //portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
             portal9G = portal9.Prefab;
-
+ /*
            
             BuildPiece portal9 = new("wackyportals", "wacky_stone_portal", "assets");
             portal9.Name.English("Portal 2"); // Localize the name and description for the building piece for a language.

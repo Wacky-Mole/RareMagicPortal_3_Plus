@@ -31,8 +31,8 @@ namespace RareMagicPortal.PortalWorld
 			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal5G);
 			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal6G);
 			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal8G);
-			//__instance.m_portalPrefabs.Add(MagicPortalFluid.portal9G);
-			//__instance.m_portalPrefabs.Add(MagicPortalFluid.portal9G);
+			__instance.m_portalPrefabs.Add(MagicPortalFluid.portal9G);
+
 
 			return true;
 		}

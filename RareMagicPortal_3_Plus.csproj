@@ -169,6 +169,7 @@
     <Compile Include="Mic\Mic.cs" />
     <Compile Include="Patches\Player.cs" />
     <Compile Include="Patches\piece.cs" />
+    <Compile Include="Patches\ships.cs" />
     <Compile Include="Patches\stoneportal.cs" />
     <Compile Include="Patches\TargetPortalPatches.cs" />
     <Compile Include="Patches\TeleportWorld.cs" />
@@ -317,8 +318,8 @@
     <Copy SourceFiles="README.md" DestinationFolder="$(ProjectDir)\Thunderstore" OverwriteReadOnlyFiles="true" />
   </Target>
   <Target Name="CopyEnglishToTSFolder" AfterTargets="CopyOutputDLL" Condition=" ('$(Configuration)|$(Platform)' == 'Release|AnyCPU') And ('$(OS)' == 'Windows_NT') ">
-		<Copy SourceFiles="$(ProjectDir)\translations\English.yml" DestinationFiles="$(ProjectDir)\Thunderstore\RareMagicPortalPlus.English_Example.yml" OverwriteReadOnlyFiles="true" />
-	</Target>
+    <Copy SourceFiles="$(ProjectDir)\translations\English.yml" DestinationFiles="$(ProjectDir)\Thunderstore\RareMagicPortalPlus.English_Example.yml" OverwriteReadOnlyFiles="true" />
+  </Target>
   <UsingTask TaskName="WriteManifestFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
     <ParameterGroup>
       <ManifestFile ParameterType="System.String" Required="true" />
@@ -351,8 +352,7 @@ System.IO.File.WriteAllText(ManifestFile, content);
     <Message Text="Updating version number in Thunderstore\manifest.json" Condition="Exists(@(ManifestFile))" />
     <Exec Command="powershell.exe -ExecutionPolicy Bypass -Command &quot;&amp; { &amp; '$(ProjectDir)UpdateManifest.ps1' -manifestFile '@(ManifestFile)' -versionString '$(PackageVersion)' }&quot;" />
   </Target>
-
-	<!--
+  <!--
   <Target Name="MakeThunderstorePackage" AfterTargets="UpdateManifestVersion" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Error Text="manifest.json not found in Thunderstore directory." Condition="!Exists('$(ProjectDir)\Thunderstore\manifest.json')" />
     <Error Text="icon.png not found in Thunderstore directory. Please note that Thunderstore requires this image to be 256x256 in dimension" Condition="!Exists('$(ProjectDir)\Thunderstore\icon.png')" />
