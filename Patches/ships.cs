@@ -1,16 +1,14 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
+using RareMagicPortal;
 
 namespace RareMagicPortalPlus.Patches
 {
-    internal class ships
+    internal class Ships
     {
-
         [HarmonyPatch(typeof(Teleport), "OnTriggerEnter")]
         public class TeleportPatch
         {
@@ -33,26 +31,15 @@ namespace RareMagicPortalPlus.Patches
         {
             static void Postfix(Player __instance, Vector3 pos, Quaternion rot, bool distantTeleport)
             {
-                Ship ship = ShipTeleportHelper.FindShip(__instance);
-                if (ship != null)
-                {
-                    ShipTeleportHelper.TeleportShip(ship, pos, rot);
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(Player), "UpdateTeleport")]
-        public class UpdateTeleportPatch
-        {
-            static void Postfix(Player __instance, float dt)
-            {
-                if (!__instance.IsTeleporting())
+                if (__instance == null || __instance.IsDead()) // Ensure the player is valid
                     return;
 
                 Ship ship = ShipTeleportHelper.FindShip(__instance);
                 if (ship != null)
                 {
-                    ShipTeleportHelper.UpdateTeleportShip(ship, __instance);
+                    ZLog.Log("Teleporting Ship, " + ship.name);
+                    ShipTeleportHelper.TeleportShip(ship, pos, rot);
+                    //MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.WaitForTeleportCompletion(ship, __instance));
                 }
             }
         }
@@ -73,6 +60,7 @@ namespace RareMagicPortalPlus.Patches
             static void Prefix(Ship __instance)
             {
                 ShipTeleportHelper.UnregisterShip(__instance);
+                ZLog.Log("Ship removed");
             }
         }
 
@@ -98,7 +86,7 @@ namespace RareMagicPortalPlus.Patches
             {
                 foreach (Ship ship in ActiveShips)
                 {
-                    if (ship.IsPlayerInBoat(player))
+                    if (ship.IsPlayerInBoat(player) && ship.HasPlayerOnboard())
                     {
                         return ship;
                     }
@@ -118,34 +106,60 @@ namespace RareMagicPortalPlus.Patches
             public static void TeleportShip(Ship ship, Vector3 targetPos, Quaternion targetRotation)
             {
                 // Define a safe offset distance from the portal
-                float offsetDistance = 10f; // Adjust this value as needed
-
-                // Compute an offset in the forward direction of the teleport destination
+                float offsetDistance = 40f; // Adjust as needed
                 Vector3 offset = targetRotation * Vector3.forward * offsetDistance;
                 targetPos += offset;
+                //targetPos.x++;
 
-                // Apply the teleportation
+                // Create a reference variable for WaterVolume
+                WaterVolume targetWaterVolume = null;
+                WaterVolume currentWaterVolume = null;
+                
+                // Get the wave height at the target position
+                float waveHeightTarget = Floating.GetWaterLevel(targetPos, ref targetWaterVolume);
+                float waveHeightCurrent = Floating.GetWaterLevel(ship.transform.position, ref currentWaterVolume);
+
+                // Handle invalid values
+                if (float.IsNaN(waveHeightTarget) || float.IsNaN(waveHeightCurrent))
+                {
+                    waveHeightTarget = targetPos.y;
+                    waveHeightCurrent = ship.transform.position.y;
+                }
+
+                // Calculate height difference and prevent extreme shifts
+                float heightDifference = Mathf.Clamp(waveHeightTarget - waveHeightCurrent, -5f, 5f);
+                targetPos.y += heightDifference;
+
                 ship.transform.position = targetPos;
                 ship.transform.rotation = targetRotation;
-
-                foreach (var kvp in relativePositions)
-                {
-                    kvp.Key.transform.position = ship.transform.TransformPoint(kvp.Value);
-                }
             }
 
-
-            public static void UpdateTeleportShip(Ship ship, Player player)
+            public static IEnumerator WaitForTeleportCompletion(Ship ship, Player player)
             {
-                ship.transform.position = player.transform.position;
-                ship.transform.rotation = player.transform.rotation;
+                while (player.IsTeleporting())
+                {
+                    yield return new WaitForSeconds(0.5f);
+                }
+                ZLog.Log("Hello Wait for Teleport");
+                WaterVolume targetWaterVolume = null;
+                float waveHeightTarget = Floating.GetWaterLevel(ship.transform.position, ref targetWaterVolume);
+                ZLog.Log("Hello WaterHeight "+ waveHeightTarget);
+
+                // Handle invalid values
+                if (float.IsNaN(waveHeightTarget))
+                {
+                    waveHeightTarget = ship.transform.position.y;
+                }
 
                 foreach (var kvp in relativePositions)
                 {
-                    kvp.Key.transform.position = ship.transform.TransformPoint(kvp.Value);
+                    Vector3 adjustedPlayerPosition = ship.transform.TransformPoint(kvp.Value);
+                    adjustedPlayerPosition.y = waveHeightTarget + kvp.Value.y;
+
+                    kvp.Key.transform.position = adjustedPlayerPosition;
                 }
+                relativePositions.Clear();
             }
         }
-
     }
 }
