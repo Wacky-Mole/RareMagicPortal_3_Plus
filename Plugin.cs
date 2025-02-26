@@ -190,6 +190,7 @@ namespace RareMagicPortal
         internal static ConfigEntry<bool>? wacky3_portalAllowsEverything;
         internal static ConfigEntry<bool>? wacky4_portalAllowsEverything;
         internal static ConfigEntry<bool>? wacky5_portalAllowsEverything;
+        internal static ConfigEntry<float>? wacky9_portalBoatOffset;
         internal static ConfigEntry<Toggle>? ConfigCreatorLock;
         internal static ConfigEntry<int>? ConfigFluidValue;
         
@@ -1643,7 +1644,9 @@ namespace RareMagicPortal
             string wacky4_portal = "5.7 Quadraframe Portal";
             wacky4_portalAllowsEverything = config(wacky4_portal, "Portal Quadraframe Allows Everything", false, "Allow Portal to Transport Everything. ");
             string wacky5_portal = "5.8 Luminis Circle";
-            wacky5_portalAllowsEverything = config(wacky5_portal, "Portal Luminis Circle Allows Everything", false, "Allow Portal to Transport Everything. ");
+            wacky5_portalAllowsEverything = config(wacky5_portal, "Portal Luminis Circle Allows Everything", false, "Allow Portal to Transport Everything. ");          
+            string wacky9_portal = "5.9Boat";
+            wacky9_portalBoatOffset = config(wacky9_portal, "BoatOffset", 40f, "Boat offset when TP ");
 
             //configRequirements.SettingChanged += (s, e) => Fix(ZNetScene.instance);
 
