@@ -25,6 +25,7 @@ using UnityEngine.Windows;
 using System.Net.NetworkInformation;
 using UnityEngine.UI;
 using Guilds;
+using RareMagicPortalPlus.Patches;
 
 
 namespace RareMagicPortal_3_Plus.Patches
@@ -258,6 +259,7 @@ namespace RareMagicPortal_3_Plus.Patches
                 }
                // MagicPortalFluid.RareMagicPortal.LogWarning("Start Trigger");
                // ZLog.LogWarning("Start Trigger");
+               
                 string PortalName = __instance.m_teleportWorld.m_nview.m_zdo.GetString("tag");
                 var zdoname = __instance.m_teleportWorld.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
                 if (zdoname == "")

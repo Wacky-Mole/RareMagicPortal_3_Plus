@@ -9,14 +9,13 @@ namespace RareMagicPortalPlus.Patches
 {
     internal class Ships
     {
-        [HarmonyPatch(typeof(Teleport), "OnTriggerEnter")]
+        [HarmonyPatch(typeof(TeleportWorld), "Teleport")]
         public class TeleportPatch
         {
-            static bool Prefix(Teleport __instance, Collider collider)
+            static bool Prefix(TeleportWorld __instance, Player player)
             {
                 
-                ZLog.Log("Hello trigger boat");
-                Player player = collider.GetComponent<Player>();
+                ZLog.Log("Hello Teleport player");
                 if (player == null || Player.m_localPlayer != player)
                     return true;
 
@@ -27,10 +26,19 @@ namespace RareMagicPortalPlus.Patches
                     // I need to force teleport all players here and stop the trigger
                     //    if (!character.TeleportTo(this.m_targetPoint.GetTeleportPoint(), this.m_targetPoint.transform.rotation, false))
                     
-                    var offset = __instance.m_targetPoint.transform.rotation * Vector3.forward * MagicPortalFluid.wacky9_portalBoatOffset.Value;
+                    ZDO zDO = ZDOMan.instance.GetZDO(__instance.m_nview.GetZDO().GetConnectionZDOID(ZDOExtraData.ConnectionType.Portal));
+
+                    Vector3 position = zDO.GetPosition();
+                    Quaternion rotation = zDO.GetRotation();
+                    Vector3 vector = rotation * Vector3.forward;
+                    Vector3 pos = position + vector * __instance.m_exitDistance + Vector3.up;
+                    //player.TeleportTo(pos, rotation, distantTeleport: true);
+                    Game.instance.IncrementPlayerStat(PlayerStatType.PortalsUsed);
+                    
+                    var offset = rotation * Vector3.forward * MagicPortalFluid.wacky9_portalBoatOffset.Value;
                     foreach (Player playertp in ship.m_players)
                     {
-                        playertp.TeleportTo(__instance.m_targetPoint.GetTeleportPoint()+ offset, __instance.m_targetPoint.transform.rotation, true);
+                        playertp.TeleportTo(pos + offset, rotation, true);
                         MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.WaitForTeleportCompletion(ship, player));
                         ZLog.Log("Starting timer");
                     }
@@ -184,9 +192,9 @@ namespace RareMagicPortalPlus.Patches
                     Vector3 adjustedPlayerPosition = ship.transform.TransformPoint(kvp.Value); // for relative offset fix
                     adjustedPlayerPosition.y = waveHeightTarget + kvp.Value.y; // for wave height fix
                     
-                    player.TeleportTo(adjustedPlayerPosition + ship.transform.position, ship.transform.rotation, false);
+                   // player.TeleportTo(adjustedPlayerPosition + ship.transform.position, ship.transform.rotation, false);
 
-                   // kvp.Key.transform.position = adjustedPlayerPosition + offset;
+                    kvp.Key.transform.position = adjustedPlayerPosition + offset;
                 }
                 relativePositions.Clear();
             }
