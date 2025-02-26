@@ -7,6 +7,7 @@ using RareMagicPortal;
 
 namespace RareMagicPortalPlus.Patches
 {
+
     internal class Ships
     {
         [HarmonyPatch(typeof(TeleportWorld), "Teleport")]
@@ -23,9 +24,6 @@ namespace RareMagicPortalPlus.Patches
                 if (ship != null)
                 {
                     ShipTeleportHelper.StoreRelativePositions(ship);
-                    // I need to force teleport all players here and stop the trigger
-                    //    if (!character.TeleportTo(this.m_targetPoint.GetTeleportPoint(), this.m_targetPoint.transform.rotation, false))
-                    
                     ZDO zDO = ZDOMan.instance.GetZDO(__instance.m_nview.GetZDO().GetConnectionZDOID(ZDOExtraData.ConnectionType.Portal));
 
                     Vector3 position = zDO.GetPosition();
@@ -36,12 +34,13 @@ namespace RareMagicPortalPlus.Patches
                     Game.instance.IncrementPlayerStat(PlayerStatType.PortalsUsed);
                     
                     var offset = rotation * Vector3.forward * MagicPortalFluid.wacky9_portalBoatOffset.Value;
-                    foreach (Player playertp in ship.m_players)
-                    {
-                        playertp.TeleportTo(pos + offset, rotation, true);
-                        MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.WaitForTeleportCompletion(ship, player));
-                        ZLog.Log("Starting timer");
-                    }
+                   // foreach (Player playertp in ship.m_players)
+                    //{
+                    ShipTeleportHelper.holdposition = pos + offset;
+                    player.TeleportTo(pos + offset, rotation, true);
+                    MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.WaitForTeleportCompletion(ship, player));
+                   // ZLog.Log("Starting timer");
+                   // }
                     return false;
                 }
                 return true;
@@ -66,25 +65,7 @@ namespace RareMagicPortalPlus.Patches
             }
         }
 
-        [HarmonyPatch(typeof(Ship), "Awake")]
-        public class ShipAwakePatch
-        {
-            static void Postfix(Ship __instance)
-            {
-                ShipTeleportHelper.RegisterShip(__instance);
-               // ZLog.Log("Ship added");
-            }
-        }
 
-        [HarmonyPatch(typeof(Ship), "OnDestroyed")]
-        public class ShipDestroyPatch
-        {
-            static void Prefix(Ship __instance)
-            {
-                ShipTeleportHelper.UnregisterShip(__instance);
-               // ZLog.Log("Ship removed");
-            }
-        }
 
         public static class ShipTeleportHelper
         {
@@ -93,22 +74,14 @@ namespace RareMagicPortalPlus.Patches
             private static float waveHeightTargetHold = 0f;
             private static Vector3 holdVelocity = Vector3.zero;
             private static Vector3 offset = Vector3.zero;
-            public static void RegisterShip(Ship ship)
-            {
-                if (!ActiveShips.Contains(ship))
-                {
-                    ActiveShips.Add(ship);
-                }
-            }
+            internal static Vector3 holdposition = Vector3.zero;
+            internal static Ship currentship = null;
 
-            public static void UnregisterShip(Ship ship)
-            {
-                ActiveShips.Remove(ship);
-            }
 
             public static Ship FindShip(Player player)
             {
-                foreach (Ship ship in ActiveShips)
+                Ship[] allShips = UnityEngine.Object.FindObjectsOfType<Ship>();
+                foreach (Ship ship in allShips)
                 {
                     if (ship.IsPlayerInBoat(player) && ship.HasPlayerOnboard())
                     {
@@ -131,8 +104,8 @@ namespace RareMagicPortalPlus.Patches
             public static void TeleportShip(Ship ship, Vector3 targetPos, Quaternion targetRotation)
             {
                 // Define a safe offset distance from the portal
-                offset = targetRotation * Vector3.forward * MagicPortalFluid.wacky9_portalBoatOffset.Value;
-                targetPos += offset;
+                offset = targetRotation * Vector3.forward * (MagicPortalFluid.wacky9_portalBoatOffset.Value + 1f);
+                //targetPos += offset;
                 //targetPos.x++;
 
                 // Create a reference variable for WaterVolume
@@ -183,6 +156,10 @@ namespace RareMagicPortalPlus.Patches
                     waveHeightTarget = ship.transform.position.y;
                 }
 
+                var vp = relativePositions[player];
+                Vector3 adjustedPlayerPosition = ship.transform.TransformPoint(vp); // for relative offset fix
+                player.transform.position = adjustedPlayerPosition;
+/*
                 foreach (var kvp in relativePositions)
                 {
                     //kvp.Key.transform.position += offset; // for global offset
@@ -196,7 +173,8 @@ namespace RareMagicPortalPlus.Patches
 
                     kvp.Key.transform.position = adjustedPlayerPosition + offset;
                 }
-                relativePositions.Clear();
+               // relativePositions.Clear();
+               */
             }
         }
     }
