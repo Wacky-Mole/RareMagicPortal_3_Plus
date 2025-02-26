@@ -17,9 +17,7 @@ namespace RareMagicPortalPlus.Patches
             {
                 
                 ZLog.Log("Hello Teleport player");
-                if (player == null || Player.m_localPlayer != player)
-                    return true;
-
+                
                 Ship ship = ShipTeleportHelper.FindShip(player);
                 if (ship != null)
                 {
@@ -157,7 +155,11 @@ namespace RareMagicPortalPlus.Patches
                 }
 
                 var vp = relativePositions[player];
+                ZLog.Log("Calc position and height ");  
                 Vector3 adjustedPlayerPosition = ship.transform.TransformPoint(vp); // for relative offset fix
+                
+                adjustedPlayerPosition.y = waveHeightTarget + vp.y; // Adjust for wave height
+                ZLog.Log("Adjusting position and height ");
                 player.transform.position = adjustedPlayerPosition;
 /*
                 foreach (var kvp in relativePositions)
