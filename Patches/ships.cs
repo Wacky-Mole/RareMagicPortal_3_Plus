@@ -32,37 +32,22 @@ namespace RareMagicPortalPlus.Patches
                     Game.instance.IncrementPlayerStat(PlayerStatType.PortalsUsed);
                     
                     var offset = rotation * Vector3.forward * MagicPortalFluid.wacky9_portalBoatOffset.Value;
-                   // foreach (Player playertp in ship.m_players)
-                    //{
                     ShipTeleportHelper.holdposition = pos + offset;
-                    player.TeleportTo(pos + offset, rotation, true);
-                    MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.WaitForTeleportCompletion(ship, player));
-                   // ZLog.Log("Starting timer");
-                   // }
+                    foreach (Player playertp in ship.m_players)
+                    {
+                        player.TeleportTo(pos + offset, rotation, true);
+                    }
+                    ZLog.Log("Teleporting Ship, " + ship.name);
+                    ShipTeleportHelper.TeleportShip(ship, pos + offset, rotation);
+                    
+                   MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.WaitForTeleportCompletion(ship, player));
                     return false;
                 }
                 return true;
             }
         }
 
-        [HarmonyPatch(typeof(Player), "TeleportTo")]
-        public class PlayerTeleportPatch
-        {
-            static void Postfix(Player __instance, Vector3 pos, Quaternion rot, bool distantTeleport)
-            {
-                if (__instance == null || __instance.IsDead()) // Ensure the player is valid
-                    return;
-
-                Ship ship = ShipTeleportHelper.FindShip(__instance);
-                if (ship != null && ship.IsOwner())
-                {
-                    ZLog.Log("Teleporting Ship, " + ship.name);
-                    ShipTeleportHelper.TeleportShip(ship, pos, rot);
-                    
-                }
-            }
-        }
-
+        
 
 
         public static class ShipTeleportHelper
