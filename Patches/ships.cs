@@ -7,7 +7,6 @@ using RareMagicPortal;
 
 namespace RareMagicPortalPlus.Patches
 {
-
     internal class Ships
     {
         [HarmonyPatch(typeof(TeleportWorld), "Teleport")]
@@ -46,19 +45,15 @@ namespace RareMagicPortalPlus.Patches
                 return true;
             }
         }
-
         
-
 
         public static class ShipTeleportHelper
         {
-            private static List<Ship> ActiveShips = new List<Ship>();
             private static Dictionary<Player, Vector3> relativePositions = new Dictionary<Player, Vector3>();
-            private static float waveHeightTargetHold = 0f;
             private static Vector3 holdVelocity = Vector3.zero;
             private static Vector3 offset = Vector3.zero;
             internal static Vector3 holdposition = Vector3.zero;
-            internal static Ship currentship = null;
+ 
 
 
             public static Ship FindShip(Player player)
@@ -79,7 +74,15 @@ namespace RareMagicPortalPlus.Patches
                 relativePositions.Clear();
                 foreach (Player player in ship.m_players)
                 {
-                    relativePositions[player] = ship.transform.InverseTransformPoint(player.transform.position);
+                    if (player == null)
+                    {
+                        ZLog.LogError("A player in the ship's list is null!");
+                        continue;
+                    }
+                    Vector3 relativePosition = ship.transform.InverseTransformPoint(player.transform.position);
+                    relativePosition.y = 0;
+                    relativePositions[player] = relativePosition;
+                    ZLog.Log($"Stored relative position for {player.GetPlayerName()}: {relativePosition}");
       
                 }
             }
@@ -98,7 +101,6 @@ namespace RareMagicPortalPlus.Patches
                 // Get the wave height at the target position
                 float waveHeightTarget = Floating.GetWaterLevel(targetPos, ref targetWaterVolume);
                 float waveHeightCurrent = Floating.GetWaterLevel(ship.transform.position, ref currentWaterVolume);
-                waveHeightTargetHold = waveHeightTarget;
 
                 // Handle invalid values
                 if (float.IsNaN(waveHeightTarget) || float.IsNaN(waveHeightCurrent))
@@ -121,47 +123,52 @@ namespace RareMagicPortalPlus.Patches
                 bool updateplayer = true;
                 while (player.IsTeleporting())
                 {
-                    if (updateplayer)
-                    {
-
-                        updateplayer = false;
-                    }
                     yield return new WaitForSeconds(0.5f);
                 }
-                ZLog.Log("Hello Wait for Teleport");
+
+                while (Ship.GetLocalShip() == null)
+                {
+                    yield return new WaitForSeconds(0.5f);
+                }
+                
                 WaterVolume targetWaterVolume = null;
                 float waveHeightTarget = holdVelocity.y;
                 ZLog.Log("Hello WaterHeight "+ waveHeightTarget);
 
+                Ship shipFind = Ship.GetLocalShip(); //ShipTeleportHelper.FindShip(player);
+                
                 // Handle invalid values
                 if (float.IsNaN(waveHeightTarget))
                 {
-                    waveHeightTarget = ship.transform.position.y;
+                    waveHeightTarget = shipFind.transform.position.y;
                 }
-
-                var vp = relativePositions[player];
-                ZLog.Log("Calc position and height ");  
-                Vector3 adjustedPlayerPosition = ship.transform.TransformPoint(vp); // for relative offset fix
                 
-                adjustedPlayerPosition.y = waveHeightTarget + vp.y; // Adjust for wave height
-                ZLog.Log("Adjusting position and height ");
-                player.transform.position = adjustedPlayerPosition;
-/*
-                foreach (var kvp in relativePositions)
+                
+                if (shipFind == null)
                 {
-                    //kvp.Key.transform.position += offset; // for global offset
-                    if(kvp.Key != player)
-                        continue;
-                    
-                    Vector3 adjustedPlayerPosition = ship.transform.TransformPoint(kvp.Value); // for relative offset fix
-                    adjustedPlayerPosition.y = waveHeightTarget + kvp.Value.y; // for wave height fix
-                    
-                   // player.TeleportTo(adjustedPlayerPosition + ship.transform.position, ship.transform.rotation, false);
-
-                    kvp.Key.transform.position = adjustedPlayerPosition + offset;
+                    ZLog.LogError("Ship reference is null during player teleport adjustment!");
+                    yield break;
                 }
-               // relativePositions.Clear();
-               */
+               foreach (var kvp in relativePositions)
+               {
+                   if (!relativePositions.TryGetValue(kvp.Key, out var vp))
+                   {
+                       ZLog.LogError($"Missing relative position for player: {kvp.Key.GetPlayerName()}");
+                       continue;
+                   }
+                   
+                   Vector3 adjustedPlayerPosition = shipFind.transform.TransformPoint(relativePositions[kvp.Key]); // for relative offset fix
+                   //kvp.Key.transform.position += offset; // for global offset
+                   //adjustedPlayerPosition.y = waveHeightTarget + kvp.Value.y; // for wave height fix
+                   // player.TeleportTo(adjustedPlayerPosition + ship.transform.position, ship.transform.rotation, false);
+                   //Vector3 adjustedPlayerPosition = kvp.Key.transform.position + relativePositions[kvp.Key];
+                   ZLog.Log($" Current position for Ship: {shipFind.transform.position}");
+                   ZLog.Log($"Setting relative position for {player.GetPlayerName()}: {adjustedPlayerPosition}");
+
+                   kvp.Key.transform.position = adjustedPlayerPosition;
+
+               }
+               relativePositions.Clear();
             }
         }
     }
