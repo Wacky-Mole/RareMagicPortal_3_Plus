@@ -30,7 +30,9 @@ namespace RareMagicPortalPlus.Patches
                     //player.TeleportTo(pos, rotation, distantTeleport: true);
                     Game.instance.IncrementPlayerStat(PlayerStatType.PortalsUsed);
                     
-                    var offset = rotation * Vector3.forward * MagicPortalFluid.wacky9_portalBoatOffset.Value;
+                    var randomMultiplier = UnityEngine.Random.Range(0.5f, 3f);
+                    var offset = rotation * Vector3.forward * (MagicPortalFluid.wacky9_portalBoatOffset.Value * randomMultiplier);
+
                     ShipTeleportHelper.holdposition = pos + offset;
                     foreach (Player playertp in ship.m_players)
                     {
@@ -80,7 +82,7 @@ namespace RareMagicPortalPlus.Patches
                         continue;
                     }
                     Vector3 relativePosition = ship.transform.InverseTransformPoint(player.transform.position);
-                    relativePosition.y = 0;
+                    //relativePosition.y = 0;
                     relativePositions[player] = relativePosition;
                     ZLog.Log($"Stored relative position for {player.GetPlayerName()}: {relativePosition}");
       
@@ -156,13 +158,14 @@ namespace RareMagicPortalPlus.Patches
                        ZLog.LogError($"Missing relative position for player: {kvp.Key.GetPlayerName()}");
                        continue;
                    }
-                   
-                   Vector3 adjustedPlayerPosition = shipFind.transform.TransformPoint(relativePositions[kvp.Key]); // for relative offset fix
+                   ZLog.Log($"Player relative stored position {player.GetPlayerName()}: {vp}");
+                   Vector3 adjustedPlayerPosition = shipFind.transform.TransformPoint(vp); // for relative offset fix
                    //kvp.Key.transform.position += offset; // for global offset
                    //adjustedPlayerPosition.y = waveHeightTarget + kvp.Value.y; // for wave height fix
                    // player.TeleportTo(adjustedPlayerPosition + ship.transform.position, ship.transform.rotation, false);
                    //Vector3 adjustedPlayerPosition = kvp.Key.transform.position + relativePositions[kvp.Key];
                    ZLog.Log($" Current position for Ship: {shipFind.transform.position}");
+                   ZLog.Log($" Current position for Player: {player.transform.position}");
                    ZLog.Log($"Setting relative position for {player.GetPlayerName()}: {adjustedPlayerPosition}");
 
                    kvp.Key.transform.position = adjustedPlayerPosition;
