@@ -39,7 +39,7 @@ namespace RareMagicPortalPlus.limit
                 }
 
                 ZRoutedRpc.instance.Register("RMPportal Data", new Action<long, bool>(ReceiveData_RMPPortals));
-
+                
             }
 
             private static void PortalPlaced(long sender)

@@ -856,16 +856,12 @@ namespace RareMagicPortal
 
             
             BuildPiece portal9 = new("wackyportals", "wacky_portal91_boat", "assets");
-            portal9.Name.English("5.8 Boat"); 
-            portal9.Description.English("Glowing, mystical circular portal on the ground. ");
-            portal9.RequiredItems.Add("FineWood", 20, true);
-            portal9.RequiredItems.Add("SurtlingCore", 4, true);
-            portal9.RequiredItems.Add("PortalMagicFluid", 2, true);
-            portal9.RequiredItems.Add("Obsidian", 20, true);
-            // portal8.RequiredItems.Add("SwordCheat", 1, false);
+            portal9.Name.English("5.91 Boat"); 
+            portal9.Description.English("Glowing, HUGEEEE Portal");
+            portal8.RequiredItems.Add("SwordCheat", 1, false);
             portal9.Category.Set("Portals"); 
             portal9.Crafting.Set(PieceManager.CraftingTable.Workbench);
-            //portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
+            portal8.SpecialProperties = new SpecialProperties() { AdminOnly = true }; // You can declare multiple properties in one line           
             portal9G = portal9.Prefab;
  /*
            
