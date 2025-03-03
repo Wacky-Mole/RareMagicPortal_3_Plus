@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using RareMagicPortal;
 using BepInEx.Bootstrap;
 using System.Reflection;
+using RareMagicPortalPlus.Patches;
 using UnityEngine;
 
 namespace RareMagicPortal_3_Plus
@@ -88,6 +89,26 @@ namespace RareMagicPortal_3_Plus
                 {
                    // MagicPortalFluid.RareMagicPortal.LogWarning("PortalName = null or empty");
                     throw new SkipPortalException2(); // Stop TargetPortals from executing
+                }
+                
+                Ship ship = Ships.ShipTeleportHelper.FindShip(Player.m_localPlayer);
+                if (ship != null)
+                {
+                    if (!ship.IsOwner())
+                    {
+                        Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Only the owner of Zone/ship can activate tp.");
+                        throw new SkipPortalException2();
+                    }
+                    else
+                    {
+                        ZLog.Log("RMP TargetPortal with Ship Owner, ");
+                        Vector3 position = portalZDO.GetPosition();
+                        Quaternion rotation = portalZDO.GetRotation();
+                        Vector3 vector = rotation * Vector3.forward;
+                        Vector3 pos = position + vector * 1f + Vector3.up;
+                        Ships.BoatPlayerTP(ship, Player.m_localPlayer, position, rotation, vector,pos);
+                        return false;
+                    }
                 }
 
                 if (!Player.m_localPlayer.IsTeleportable())

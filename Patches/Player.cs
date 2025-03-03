@@ -106,6 +106,12 @@ namespace RareMagicPortal_3_Plus.Patches
                     return false;
                 }
 
+                if (Ships.ShipTeleportHelper.PlayerisOnShip)
+                {
+                    __result = true; // skips checks for boats
+                    return false;
+                }
+
                 if (MagicPortalFluid.JustWaitforInventory)
                 {
                     return true;
