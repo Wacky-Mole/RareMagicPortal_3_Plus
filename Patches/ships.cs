@@ -19,15 +19,15 @@ namespace RareMagicPortalPlus.Patches
             }
         }
 
-        internal static void HandleRemoteTeleport(long sender,Vector3 position, Quaternion rotation, bool distance)
+        internal static void HandleRemoteTeleport(long sender,Vector3 position)
         {
             
-            Player player = Player.m_localPlayer;
-            Ship ship = ShipTeleportHelper.FindShip(player);
-            ShipTeleportHelper.StoreRelativePositions(ship);
-            ZLog.Log("RMP Recieved Orders to Teleport Player with Ship Owner, " + ship.name);
-            player.TeleportTo(position, rotation, distance);
-            MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.WaitForTeleportCompletion(ship, player));
+           // Player player = Player.m_localPlayer;
+           // Ship ship = ShipTeleportHelper.FindShip(player);
+            //ShipTeleportHelper.StoreRelativePositions(ship);
+            //ZLog.Log("RMP Recieved Orders to Teleport Player with Ship Owner, " + ship.name);
+           // player.TeleportTo(position, rotation, distance);
+            MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.WaitForTeleportCompletion(position));
         }
     
         internal static bool PlayerBoatChecker(TeleportWorld __instance, Player player)
@@ -61,7 +61,11 @@ namespace RareMagicPortalPlus.Patches
                             ZLog.LogError("Null player found in ship.m_players!");
                             continue;
                         }
+                        playertp.TeleportTo(pos + offset, rotation, true);
+                        //var znetHold = ZNet.instance.GetPeerByPlayerName(playertp.GetPlayerName()); had problems with this approach
+                        //ZRoutedRpc.instance.InvokeRoutedRPC(znetHold.m_uid, "RMPP Teleport Boat", ShipTeleportHelper.relativePositions[playertp]);
                         
+                        /*
                         if (player == playertp)
                         {
                             
@@ -71,19 +75,19 @@ namespace RareMagicPortalPlus.Patches
                             ZLog.Log("Sending RMP Teleporting Player " + playertp.GetPlayerName());
                             var znetHold = ZNet.instance.GetPeerByPlayerName(playertp.GetPlayerName());
                             ZRoutedRpc.instance.InvokeRoutedRPC(znetHold.m_uid, "RMPP Teleport Boat", pos + offset, rotation, true);
-                        }   
+                        }   */
                         
                     }
-                    player.TeleportTo(pos + offset, rotation, true);
-                    ZLog.Log("RMP Teleporting Ship with Owner, " + ship.name);
+                    
+                    ZLog.Log("RMP Teleporting Ship, " + ship.name);
                     ShipTeleportHelper.TeleportShip(ship, pos + offset, rotation);
 
-                    MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.WaitForTeleportCompletion(ship, player));
+                    MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.WaitForTeleportCompletion());
                     return false;
                 }
                 else
                 {
-                    ShipTeleportHelper.StoreRelativePositions(ship);
+                   // ShipTeleportHelper.StoreRelativePositions(ship);
                     return false;
                 }
             }
@@ -93,7 +97,7 @@ namespace RareMagicPortalPlus.Patches
 
         public static class ShipTeleportHelper
         {
-            private static Dictionary<Player, Vector3> relativePositions = new Dictionary<Player, Vector3>();
+            internal static Dictionary<Player, Vector3> relativePositions = new Dictionary<Player, Vector3>();
             private static Vector3 holdVelocity = Vector3.zero;
             private static Vector3 offset = Vector3.zero;
             internal static Vector3 holdposition = Vector3.zero;
@@ -161,8 +165,9 @@ namespace RareMagicPortalPlus.Patches
                 holdVelocity = targetPos;
             }
 
-            public static IEnumerator WaitForTeleportCompletion(Ship ship, Player player)
+            public static IEnumerator WaitForTeleportCompletion(Vector3 Relativeposition)
             {
+                Player player = Player.m_localPlayer;
                 while (player.IsTeleporting())
                 {
                     yield return new WaitForSeconds(0.5f);
@@ -207,9 +212,9 @@ namespace RareMagicPortalPlus.Patches
                    //adjustedPlayerPosition.y = waveHeightTarget + kvp.Value.y; // for wave height fix
                    // player.TeleportTo(adjustedPlayerPosition + ship.transform.position, ship.transform.rotation, false);
                    //Vector3 adjustedPlayerPosition = kvp.Key.transform.position + relativePositions[kvp.Key];
-                   ZLog.Log($" Current position for Ship: {shipFind.transform.position}");
+                   //ZLog.Log($" Current position for Ship: {shipFind.transform.position}");
                   // ZLog.Log($" Current position for Player: {player.transform.position}");
-                  // ZLog.Log($"Setting relative position for {player.GetPlayerName()}: {adjustedPlayerPosition}");
+                  ZLog.Log($"Setting relative position for {player.GetPlayerName()}: {adjustedPlayerPosition}");
 
                    kvp.Key.transform.position = adjustedPlayerPosition;
 

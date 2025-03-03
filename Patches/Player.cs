@@ -312,7 +312,7 @@ namespace RareMagicPortal_3_Plus.Patches
         {
             internal static void Prefix()
             {
-                ZRoutedRpc.instance.Register("RMPP Teleport Boat", new Action<long,Vector3, Quaternion, bool>(Ships.HandleRemoteTeleport));
+                ZRoutedRpc.instance.Register("RMPP Teleport Boat", new Action<long,Vector3>(Ships.HandleRemoteTeleport));
                 ZRoutedRpc.instance.Register("RequestServerAnnouncementRMP", new Action<long, ZPackage>(functions.RPC_RequestServerAnnouncementRMP)); // Our Server Handler
                 ZRoutedRpc.instance.Register("RequestServerAnnouncementRMPZDOFULL", new Action<long, ZPackage>(functions.RPC_RequestServerAnnouncementRMPZDOFULL)); // Our Server Handler
                                                                                                                                                                     //((MonoBehaviour)(object)MagicPortalFluid.context).StartCoroutine(MagicPortalFluid.RemovedDestroyedTeleportWorldsCoroutine()); // moved to this incase the stop and start joining
