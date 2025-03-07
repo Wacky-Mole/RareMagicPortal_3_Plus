@@ -14,6 +14,7 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
+using Splatform;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
@@ -1307,7 +1308,8 @@ namespace RareMagicPortal
                 {
                    // MagicPortalFluid.RareMagicPortal.LogWarning("made it to target");
                     zdo.Set("TargetPortal PortalMode", (int) MagicPortalFluid.ConfigTargetPortalDefaultMode.Value);
-                    zdo.Set("TargetPortal PortalOwnerId", PrivilegeManager.GetNetworkUserId().Replace("Steam_", ""));
+                    zdo.Set("TargetPortal PortalOwnerId", PlatformManager.DistributionPlatform.LocalUser.PlatformUserID.m_userID.Replace("Steam_", ""));
+                    
                     zdo.Set("TargetPortal PortalOwnerName", Player.m_localPlayer.GetHoverName());
                 }
             }

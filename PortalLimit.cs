@@ -326,7 +326,11 @@ namespace RareMagicPortalPlus.limit
             pathPortalData = Path.Combine(MagicPortalFluid.YMLFULLFOLDER, MagicPortalFluid.Worldname + "_PlayerPortals.json");
             _portalManager = new PortalManager(pathPortalData);
             var VIPPath = Path.Combine(MagicPortalFluid.YMLFULLFOLDER, "VIP_Portal_players.txt");
-            VIPportalplayersList = new SyncedList(VIPPath, "");
+            //VIPportalplayersList = new SyncedList(VIPPath, "");
+            VIPportalplayersList = new SyncedList(
+                new FileHelpers.FileLocation(FileHelpers.FileSource.Local, VIPPath),
+                "");
+
 
             /*
 

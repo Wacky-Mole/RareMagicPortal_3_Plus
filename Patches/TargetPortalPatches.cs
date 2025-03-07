@@ -107,7 +107,7 @@ namespace RareMagicPortal_3_Plus
                         Vector3 vector = rotation * Vector3.forward;
                         Vector3 pos = position + vector * 1f + Vector3.up;
                         Ships.BoatPlayerTP(ship, Player.m_localPlayer, position, rotation, vector,pos);
-                        return false;
+                        throw new SkipPortalException2();
                     }
                 }
 

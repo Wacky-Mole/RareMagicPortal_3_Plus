@@ -106,8 +106,9 @@ namespace RareMagicPortal_3_Plus.Patches
                     return false;
                 }
 
-                if (Ships.ShipTeleportHelper.PlayerisOnShip)
+                if (Ships.ShipTeleportHelper.FindShip(Player.m_localPlayer))
                 {
+                    MagicPortalFluid.RareMagicPortal.LogInfo("Player.m_localPlayer is on ship, skipping inventory checks.");
                     __result = true; // skips checks for boats
                     return false;
                 }

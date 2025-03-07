@@ -32,6 +32,7 @@ namespace RareMagicPortal_3_Plus.PortalMode
         {
             popupInstance = Instantiate(MagicPortalFluid.uiasset.LoadAsset<GameObject>("RMPUIpop"));
 
+            popupInstance.GetComponentInChildren<Canvas>().sortingOrder = 1530;
             Panel = popupInstance.transform.Find("Canvas/MainPanel/Panel").gameObject;
             closeButton = popupInstance.transform.Find("Canvas/MainPanel/Close").GetComponent<Button>();
             Lists = Panel.transform.Find("Lists").gameObject;
@@ -428,6 +429,8 @@ namespace RareMagicPortal_3_Plus.PortalMode
                 // Force the player's inventory to open
                 InventoryGui.instance.Show(null);
             }
+
+            popupPrefab.GetComponentInChildren<Canvas>().sortingOrder = 1531;
 
             _passwordInputField = popupPrefab.transform.Find("Canvas/MainPanel/Panel/PasswordInputField").GetComponentInChildren<InputField>();
             _submitButton = popupPrefab.transform.Find("Canvas/MainPanel/Panel/SubmitButton").GetComponentInChildren<Button>();

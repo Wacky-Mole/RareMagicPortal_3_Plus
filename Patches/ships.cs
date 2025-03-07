@@ -95,7 +95,6 @@ namespace RareMagicPortalPlus.Patches
                 }   */
                 
             }
-
             
             ZLog.Log("RMP Teleporting Ship, " + ship2.name);
             ShipTeleportHelper.TeleportShip(ship2, pos + offset, rotation);
