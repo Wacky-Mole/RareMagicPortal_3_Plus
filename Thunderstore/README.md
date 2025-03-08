@@ -30,6 +30,7 @@ By default all the portals can be built by players, add SwordCheat (non recovera
 - **YAML Configuration Support:** Easily manage portal-specific settings like colors, access, and behavior.
 - **More Portals:** This mod unlocks the default stone portal and adds 5 more new portals types!
 - **Teleport Everything:** Won't teleport your pets, but all items. 
+- **Teleport Your Ships and Buddies! - No pets for now.
 
 ---
 
@@ -143,6 +144,11 @@ Most Portal modes can be combined with **Portal Crystals**, **Keys**,  for even 
 
 ---
 
+
+### **Ships**
+
+3.1.0 Added the ability to go through SEA based portals with your ships. 
+It is awesome, but has some limitations. 
 
 
 ### **2. Dynamic Portal Colors**

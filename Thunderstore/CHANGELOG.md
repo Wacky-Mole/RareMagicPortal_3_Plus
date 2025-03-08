@@ -6,4 +6,4 @@
 | 3.0.3     | - Allowed Target Portal Portals to be used if nameless. |
 | 3.0.4     | - Some Null fixes |
 | 3.0.5     | - Fix for PlayerPortal Limits, changed the ID to PLAYERNAME instead of SteamID or XboxID </br> Enabled Portal Images by default|
-| 3.0.6     | - Added a Ship Portal|
+| 3.1.0     | - Added a Ship Portal, Updated for 220.3|

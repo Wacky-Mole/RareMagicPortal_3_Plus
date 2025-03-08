@@ -96,8 +96,26 @@ namespace RareMagicPortalPlus.Patches
                 
             }
             
-            ZLog.Log("RMP Teleporting Ship, " + ship2.name);
-            ShipTeleportHelper.TeleportShip(ship2, pos + offset, rotation);
+            if (ship2 == null)
+            {
+                ZLog.Log("RMP Ship is null!"); 
+            }
+
+            if (!ship.IsOwner())
+            {
+                ZLog.Log("RMP Ship not owner!"); 
+            }
+
+            if (ShipTeleportHelper.ShipisTargetPortal)
+            {
+                MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.FreakingWaitforTargetPortalShipTeleport(ship2, ShipTeleportHelper.holdposition, rotation));
+            }
+            else
+            {
+                ZLog.Log("RMP Teleporting Ship, " + ship2.name + " Current Position " + ship2.transform.position + " Transport Position "+ ShipTeleportHelper.holdposition );
+                ShipTeleportHelper.TeleportShip(ship2, ShipTeleportHelper.holdposition, rotation);
+            }    
+            
             ship2.m_shipControlls.RPC_ReleaseControl(player.GetPlayerID(),player.GetPlayerID());
 
             MagicPortalFluid.context.StartCoroutine(ShipTeleportHelper.WaitForTeleportCompletion());
@@ -112,6 +130,7 @@ namespace RareMagicPortalPlus.Patches
             private static Vector3 offset = Vector3.zero;
             internal static Vector3 holdposition = Vector3.zero;
             internal static bool PlayerisOnShip = false;
+            internal static bool ShipisTargetPortal= false;
             
 
             public static Ship FindShip(Player player)
@@ -174,6 +193,15 @@ namespace RareMagicPortalPlus.Patches
                 ship.transform.position = targetPos;
                 ship.transform.rotation = targetRotation;
                 holdVelocity = targetPos;
+            }
+
+            public static IEnumerator FreakingWaitforTargetPortalShipTeleport(Ship ship, Vector3 targetPos,
+                Quaternion targetRotation)
+            {
+                yield return new WaitForSeconds(0.9f);
+                ZLog.Log("RMP Teleporting Ship, " + ship.name + " Current Position " + ship.transform.position + " Transport Position "+ ShipTeleportHelper.holdposition );
+                ShipisTargetPortal = false;
+                ShipTeleportHelper.TeleportShip(ship, targetPos, targetRotation);
             }
 
             public static IEnumerator WaitForTeleportCompletion()
