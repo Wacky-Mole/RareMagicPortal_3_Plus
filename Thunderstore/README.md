@@ -147,11 +147,33 @@ Most Portal modes can be combined with **Portal Crystals**, **Keys**,  for even 
 
 ### **Ships**
 
-3.1.0 Added the ability to go through SEA based portals with your ships. 
+3.1.0 Added the ability to go through SEA based portals with your ship and buddies. 
+
 It is awesome, but has some limitations. 
 
+1) No pets or carts will be teleported.
 
-### **2. Dynamic Portal Colors**
+2) Can be used in most modes, but I only tested Normal and Target Portal Modes. 
+
+3) Relative position saving only has as about a 50% chance of working.
+
+4) If it restores a player to sitting at the rudder you need to sit up and sit back down to regain control or rudder.
+
+5) Admin only placement. I might allow it to be set in world generation in the future, but I am still thinking about it. 
+
+6) Instance owner of area controls the ship transportation. Only when they cross the threshold does the ship transport with the other players on the ship.
+
+7) Supports Crossplay teleportation.
+
+<img src="https://wackymole.com/hosts/portalboat.png" width="900"/>  
+
+</br></br>
+<a href="https://wackymole.com/hosts/WackyRMPBoat.mp4"><b>Video Link </b></a>
+
+---
+
+
+### **1. Dynamic Portal Colors**
 Portals don't have to be dull anymore! Customize portals with **vibrant colors** to match biomes, themes, or server events.
 
 #### **Default Colors by Biome:**
@@ -175,7 +197,7 @@ These can all be changed or manually changed
 
 ---
 
-### **3. Crystal and Key Economy**
+### **2. Crystal and Key Economy**
 This system adds a layer of strategy and progression to portal use.
 
 - **Crystals** are consumed upon entering portals, making their use a calculated decision. // can be anything prefab, from any mod
