@@ -993,7 +993,7 @@ namespace RareMagicPortal
 
                 if (PortalColorLogic.PortalN == null || PortalColorLogic.PortalN.Portals == null)
                 {
-                    RareMagicPortal.LogInfo("PortalColorLogic.PortalN or Portals is null");
+                    RareMagicPortal.LogWarning("PortalColorLogic.PortalN or Portals is null on ServerSync");
                     return;
                 }
 

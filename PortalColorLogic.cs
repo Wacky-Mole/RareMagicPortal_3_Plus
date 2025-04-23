@@ -549,6 +549,11 @@ namespace RareMagicPortal
                 }
 
                 string zdoName = __instance.m_nview.GetZDO().GetString(MagicPortalFluid._portalID);
+                if (PortalColorLogic.PortalN == null || PortalColorLogic.PortalN.Portals == null)
+                {
+                    PortalColorLogic.RMP.LogWarning("The portal dictionary is not set for some reason - very wacky");
+                    return;
+                }
                 if (!PortalN.Portals.ContainsKey(portalName) || zdoName == "")
                 {
                     if (zdoName == "")
