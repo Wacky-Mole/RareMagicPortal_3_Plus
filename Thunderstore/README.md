@@ -539,8 +539,3 @@ For feedback, support, or feature suggestions, feel free to <a href="https://www
 
 --- 
 
-## **KeyManager**
- I put over a year of effort into making this mod, I don't want it to be misused or uncredited. 
-
-[![KeyManager Disclaimer](https://noobtrap.eu/images/keymanager_disclaimer_server.png)](https://key.sayless.eu/faq.php)
----
