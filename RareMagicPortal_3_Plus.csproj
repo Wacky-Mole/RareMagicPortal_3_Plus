@@ -82,10 +82,6 @@
     <Reference Include="ItemManager">
       <HintPath>Libs\ItemManager.dll</HintPath>
     </Reference>
-    <Reference Include="KeyManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\KeyManager.dll</HintPath>
-    </Reference>
     <Reference Include="LocalizationManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libs\LocalizationManager.dll</HintPath>
@@ -210,6 +206,9 @@
     <EmbeddedResource Include="assets\portalmagicfluid" />
     <EmbeddedResource Include="assets\wackyportals" />
     <EmbeddedResource Include="assets\rmpui" />
+    <None Include="Nexus\RareMagicPortalPlus_v3.0.0.zip" />
+    <None Include="Nexus\RareMagicPortalPlus_v3.0.1.zip" />
+    <None Include="Nexus\RareMagicPortalPlus_v3.1.1.zip" />
     <None Include="translations\Spanish.yml" />
   </ItemGroup>
   <ItemGroup>
@@ -234,9 +233,6 @@
     <EmbeddedResource Include="Img\background1.png" />
     <EmbeddedResource Include="Img\background2.png" />
     <EmbeddedResource Include="Img\background3.png" />
-    <Content Include="KeyManager.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Libs\GuildsAPI.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -285,11 +281,7 @@
     <Target Name="AfterBuild">
     </Target>
     -->
-  <UsingTask AssemblyFile="KeyManager.dll" TaskName="KeyManager.Seal" />
-  <Target Name="KeyManager" AfterTargets="ILRepack">
-    <Seal DLL="$(TargetPath)" />
-  </Target>
-  <Target Name="GetAssemblyVersion" AfterTargets="KeyManager">
+  <Target Name="GetAssemblyVersion" AfterTargets="ILRepack">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="Targets" />
     </GetAssemblyIdentity>
@@ -355,16 +347,16 @@ System.IO.File.WriteAllText(ManifestFile, content);
     <Message Text="Updating version number in Thunderstore\manifest.json" Condition="Exists(@(ManifestFile))" />
     <Exec Command="powershell.exe -ExecutionPolicy Bypass -Command &quot;&amp; { &amp; '$(ProjectDir)UpdateManifest.ps1' -manifestFile '@(ManifestFile)' -versionString '$(PackageVersion)' }&quot;" />
   </Target>
-  <!--
   <Target Name="MakeThunderstorePackage" AfterTargets="UpdateManifestVersion" Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Error Text="manifest.json not found in Thunderstore directory." Condition="!Exists('$(ProjectDir)\Thunderstore\manifest.json')" />
     <Error Text="icon.png not found in Thunderstore directory. Please note that Thunderstore requires this image to be 256x256 in dimension" Condition="!Exists('$(ProjectDir)\Thunderstore\icon.png')" />
     <ItemGroup>
       <PackageFiles Include="$(TargetDir)$(AssemblyName).dll" Condition="Exists('$(TargetDir)$(AssemblyName).dll')" />
       <PackageFiles Include="$(ProjectDir)\Thunderstore\CHANGELOG.md" Condition="Exists('$(ProjectDir)\Thunderstore\CHANGELOG.md')" />
+      <PackageFiles Include="README.md" Condition="Exists('README.md')" />
       <PackageFiles Include="$(ProjectDir)\Thunderstore\manifest.json" Condition="Exists('$(ProjectDir)\Thunderstore\manifest.json')" />
       <PackageFiles Include="$(ProjectDir)\Thunderstore\icon.png" Condition="Exists('$(ProjectDir)\Thunderstore\icon.png')" />
-      <PackageFiles Include="$(ProjectDir)\Thunderstore\English_Example.yml" Condition="Exists('$(ProjectDir)\Thunderstore\RareMagicPortalPlus.English_Example.yml')" />
+      <PackageFiles Include="$(ProjectDir)\Thunderstore\RareMagicPortalPlus.English_Example.yml" Condition="Exists('$(ProjectDir)\Thunderstore\RareMagicPortalPlus.English_Example.yml')" />
     </ItemGroup>
     <MakeDir Directories="$(PackageDir)" />
     <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(PackageDir)" />
@@ -380,5 +372,5 @@ System.IO.File.WriteAllText(ManifestFile, content);
     <Copy SourceFiles="@(NexusPackageFiles)" DestinationFolder="$(PackageDir)" />
     <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="Nexus\$(PackageName).zip" Overwrite="true" />
     <RemoveDir Directories="$(PackageDir)" />
-  </Target>  -->
+  </Target>
 </Project>

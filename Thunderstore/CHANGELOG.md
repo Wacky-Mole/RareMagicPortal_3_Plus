@@ -7,3 +7,5 @@
 | 3.0.4     | - Some Null fixes |
 | 3.0.5     | - Fix for PlayerPortal Limits, changed the ID to PLAYERNAME instead of SteamID or XboxID </br> Enabled Portal Images by default|
 | 3.1.0     | - Added a Ship Portal, You can transport your ship and buddies through a very large Portal now. Admin only placement. </br>Updated for 220.3 and update GUILDSAPI|
+| 3.1.1     | - Updated some warnings and some logs to try to catch rare error. </br> Removed KeyManager and made source code public. </br>Here are some stats from large server usage:</br>This mod has been included in 9 Thunderstore modpacks and used on 42 unique servers.</br> </br> However, it’s primarily designed for large servers—yet 33 of those didn’t create a Thunderstore modpack, meaning mod creators were denied the dignity of proper client-side downloads. </br> </br> I’ve made \$0 from this mod. If you're going to bypass Thunderstore and the terms of service set by mod authors, the least you can do is support the creators with a small donation. 
+
